@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>HOOD — the 5-minute divergent bottom of 2026-03-27, replayed</title>
+<meta name="description" content="Replay of HOOD's 5-minute bullish divergence on 2026-03-27, one bar at a time, with the buy, the target and the close.">
+<style>
+:root{--bg:#0d0d0d;--ink:#e8e6e1;--mute:#8a877f;--dim:#5c5a55;--rule:#2a2a2a;--card:#111;--amber:#f5b041;--blue:#4c8bf5;--green:#2ecc71;--red:#ef5350;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--mono);-webkit-text-size-adjust:100%}
+body{font-size:16px;line-height:1.5;overflow-x:hidden}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 60px}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.top .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.nav a{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border:1px solid var(--rule);padding:8px 10px;min-height:36px;display:inline-flex;align-items:center}
+.strip{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin:18px 0 10px;font-size:13px;color:var(--mute)}
+.strip .sym{font-size:clamp(28px,7vw,44px);line-height:1;color:var(--ink);letter-spacing:-.02em}
+.strip .mode{font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--amber);color:var(--amber)}
+.strip .mode.fwd{border-color:var(--green);color:var(--green)}
+.strip .live{color:var(--green)}
+.stages{display:grid;grid-template-columns:repeat(var(--ns),1fr);gap:4px;margin:8px 0}
+.stage{border:1px solid var(--rule);padding:7px 3px;text-align:center;cursor:pointer;min-height:42px;background:transparent;color:var(--mute);font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;transition:color .2s,border-color .2s}
+.stage b{display:block;font-size:15px;color:var(--dim);letter-spacing:0;margin-bottom:1px;transition:color .2s}
+.stage.on{color:var(--ink);border-color:var(--amber)}.stage.on b{color:var(--amber)}.stage.done b{color:var(--ink)}
+.stage .t{display:none}@media(min-width:760px){.stage .t{display:block}}
+.chart{border:1px solid var(--rule);background:var(--card);position:relative}
+canvas{display:block;width:100%;height:clamp(400px,112vw,600px)}
+.prog{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--amber);transform-origin:left center;transform:scaleX(0)}
+.cap{border:1px solid var(--rule);border-top:0;background:var(--card);padding:12px 14px;min-height:92px}
+.cap .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.cap .k.g{color:var(--green)}.cap .k.r{color:var(--red)}
+.cap p{margin:0;font-size:15px;color:var(--ink);overflow-wrap:anywhere}.cap b{color:var(--ink)}
+.ctl{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--mute);padding:0 14px;min-height:42px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}.btn.pri{border-color:var(--amber);color:var(--amber)}.btn.pri:hover{background:var(--amber);color:var(--bg)}
+.btn.sm{padding:0 10px;min-height:36px;font-size:11px;color:var(--mute)}.btn.sm.on{color:var(--amber);border-color:var(--amber)}
+.grp{display:flex;gap:4px}.clock{font-size:12px;color:var(--mute);margin-left:auto;font-variant-numeric:tabular-nums}
+.scrub{width:100%;margin:10px 0 0;-webkit-appearance:none;appearance:none;height:28px;background:transparent;cursor:pointer}
+.scrub::-webkit-slider-runnable-track{height:3px;background:var(--rule)}.scrub::-moz-range-track{height:3px;background:var(--rule)}
+.scrub::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--amber);border:3px solid var(--bg);margin-top:-9.5px}
+.scrub::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--amber);border:3px solid var(--bg)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mute);margin:8px 0 0}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid rgba(232,230,225,.6);vertical-align:middle;margin-right:5px}
+.legend i.s20{border-top:1px solid rgba(76,139,245,.6)}.legend i.tint{border-top:6px solid rgba(239,83,80,.14)}.legend i.tg{border-top:2px dashed var(--green)}.legend i.kl{border-top:2px dashed var(--red)}
+h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:6px}@media(min-width:760px){.nums{grid-template-columns:repeat(3,1fr)}}
+.nums div{border:1px solid var(--rule);background:var(--card);padding:10px 12px}
+.nums .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.nums .v{font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.next{border:1px solid var(--green);background:var(--card);padding:14px 16px}
+.next .h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.next ul{margin:0;padding-left:18px;font-size:15px}.next li{margin:5px 0;overflow-wrap:anywhere}
+.src{font-size:12px;color:var(--mute);line-height:1.7;padding-left:18px}.src code{color:var(--ink);word-break:break-all}
+.foot{margin-top:30px;padding-top:10px;border-top:1px solid var(--rule);font-size:12px;color:var(--dim)}
+@media(prefers-reduced-motion:reduce){.stage,.btn{transition:none}}
+
+.legend i.pre{border-top:6px solid rgba(232,230,225,.10)}.legend i.dv{border-top:2px dashed var(--amber)}
+.cap #run,.cap #best{font-variant-numeric:tabular-nums}
+.next.m{border-color:var(--amber)}.next.m .h{color:var(--amber)}
+</style></head>
+<body>
+<div class="top"><div class="in"><div class="brand">Riven · Replay</div><nav class="nav"><a href="index.html">All replays</a></nav></div></div>
+<div class="wrap">
+  <div class="strip"><span class="sym">HOOD</span><span class="mode">INTRADAY</span><span>2026-03-27 · Fri</span><span>5-minute candles, 1 = 5 minutes · times Central</span></div>
+  <div class="stages" id="stages" style="--ns:5"></div>
+  <div class="chart"><canvas id="cv" aria-label="5-minute candle replay of HOOD on 2026-03-27 with the stages of the divergence"></canvas><div class="prog" id="prog"></div></div>
+  <div class="cap" id="cap"></div>
+  <div class="ctl">
+    <button class="btn pri" id="play" type="button">Pause</button>
+    <button class="btn" id="restart" type="button">Restart</button>
+    <span class="grp"><button class="btn sm" data-speed="0.5" type="button">0.5×</button><button class="btn sm on" data-speed="1" type="button">1×</button><button class="btn sm" data-speed="2" type="button">2×</button></span>
+    <span class="grp"><button class="btn sm on" data-zoom="full" type="button">full</button><button class="btn sm" data-zoom="tight" type="button">tight</button></span>
+    <span class="clock" id="clock"></span>
+  </div>
+  <input class="scrub" id="scrub" type="range" min="0" max="1" step="0.05" value="0" aria-label="scrub the replay">
+  <div class="legend"><span><i></i>20-bar average (the light line)</span><span><i class="pre"></i>premarket</span><span><i class="dv"></i>the divergence</span><span><i class="tg"></i>best high after the buy (hindsight)</span><span>space = play/pause · ←/→ = 5 bars</span></div>
+  <h2>The numbers on the screen</h2>
+  <div class="nums"><div><div class="l">entry (the confirm bar's close)</div><div class="v">67.24</div></div><div><div class="l">time</div><div class="v">10:05 CT</div></div><div><div class="l">pivot low vs prior low</div><div class="v">66.05 vs 66.08</div></div><div><div class="l">RSI-14 at the two lows</div><div class="v">27.5 → 36.0</div></div><div><div class="l">best high to the close</div><div class="v">+1.00%</div></div><div><div class="l">close at the end of day</div><div class="v">-1.81%</div></div><div><div class="l">next-day close</div><div class="v">-3.11%</div></div><div><div class="l">at the day's low</div><div class="v">yes</div></div><div><div class="l">higher timeframes live</div><div class="v">none</div></div></div>
+  <h2>What was measured</h2><div class="next m"><div class="h">the finding this page illustrates — a filter for judgment, not a proven edge</div><ul><li><b>38 stocks, 1,150 trading days, 12,022 cases</b> (2022 → 2026-09-18): a 5-minute bullish divergence <b>at the day's low</b> ran to a best high of <b>+1.65%</b> by the close. Any regular-hours 5-minute bar: +1.37%. Difference <b>+0.29 points</b> (95% range +0.22 to +0.35, dates as the clusters).</li><li>The same divergence <b>not</b> at the day's low carries nothing (+1.22% for every 5-minute divergence, under the every-bar baseline). Stacked with a higher timeframe (n 488): +1.56%, no better. Within 1% of the daily 50 (n 2,370): +0.76%, worse.</li><li>The next-day close carries nothing (+0.46% vs +0.30%, not separable). <b>The money is the same-day exit.</b></li></ul></div>
+  <h2>Sources</h2>
+  <ol class="src"><li><code>data/qlab/bars5m/HOOD.json (Alpaca SIP 5-minute, extended hours, UTC stamps)</code></li><li><code>qlab/div5m.py::detect — pivot_lows(l=2,r=4)+wilder_rsi(14)+macd(12,26,9)+tol0.10%+ref=prev — run on the whole tape, so the RSI/MACD warm-up and every pivot index are the ones the measurement used</code></li><li><code>data/qlab/div_mtf_events_base5.json row: sym HOOD, tf 5, t 2026-03-27T15:00:00Z (bheod +0.996, ceod -1.814, cnd -3.108, live [])</code></li><li><code>data/qlab/div_mtf_base5.json[tables] — '5m + at session low': n 12,022 over 1,150 dates, 38 names, best high to close +1.65% vs +1.37% for every RTH 5-minute bar (diff +0.29 pp, CI +0.22..+0.35)</code></li><li><code>selection: The 40th percentile of the 480 at-the-low 5-minute RTH cases of 2026 on COIN, MSTR, HOOD, NVDA, MARA, RIOT, SMCI, NBIS, ranked by best high to the close (rank 193 of 480) — picked by rank, not by hand.</code></li><li><code>qlab/replay_page.py — the CSS and the page skeleton; qlab/replay_intraday.py — this drawing</code></li></ol>
+  <div class="foot">bars: Alpaca SIP 5-minute, extended hours · detector: qlab/div5m.py · measurement: qlab/div_mtf.py · not advice · built 2026-09-18T18:26 by Riven</div>
+</div>
+<script>
+const DATA = {"mode":"intraday","sym":"HOOD","signal_date":"2026-03-27","built":"2026-09-18T18:26","strip":["HOOD","INTRADAY","2026-03-27 \u00b7 Fri","5-minute candles, 1 = 5 minutes \u00b7 times Central"],"title":"HOOD \u2014 the 5-minute divergent bottom of 2026-03-27, replayed","N":137,"bars":{"t":["03:05","03:10","03:15","03:20","03:30","03:45","03:50","03:55","04:00","04:05","04:10","04:25","04:30","04:35","04:45","04:50","04:55","05:00","05:05","05:10","05:15","05:20","05:25","05:30","05:35","05:40","05:45","05:50","05:55","06:00","06:05","06:10","06:15","06:20","06:25","06:30","06:35","06:40","06:45","06:50","06:55","07:00","07:05","07:10","07:15","07:20","07:25","07:30","07:35","07:40","07:45","07:50","07:55","08:00","08:05","08:10","08:15","08:20","08:25","08:30","08:35","08:40","08:45","08:50","08:55","09:00","09:05","09:10","09:15","09:20","09:25","09:30","09:35","09:40","09:45","09:50","09:55","10:00","10:05","10:10","10:15","10:20","10:25","10:30","10:35","10:40","10:45","10:50","10:55","11:00","11:05","11:10","11:15","11:20","11:25","11:30","11:35","11:40","11:45","11:50","11:55","12:00","12:05","12:10","12:15","12:20","12:25","12:30","12:35","12:40","12:45","12:50","12:55","13:00","13:05","13:10","13:15","13:20","13:25","13:30","13:35","13:40","13:45","13:50","13:55","14:00","14:05","14:10","14:15","14:20","14:25","14:30","14:35","14:40","14:45","14:50","14:55"],"o":[70.52,70.59,70.52,70.3,70.22,70.2,70.2,70.09,69.8,69.7,69.52,69.67,69.8,69.76,69.7,69.55,69.41,69.25,69.27,69.16,69.11,69.07,69.12,69.3,69.08,68.86,68.82,68.67,68.58,68.77,68.53,68.54,68.5,68.46,68.45,68.55,68.485,68.35,68.42,68.65,68.59,68.89,68.47,68.3,68.3019,68.3,68.25,68.23,68.1,68.1747,68.13,67.91,67.9893,67.8,67.72,67.64,67.5083,67.899,68.09,68.54,67.91,67.6951,67.34,67.6021,66.5,66.38,66.58,66.23,66.75,67.01,66.49,66.28,66.52,66.27,66.275,66.8,66.65,66.96,67.24,67.22,67.09,66.75,67.18,67.57,67.81,67.655,67.61,67.665,67.74,67.67,67.6501,67.48,67.4382,67.39,67.135,67.2,67.26,67,67.07,67.29,67.13,67.09,66.97,67.16,67.1684,67.02,67.1,66.82,66.8735,66.59,66.442,66.35,66.36,66.26,66.375,66.41,66.41,66.655,66.51,66.55,66.66,66.66,66.66,66.56,66.45,66.33,66.29,66.175,66.02,66.09,66.05,66.21,66.42,66.2203,66.17,66.04,66.06],"h":[70.52,70.71,70.52,70.3,70.33,70.2,70.21,70.09,69.83,69.7,69.69,69.75,69.8,69.77,69.7,69.57,69.49,69.44,69.44,69.27,69.12,69.11,69.2,69.3,69.08,68.99,68.83,68.67,68.7,68.9,68.53,68.55,68.55,68.6,68.55,68.56,68.49,68.42,68.69,68.65,68.61,71.32,68.47,68.4,68.38,68.37,68.2786,68.32,68.18,68.18,68.18,68.04,67.9893,67.89,67.75,67.7489,67.93,68.1,68.6,68.89,68,67.77,67.835,67.7295,66.5,66.75,66.62,66.865,67.11,67.04,66.5733,66.56,66.55,66.37,66.805,66.87,66.98,67.38,67.48,67.245,67.09,67.44,67.565,67.85,67.91,67.66,67.73,67.875,67.85,67.73,67.76,67.48,67.515,67.51,67.22,67.3,67.26,67.1034,67.355,67.29,67.185,67.1227,67.43,67.185,67.18,67.12,67.12,66.9099,66.91,66.6,66.52,66.38,66.4,66.49,66.46,66.48,66.69,66.6999,66.57,66.69,66.735,66.93,66.75,66.56,66.4501,66.45,66.3,66.18,66.2299,66.145,66.2,66.435,66.435,66.245,66.29,66.14,66.21],"l":[70.51,70.59,70.35,70.3,70.2,70.2,70.13,69.8,69.75,69.61,69.51,69.67,69.66,69.64,69.5,69.36,69.3,69.2,69.25,69.11,69.1,69,69.12,69.23,68.78,68.85,68.68,68.6,68.49,68.46,68.45,68.39,68.45,68.46,68.42,68.47,68.39,68.35,68.42,68.47,68.53,68.32,68.3,68.3,68.3019,68.2,68.1813,68.1,67.93,68.04,67.9111,67.89,67.7,67.7,67.55,67.5,67.5075,67.89,68.08,67.68,67.25,67.19,67.31,66.445,66.08,66.34,66.11,66.2,66.65,66.25,66.22,66.19,66.14,66.05,66.135,66.5999,66.56,66.91,67.17,67.06,66.65,66.665,67.15,67.5,67.57,67.4755,67.585,67.64,67.575,67.503,67.44,67.29,67.37,67.1328,67.075,67.15,66.99,66.8,67.06,66.985,67.04,66.9201,66.91,67.09,66.98,66.9,66.75,66.82,66.51,66.42,66.21,66.26,66.2,66.225,66.34,66.345,66.36,66.45,66.464,66.52,66.5517,66.52,66.54,66.36,66.2701,66.25,66.07,66.015,66.005,65.91,66,66.2,66.22,66.06,66.0401,65.872,66.01],"c":[70.51,70.71,70.35,70.3,70.29,70.2,70.14,69.8,69.75,69.61,69.53,69.75,69.76,69.64,69.5,69.36,69.3,69.44,69.25,69.11,69.1,69.11,69.2,69.25,68.78,68.9,68.68,68.65,68.61,68.56,68.45,68.45,68.49,68.46,68.55,68.5,68.39,68.42,68.65,68.58,68.57,68.47,68.34,68.3,68.316,68.26,68.25,68.1,68.18,68.04,67.9975,67.89,67.82,67.75,67.65,67.55,67.92,68.1,68.6,67.91,67.7,67.3592,67.635,66.495,66.39,66.57,66.25,66.76,66.98,66.49,66.31,66.515,66.27,66.275,66.79,66.66,66.96,67.24,67.2009,67.11,66.7551,67.16,67.565,67.8,67.65,67.6083,67.68,67.73,67.66,67.66,67.47,67.42,67.39,67.14,67.1984,67.26,66.99,67.09,67.29,67.13,67.085,66.98,67.17,67.17,67.02,67.115,66.82,66.87,66.58,66.4599,66.36,66.37,66.27,66.37,66.42,66.41,66.6569,66.51,66.54,66.665,66.65,66.66,66.565,66.44,66.33,66.2978,66.175,66.015,66.0955,66.045,66.19,66.41,66.225,66.17,66.0499,66.05,66.02],"v":[520,1596,5452,302,4540,500,2284,17786,2234,1841,7519,542,7587,2091,6022,5117,4212,3836,4693,6128,7824,5888,1997,1429,11170,6150,11749,8857,8067,22721,4105,17759,25029,18631,10721,3684,7536,2535,24725,8057,4326,247734,14737,15095,7395,19440,7715,20344,37071,12874,15977,21833,42242,21825,27897,32327,25648,39940,78543,1201996,821511,672187,714733,1072594,723093,642122,545978,599941,652534,696997,443182,437136,386415,493823,380298,439340,330031,466139,398211,279830,415320,440208,291910,435849,372403,237909,217975,253126,175668,213574,209315,309585,262923,216678,175008,177046,188552,282851,167832,196546,148564,167521,226498,109735,136156,226277,195453,134036,489835,326418,426582,210376,190175,241048,154585,140476,211654,212981,131209,137203,135452,299581,120501,188561,152554,212591,278060,238788,308974,403166,237120,249884,210209,264978,442876,841601,1067153],"s20":[70.5374,70.5495,70.5416,70.5341,70.5241,70.5084,70.4904,70.4484,70.4109,70.3619,70.3114,70.2723,70.2353,70.1918,70.1393,70.0783,70.0158,69.9598,69.8963,69.815,69.7445,69.6645,69.607,69.5545,69.479,69.414,69.341,69.2835,69.2265,69.174,69.12,69.055,68.9915,68.9325,68.885,68.842,68.7965,68.7455,68.7155,68.689,68.6625,68.6305,68.5875,68.54,68.5168,68.4848,68.4633,68.4358,68.4143,68.3883,68.3657,68.3377,68.3042,68.2687,68.2237,68.1762,68.1527,68.1367,68.1342,68.1007,68.0572,68.0016,67.9664,67.8761,67.7798,67.6953,67.5953,67.5283,67.4683,67.3908,67.3065,67.2377,67.1602,67.0865,67.0435,66.999,66.951,66.908,66.838,66.798,66.7508,66.7408,66.7373,66.8025,66.8655,66.9175,66.989,67.0375,67.0715,67.13,67.188,67.2332,67.2892,67.3325,67.3529,67.3829,67.3844,67.3769,67.3813,67.3823,67.3988,67.3898,67.3701,67.3386,67.3071,67.2824,67.2394,67.1964,67.1424,67.0824,67.0269,66.9744,66.9184,66.8799,66.841,66.7985,66.7818,66.7528,66.7153,66.6921,66.6703,66.6543,66.6241,66.5876,66.5531,66.5122,66.48,66.4372,66.413,66.3923,66.3838,66.3858,66.3835,66.3735,66.355,66.337,66.3052],"rsi":[48.85,57.58,43.27,41.72,41.4,38.54,36.72,28.5,27.52,24.95,23.59,34.2,34.64,31.86,28.94,26.35,25.3,32.09,28.33,25.91,25.74,26.26,30.92,33.44,24.43,29.64,26.09,25.64,25.02,24.23,22.54,22.54,24.75,24.19,29.33,28.19,25.81,27.6,39.68,37.62,37.32,34.39,30.99,30.0,30.95,29.45,29.18,25.39,30.57,27.03,26.05,23.7,22.29,20.95,19.17,17.57,38.18,45.34,59.4,42.97,39.4,34.4,40.93,28.36,27.52,31.27,28.46,38.04,41.67,36.54,34.84,38.35,35.86,35.95,44.69,43.1,47.74,51.7,51.12,49.72,44.57,50.82,56.15,58.93,56.47,55.77,56.76,57.48,56.08,56.08,52.1,51.07,50.43,45.31,46.67,48.14,42.6,45.12,49.85,46.4,45.45,43.22,48.18,48.18,44.61,47.27,40.73,42.19,36.56,34.51,32.86,33.2,31.46,35.13,36.94,36.72,45.41,41.74,42.75,46.92,46.48,46.83,43.86,40.23,37.31,36.47,33.4,29.87,33.67,32.48,39.12,47.56,42.26,40.8,37.74,37.75,36.94],"pre":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},"futurePad":4,"stages":[{"key":"p1","n":"01","t":"The first low","at":68,"sub":"swing low <b>66.08<\/b> at 08:55 CT, RSI <b>27.5<\/b>. A low only counts once <b>4 closes<\/b> print after it (pivot 2/4) \u2014 so it is knowable here, at 09:20 CT, not when it printed."},{"key":"p2","n":"02","t":"Lower low, RSI higher","at":73,"sub":"low <b>66.05<\/b> at 09:40 CT, under the first low (66.08), while RSI printed <b>36.0<\/b> vs 27.5 \u2014 price lower, momentum higher. It is the day's low so far. Not a pivot yet: four closes have to hold it."},{"key":"buy","n":"03","t":"Confirmed \u2014 the buy","at":77,"sub":"four closes held the low; the divergence is knowable at the 10:00 bar's close, <b>10:05 CT<\/b> \u00b7 BUY <b>67.24<\/b> \u00b7 MACD histogram higher too (-0.0354 vs -0.1192) \u00b7 the line zooming in is the day's eventual best high, <b>67.91<\/b> (<b>+1.00%<\/b>) \u2014 hindsight, labelled so."},{"key":"move","n":"04","t":"The move","at":78,"sub":"from the buy at 67.24: <b id=\"run\">\u2026<\/b> at <span id=\"rt\">\u2026<\/span> \u00b7 best so far <b id=\"best\">\u2026<\/b> \u00b7 the average at-the-low case runs to <b>+1.65%<\/b> by the close (n 12,022)."},{"key":"close","n":"05","t":"The close","at":136,"sub":"best high <b>67.91<\/b> at 10:35 CT = <b>+1.00%<\/b> from the buy \u00b7 close <b>66.02<\/b> = <b>-1.81%<\/b> \u2014 <b>gone by the close<\/b>: it paid only as a same-day exit \u00b7 next-day close <b>-3.11%<\/b> \u00b7 The 40th percentile of the 480 at-the-low 5-minute RTH cases of 2026 on COIN, MSTR, HOOD, NVDA, MARA, RIOT, SMCI, NBIS, ranked by best high to the close (rank 193 of 480) \u2014 picked by rank, not by hand."}],"holds":[{"at":77,"ms":1500},{"at":84,"ms":700}],"div":{"a":64,"b":73,"known":68,"loA":66.08,"loB":66.05,"rsiA":27.52,"rsiB":35.95,"tA":"08:55","tB":"09:40"},"buy":{"i":77,"close":67.24,"t":"10:05","rsi":51.7,"atLow":true,"lod":65.5,"lodI":null,"lodT":"18:55","pre":false},"outcome":{"bh_i":84,"bh_price":67.91,"bh_pct":1.0,"bh_t":"10:35","c_i":136,"close":66.02,"ceod":-1.81,"c_t":"15:00","cnd":-3.108,"fail":false,"gone":true,"dir":"down"},"priors":[],"cell":{"n":12022,"dates":1150,"syms":38,"mean":1.65,"base":1.37,"diff":0.29,"lo":0.22,"hi":0.35,"cnd":0.46,"cnd_base":0.3,"any_mean":1.22,"stack_mean":1.56,"stack_n":488,"near50_mean":0.76,"near50_n":2370,"src":"data/qlab/div_mtf_base5.json[tables]"},"pick":{"kind":"pct","pct":40,"rank":193,"n":480,"order":4,"tag":"40th percentile","text":"The 40th percentile of the 480 at-the-low 5-minute RTH cases of 2026 on COIN, MSTR, HOOD, NVDA, MARA, RIOT, SMCI, NBIS, ranked by best high to the close (rank 193 of 480) \u2014 picked by rank, not by hand."},"live":[],"nums":[["entry (the confirm bar's close)","67.24"],["time","10:05 CT"],["pivot low vs prior low","66.05 vs 66.08"],["RSI-14 at the two lows","27.5 \u2192 36.0"],["best high to the close","+1.00%"],["close at the end of day","-1.81%"],["next-day close","-3.11%"],["at the day's low","yes"],["higher timeframes live","none"]],"sources":["data/qlab/bars5m/HOOD.json (Alpaca SIP 5-minute, extended hours, UTC stamps)","qlab/div5m.py::detect \u2014 pivot_lows(l=2,r=4)+wilder_rsi(14)+macd(12,26,9)+tol0.10%+ref=prev \u2014 run on the whole tape, so the RSI/MACD warm-up and every pivot index are the ones the measurement used","data/qlab/div_mtf_events_base5.json row: sym HOOD, tf 5, t 2026-03-27T15:00:00Z (bheod +0.996, ceod -1.814, cnd -3.108, live [])","data/qlab/div_mtf_base5.json[tables] \u2014 '5m + at session low': n 12,022 over 1,150 dates, 38 names, best high to close +1.65% vs +1.37% for every RTH 5-minute bar (diff +0.29 pp, CI +0.22..+0.35)","selection: The 40th percentile of the 480 at-the-low 5-minute RTH cases of 2026 on COIN, MSTR, HOOD, NVDA, MARA, RIOT, SMCI, NBIS, ranked by best high to the close (rank 193 of 480) \u2014 picked by rank, not by hand.","qlab/replay_page.py \u2014 the CSS and the page skeleton; qlab/replay_intraday.py \u2014 this drawing"],"meta":{"entry":67.24,"time_ct":"10:05","at_low":true,"bheod":1.0,"ceod":-1.81,"cnd":-3.108,"live":[],"pre":false,"fail":false,"gone":true,"pick":{"kind":"pct","order":4,"tag":"40th percentile"}}};
+
+(function(){
+const D = DATA, B = D.bars, N = D.N;
+const $ = s => document.querySelector(s);
+const COL = {bg:'#0d0d0d', ink:'#e8e6e1', mute:'#8a877f', dim:'#5c5a55', rule:'#2a2a2a', amber:'#f5b041', blue:'#4c8bf5', green:'#2ecc71', red:'#ef5350'};
+const RGB = {green:'46,204,113', red:'239,83,80', amber:'245,176,65', blue:'76,139,245', ink:'232,230,225'};
+const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
+const RATE = 12;                                   // candles per second at 1x
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cv = $('#cv'), ctx = cv.getContext('2d');
+let W = 0, H = 0, dpr = 1, pos = 0, playing = false, speed = 1, holdUntil = 0, lastT = 0, raf = 0, ended = false, scrubbing = false;
+let v0 = 0, v1 = N - 1, cam = null, snap = true;
+const fx = {}, held = new Set();
+const DV = D.div, BUY = D.buy, OUT = D.outcome, CELL = D.cell;
+function fmtP(v) { return v >= 1000 ? v.toFixed(0) : v >= 100 ? v.toFixed(1) : v.toFixed(2); }
+function sgn(v, d) { return (v >= 0 ? '+' : '') + v.toFixed(d == null ? 2 : d) + '%'; }
+const AXIS_TAGS = ['0000.0', sgn(OUT.bh_pct)];
+const cellLvl = BUY.close * (1 + CELL.mean / 100);
+
+/* effects: fire when the candle at `at` is fully drawn (pos >= at+1); p = progress 0..1 */
+const FX = [
+  {key:'p1', at:DV.known, dur:450}, {key:'p2', at:DV.b, dur:700},
+  {key:'burst', at:BUY.i, dur:600}, {key:'tag', at:BUY.i, delay:250, dur:300}, {key:'target', at:BUY.i, delay:450, dur:1000},
+  {key:'cell', at:BUY.i, delay:700, dur:400}, {key:'slow', at:BUY.i, delay:950, dur:300},
+  {key:'bh', at:OUT.bh_i, dur:400}, {key:'close', at:OUT.c_i, dur:350}];
+(D.priors||[]).forEach((p,k) => FX.push({key:'prior'+k, at:p.i, dur:300}));
+const FXD = {}; FX.forEach(e => FXD[e.key] = e);
+function P(key, t) { const e = FXD[key]; if (!e) return 0; const s = fx[key]; if (s === undefined) return 0; if (s === -1e9) return 1; return Math.max(0, Math.min(1, (t - s) / e.dur)); }
+function since(key, t) { const e = FXD[key]; const s = fx[key]; if (s === undefined) return -1; if (s === -1e9) return 1e9; return t - s - e.dur; }
+const ease = p => 1 - Math.pow(1 - p, 3);
+
+function triggers(t) {
+  for (const e of FX) if (fx[e.key] === undefined && pos >= e.at + 1) fx[e.key] = t + (e.delay || 0);
+  for (const h of D.holds) if (!held.has(h.at) && pos >= h.at + 1) { held.add(h.at); holdUntil = t + h.ms; }
+}
+function seek(p, t) {
+  pos = Math.max(0, Math.min(N, p)); t = t || performance.now();
+  for (const e of FX) fx[e.key] = (pos >= e.at + 1) ? -1e9 : undefined;
+  held.clear(); for (const h of D.holds) if (pos >= h.at + 1) held.add(h.at);
+  holdUntil = 0; ended = false; snap = true;
+}
+
+/* layout — the daily engine's panels: price 66%, volume 15%, RSI the rest */
+function size() {
+  dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  const r = cv.getBoundingClientRect(); W = Math.round(r.width); H = Math.round(r.height);
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function L() {
+  const fsm = W > 700 ? 12 : 10; ctx.font = 'bold ' + fsm + 'px ' + MONO;
+  const padL = 6, padR = Math.max(W > 700 ? 64 : 54, Math.ceil(Math.max(...AXIS_TAGS.map(s => ctx.measureText(s).width))) + 16), padT = 10, padB = 20, gap = 8;
+  const inner = H - padT - padB - 2 * gap; const ph = Math.round(inner * .66), vh = Math.round(inner * .15), rh = inner - ph - vh;
+  const plotW = W - padL - padR, slot = plotW / (v1 - v0 + 1 + (D.futurePad || 0));
+  return {padL, padR, padT, padB, plotW, slot, pL: padL, pR: padL + plotW, pT: padT, pB: padT + ph, vT: padT + ph + gap, vB: padT + ph + gap + vh, rT: padT + ph + gap + vh + gap, rB: H - padB, ph, vh, rh,
+          x: k => padL + (k - v0 + .5) * slot, fs: W > 700 ? 13 : 11, fsm};
+}
+function camTarget(l) {
+  const upto = Math.min(v1, Math.max(v0 + 30, Math.ceil(pos) - 1));
+  let lo = Infinity, hi = -Infinity;
+  for (let k = v0; k <= upto; k++) { lo = Math.min(lo, B.l[k]); hi = Math.max(hi, B.h[k]); if (B.s20[k] != null) { lo = Math.min(lo, B.s20[k]); hi = Math.max(hi, B.s20[k]); } }
+  if (pos >= BUY.i + 1) { hi = Math.max(hi, OUT.bh_price, cellLvl); lo = Math.min(lo, BUY.lod); }
+  const pad = (hi - lo) * .07 || 1; return {lo: lo - pad * 2.3, hi: hi + pad * 1.6};
+}
+function updateCam(l, dt) {
+  const tg = camTarget(l);
+  if (!cam || snap) { cam = tg; snap = false; return; }
+  const k = 1 - Math.exp(-dt / 160); cam.lo += (tg.lo - cam.lo) * k; cam.hi += (tg.hi - cam.hi) * k;
+}
+function niceStep(range, n) { const raw = range / n, p = Math.pow(10, Math.floor(Math.log10(raw))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= raw) return m * p; return 10 * p; }
+
+function text(s, x, y, col, size, bold, align, base) { ctx.font = (bold ? 'bold ' : '') + size + 'px ' + MONO; ctx.fillStyle = col; ctx.textAlign = align || 'left'; ctx.textBaseline = base || 'alphabetic'; ctx.fillText(s, x, y); }
+function tag(s, x, y, bg, fg, size, align) { ctx.font = 'bold ' + size + 'px ' + MONO; const w = ctx.measureText(s).width + 10, h = size + 8; let x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x; ctx.fillStyle = bg; ctx.fillRect(x0, y - h / 2, w, h); text(s, x0 + 5, y, fg, size, true, 'left', 'middle'); return {x0, w, h}; }
+function dot(x, y, col, r, hollow) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); if (hollow) { ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.stroke(); } else { ctx.fillStyle = col; ctx.strokeStyle = COL.bg; ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); } }
+function clampX(x, w, l) { return Math.max(l.pL + 2, Math.min(l.pR - w - 2, x)); }
+/* price-panel labels: each one records its box; a later label that would overlap an earlier one is nudged up or down a row */
+let boxes = [], LL = null;
+function label(s, x, y, col, size, bold, align, prefer) {
+  ctx.font = (bold ? 'bold ' : '') + size + 'px ' + MONO; const w = ctx.measureText(s).width, h = size + 2;
+  let x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x; x0 = clampX(x0, w, LL);
+  const lim = v => Math.max(LL.pT + h, Math.min(LL.pB - 3, v)); let yy = lim(y);
+  const hit = () => boxes.some(b => x0 < b.x + b.w + 14 && x0 + w + 14 > b.x && yy - h < b.y + b.h + 3 && yy + 3 > b.y);
+  const y0 = yy, dir = prefer === 'up' ? -1 : 1;
+  for (let i = 0; i < 8 && hit(); i++) yy = lim(yy + dir * (h + 5));
+  if (hit()) { yy = y0; for (let i = 0; i < 8 && hit(); i++) yy = lim(yy - dir * (h + 5)); }
+  yy = lim(yy); boxes.push({x: x0, y: yy - h, w, h}); text(s, x0, yy, col, size, bold, 'left'); return yy;
+}
+
+function draw(t, dt) {
+  const l = L(); updateCam(l, dt); const y = p => l.pB - (p - cam.lo) / (cam.hi - cam.lo) * l.ph; boxes = []; LL = l; const NARROW = W <= 700;
+  ctx.clearRect(0, 0, W, H); ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+  const drawn = Math.min(N, pos), full = Math.floor(drawn), yb = Math.max(1, Math.floor(l.slot * .68)), bw = l.slot < 2.2 ? 1 : yb;
+  const kEnd = Math.min(v1, full);
+  // premarket, shaded very faintly, and the open
+  const oi = B.pre.indexOf(0);
+  ctx.fillStyle = 'rgba(' + RGB.ink + ',.035)'; let run = -1;
+  for (let k = v0; k <= v1 + 1; k++) { const u = k <= v1 && B.pre[k]; if (u && run < 0) run = k; if (!u && run >= 0) { ctx.fillRect(l.x(run) - l.slot / 2, l.pT, (k - run) * l.slot, l.rB - l.pT); run = -1; } }
+  if (oi > v0) { const xo = Math.round(l.x(oi) - l.slot / 2) + .5; ctx.setLineDash([2, 4]); ctx.strokeStyle = '#3a3a3a'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(xo, l.pT); ctx.lineTo(xo, l.rB); ctx.stroke(); ctx.setLineDash([]); text('open ' + B.t[oi], xo + 4, l.pT + 3, COL.dim, l.fsm, false, 'left', 'top'); }
+  // grid + price axis
+  const step = niceStep(cam.hi - cam.lo, W > 700 ? 6 : 5); ctx.strokeStyle = COL.rule; ctx.lineWidth = 1;
+  for (let p = Math.ceil(cam.lo / step) * step; p < cam.hi; p += step) { const yy = Math.round(y(p)) + .5; ctx.beginPath(); ctx.moveTo(l.pL, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); text(fmtP(p), l.pR + 6, yy, COL.dim, l.fsm, false, 'left', 'middle'); }
+  ctx.strokeStyle = COL.rule; [l.vT, l.vB, l.rT, l.rB].forEach(yy => { ctx.beginPath(); ctx.moveTo(l.pL, Math.round(yy) + .5); ctx.lineTo(l.pR, Math.round(yy) + .5); ctx.stroke(); });
+  // the clock, Central: the first bar of every hour (every other hour on a phone)
+  let lastH = -1;
+  for (let k = v0; k <= v1; k++) { const hh = +B.t[k].slice(0, 2); if (hh === lastH) continue; lastH = hh; if (NARROW && hh % 2) continue; ctx.font = l.fsm + 'px ' + MONO; const tw = ctx.measureText(B.t[k]).width; text(B.t[k], Math.max(tw / 2 + 2, Math.min(l.x(k), W - tw / 2 - 2)), H - 6, COL.dim, l.fsm, false, 'center'); ctx.strokeStyle = COL.rule; ctx.beginPath(); ctx.moveTo(Math.round(l.x(k)) + .5, l.rB); ctx.lineTo(Math.round(l.x(k)) + .5, l.rB + 4); ctx.stroke(); }
+  // RSI panel, 0..100
+  const ry = v => l.rB - v / 100 * l.rh; ctx.setLineDash([3, 4]); ctx.strokeStyle = '#333';
+  [30, 70].forEach(v => { ctx.beginPath(); ctx.moveTo(l.pL, ry(v)); ctx.lineTo(l.pR, ry(v)); ctx.stroke(); }); ctx.setLineDash([]);
+  text('RSI 14', l.pL + 4, l.rT + 3, COL.dim, l.fsm, false, 'left', 'top'); text('vol', l.pL + 4, l.vT + 3, COL.dim, l.fsm, false, 'left', 'top');
+  ctx.strokeStyle = 'rgba(179,157,219,.85)'; ctx.lineWidth = 1.2; ctx.beginPath(); let started = false;
+  for (let k = v0; k <= kEnd; k++) { const r = B.rsi[k]; if (r == null) continue; if (!started) { ctx.moveTo(l.x(k), ry(r)); started = true; } else ctx.lineTo(l.x(k), ry(r)); } ctx.stroke();
+  // volume
+  let vmax = 0; for (let k = v0; k <= v1; k++) vmax = Math.max(vmax, B.v[k]);
+  for (let k = v0; k <= kEnd; k++) { const up = B.c[k] >= B.o[k], h = B.v[k] / (vmax || 1) * l.vh; ctx.fillStyle = k === BUY.i && P('burst', t) > 0 ? COL.green : 'rgba(' + (up ? RGB.green : RGB.red) + ',.45)'; ctx.fillRect(l.x(k) - bw / 2, l.vB - h, Math.max(1, bw), h); }
+  // the very light line: the 20-bar SMA of closes
+  ctx.strokeStyle = 'rgba(' + RGB.ink + ',.5)'; ctx.lineWidth = 1.25; ctx.beginPath(); let st = false;
+  for (let k = v0; k <= kEnd; k++) { const v = B.s20[k]; if (v == null) continue; if (!st) { ctx.moveTo(l.x(k), y(v)); st = true; } else ctx.lineTo(l.x(k), y(v)); } ctx.stroke();
+  // candles, one bar at a time; the one being drawn fades in
+  for (let k = v0; k <= Math.min(v1, full); k++) {
+    const a = k < full ? 1 : (drawn - full); if (a <= 0) continue;
+    const up = B.c[k] >= B.o[k], col = up ? RGB.green : RGB.red, x = l.x(k), xr = bw === 1 ? Math.round(x) + .5 : x;
+    ctx.strokeStyle = 'rgba(' + col + ',' + (.9 * a).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(xr, y(B.h[k])); ctx.lineTo(xr, y(B.l[k])); ctx.stroke();
+    if (bw > 1) { const y1 = y(Math.max(B.o[k], B.c[k])), y2 = y(Math.min(B.o[k], B.c[k])); ctx.fillStyle = 'rgba(' + col + ',' + (.92 * a).toFixed(3) + ')'; ctx.fillRect(x - bw / 2, y1, bw, Math.max(1, y2 - y1)); }
+  }
+  // ── the divergence, as it becomes knowable ──
+  const xa = l.x(DV.a), xb = l.x(DV.b), ya = y(DV.loA), yb2 = y(DV.loB), ra = ry(DV.rsiA), rb = ry(DV.rsiB);
+  const p1 = P('p1', t);
+  if (p1 > 0) { const e = ease(p1); dot(xa, ya, COL.amber, 4.5 * e); dot(xa, ra, COL.amber, 3.5 * e); if (p1 >= 1) label('first low ' + fmtP(DV.loA) + ' · ' + DV.tA + (NARROW ? '' : ' · RSI ' + DV.rsiA.toFixed(1)), xa - 9, ya + 4, COL.amber, l.fsm, false, 'right', 'down'); }
+  const p2 = P('p2', t);
+  if (p2 > 0) {
+    const e = ease(p2);
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.amber; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(xa, ya); ctx.lineTo(xa + (xb - xa) * e, ya + (yb2 - ya) * e); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = COL.amber; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xa, ra); ctx.lineTo(xa + (xb - xa) * e, ra + (rb - ra) * e); ctx.stroke();
+    if (p2 >= 1) { dot(xb, yb2, COL.amber, 4.5); dot(xb, rb, COL.amber, 3.5); label('lower low ' + fmtP(DV.loB) + ' · RSI ' + DV.rsiA.toFixed(1) + ' → ' + DV.rsiB.toFixed(1) + (NARROW ? '' : ' higher'), xb, yb2 + l.fsm + 10, COL.amber, l.fsm, true, 'center', 'down'); }
+  }
+  // earlier divergences the same session, and how they closed
+  (D.priors || []).forEach((p, k) => { if (P('prior' + k, t) <= 0) return; const x = l.x(p.i), yy = y(p.close), col = p.pct >= 0 ? COL.green : COL.red; dot(x, yy, col, 4, true); label('earlier div ' + p.t + ' → ' + sgn(p.pct, 1), x, yy - 9, col, l.fsm, false, 'center', 'up'); });
+  // the average at-the-low case, from the buy
+  const pc = P('cell', t);
+  if (pc > 0) { ctx.setLineDash([2, 5]); ctx.strokeStyle = 'rgba(' + RGB.ink + ',' + (.35 * pc).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(l.x(BUY.i), y(cellLvl)); ctx.lineTo(l.pR, y(cellLvl)); ctx.stroke(); ctx.setLineDash([]); label((NARROW ? 'avg at-the-low case +' : 'the average at-the-low case +') + CELL.mean.toFixed(2) + (NARROW ? '%' : '% by the close'), l.x(BUY.i) + 6, y(cellLvl) - 4, 'rgba(' + RGB.ink + ',' + (.6 * pc).toFixed(3) + ')', l.fsm, false, 'left', 'up'); }
+  // THE BUY: a green burst at the confirm bar's close — always green at the buy; the outcome speaks in the caption
+  const pb = P('burst', t), xB = l.x(BUY.i), yB = y(BUY.close);
+  if (pb > 0 && pb < 1) { const r = 6 + pb * .30 * l.ph, g = ctx.createRadialGradient(xB, yB, 0, xB, yB, r); g.addColorStop(0, 'rgba(' + RGB.green + ',' + (.85 * (1 - pb)).toFixed(3) + ')'); g.addColorStop(.6, 'rgba(' + RGB.green + ',' + (.35 * (1 - pb)).toFixed(3) + ')'); g.addColorStop(1, 'rgba(' + RGB.green + ',0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(xB, yB, r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'rgba(' + RGB.green + ',' + (1 - pb).toFixed(3) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(xB, yB, r * .8, 0, Math.PI * 2); ctx.stroke(); ctx.strokeStyle = 'rgba(' + RGB.green + ',' + (.6 * (1 - pb)).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(xB, yB, r * 1.15, 0, Math.PI * 2); ctx.stroke(); }
+  if (pb > 0) dot(xB, yB, COL.green, 5);
+  if (P('tag', t) > 0) { ctx.globalAlpha = P('tag', t); label('BUY ' + fmtP(BUY.close) + ' · ' + BUY.t + ' CT', xB, y(B.h[BUY.i]) - 8, COL.green, l.fs, true, 'center', 'up'); ctx.globalAlpha = 1; }
+  // THE TARGET: the day's eventual best high zooms in from the right and lands on the price scale
+  const pt = P('target', t);
+  if (pt > 0) {
+    const e = ease(pt), yy = y(OUT.bh_price), xs = l.pR - (l.pR - xB) * e, col = OUT.fail ? COL.red : COL.green, after = since('target', t), lw = after > 0 ? 1.2 + 1.5 * Math.max(0, 1 - after / 220) : 2.6;
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]);
+    tag(sgn(OUT.bh_pct), l.pR + 2 + (1 - e) * 40, yy, col, COL.bg, Math.round(l.fsm * (1 + 1.1 * (1 - e))), 'left');
+    if (pt >= 1) label((NARROW ? 'best high ' : 'best high of the day ') + fmtP(OUT.bh_price) + ' · ' + OUT.bh_t + (NARROW ? '' : ' CT (hindsight)'), l.pR - 4, yy - 5, col, l.fsm, true, 'right', 'up');
+  }
+  // the day's low, tagged at the pivot
+  const ps = P('slow', t);
+  if (ps > 0) {
+    ctx.globalAlpha = ps;
+    if (BUY.atLow) label("DAY'S LOW " + fmtP(BUY.lod), xb, yb2 + 2 * l.fsm + 16, COL.amber, l.fs, true, 'center', 'down');
+    else { if (BUY.lodI != null) { const xl = l.x(BUY.lodI), yl = y(BUY.lod); ctx.setLineDash([2, 4]); ctx.strokeStyle = 'rgba(' + RGB.ink + ',.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(l.pL, yl); ctx.lineTo(l.pR, yl); ctx.stroke(); ctx.setLineDash([]); label("not the day's low — " + fmtP(BUY.lod) + ' at ' + BUY.lodT + (NARROW ? '' : ' CT'), xl, yl + l.fsm + 8, COL.mute, l.fsm, false, 'center', 'down'); } }
+    ctx.globalAlpha = 1;
+  }
+  if (P('bh', t) > 0) dot(l.x(OUT.bh_i), y(OUT.bh_price), OUT.fail ? COL.red : COL.green, 4 + 2 * (1 - P('bh', t)));
+  const pcl = P('close', t);
+  if (pcl > 0) { const x = l.x(OUT.c_i), yy = y(OUT.close), col = OUT.ceod >= 0 ? COL.green : COL.red; dot(x, yy, COL.ink, 4.5, true); label('close ' + fmtP(OUT.close) + ' = ' + sgn(OUT.ceod) + (NARROW ? '' : ' · ' + OUT.c_t + ' CT'), x - 4, OUT.ceod >= 0 ? yy + l.fs + 10 : yy - 9, col, l.fs, true, 'right', OUT.ceod >= 0 ? 'down' : 'up'); }
+  $('#prog').style.transform = 'scaleX(' + (pos / N).toFixed(4) + ')';
+}
+
+/* stage bar + caption */
+const stEls = [];
+function buildStages() {
+  const sw = $('#stages'); sw.style.setProperty('--ns', D.stages.length);
+  D.stages.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'stage'; b.innerHTML = '<b>' + s.n + '</b><span class="t">' + s.t + '</span>'; b.addEventListener('click', () => { seek(Math.max(0, s.at + 1)); pause(); tick(performance.now(), true); }); sw.appendChild(b); stEls.push(b); });
+}
+let capIdx = -1;
+function ui() {
+  let cur = 0; D.stages.forEach((s, i) => { if (pos >= s.at + 1) cur = i; });
+  stEls.forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); });
+  if (cur !== capIdx) { capIdx = cur; const s = D.stages[cur]; const kc = s.key === 'buy' ? ' g' : s.key === 'close' ? (OUT.fail ? ' r' : ' g') : ''; $('#cap').innerHTML = '<div class="k' + kc + '">' + s.n + ' · ' + s.t + '</div><p>' + s.sub + '</p>'; }
+  const k = Math.min(N, Math.max(1, Math.ceil(pos))); $('#clock').textContent = 'bar ' + k + ' / ' + N + ' · ' + B.t[k - 1] + ' CT';
+  const runEl = document.getElementById('run');
+  if (runEl) { const p = (B.c[k - 1] / BUY.close - 1) * 100; runEl.textContent = sgn(p); runEl.style.color = p >= 0 ? COL.green : COL.red; let best = -Infinity; for (let j = BUY.i + 1; j < k; j++) best = Math.max(best, B.h[j]); const be = document.getElementById('best'); if (be) be.textContent = isFinite(best) ? sgn((best / BUY.close - 1) * 100) : '—'; const te = document.getElementById('rt'); if (te) te.textContent = B.t[k - 1] + ' CT'; }
+  if (!scrubbing) $('#scrub').value = pos;
+  $('#play').textContent = ended ? 'Replay' : playing ? 'Pause' : 'Play';
+}
+let frozen = false, pinT = 0;
+function tick(t, force) {
+  if (frozen) { if (!force) return; t = pinT; }
+  const dt = Math.max(0, Math.min(64, lastT ? t - lastT : 16)); lastT = t;
+  if (playing && t >= holdUntil) pos = Math.min(N, pos + RATE * speed * dt / 1000);
+  triggers(t); draw(t, dt); ui();
+  const live = FX.some(e => fx[e.key] !== undefined && fx[e.key] !== -1e9 && t < fx[e.key] + e.dur + 260);
+  if (pos >= N && playing && !live && t >= holdUntil) { playing = false; ended = true; ui(); }
+  const keep = playing || live || (cam && Math.abs(cam.hi - camTarget(L()).hi) > (cam.hi - cam.lo) * .002);
+  if (keep && !RM) raf = requestAnimationFrame(tick); else raf = 0;
+}
+function run() { if (!raf) { lastT = 0; raf = requestAnimationFrame(tick); } }
+function play() { if (ended || pos >= N) { seek(0); ended = false; } playing = true; run(); ui(); }
+function pause() { playing = false; ui(); }
+$('#play').addEventListener('click', () => playing ? pause() : play());
+$('#restart').addEventListener('click', () => { seek(0); playing = true; run(); });
+document.querySelectorAll('[data-speed]').forEach(b => b.addEventListener('click', () => { speed = +b.dataset.speed; document.querySelectorAll('[data-speed]').forEach(x => x.classList.toggle('on', x === b)); }));
+document.querySelectorAll('[data-zoom]').forEach(b => b.addEventListener('click', () => { const z = b.dataset.zoom; document.querySelectorAll('[data-zoom]').forEach(x => x.classList.toggle('on', x === b)); v0 = z === 'tight' ? Math.max(0, DV.a - 12) : 0; snap = true; tick(performance.now(), true); }));
+const sc = $('#scrub'); sc.max = N; sc.step = 0.05;
+sc.addEventListener('input', () => { scrubbing = true; seek(+sc.value); playing = false; tick(performance.now(), true); scrubbing = false; });
+sc.addEventListener('change', () => { scrubbing = false; });
+window.addEventListener('keydown', e => { if (e.target && /input|button|textarea/i.test(e.target.tagName) && e.code !== 'Space') return; if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); } else if (e.code === 'ArrowRight') { seek(pos + 5); tick(performance.now(), true); } else if (e.code === 'ArrowLeft') { seek(pos - 5); tick(performance.now(), true); } });
+window.addEventListener('resize', () => { size(); snap = true; tick(performance.now(), true); });
+
+/* boot: #t=end (or #t=<bar>, optionally &p=<0..1> = that bar's effects frozen mid-flight) draws that frame synchronously for screenshots; reduced motion draws it all at once */
+buildStages(); size();
+window.__replay = {tick: t => tick(t, true), seek, freeze: () => { frozen = true; }, get pos() { return pos; }, get playing() { return playing; }, get fx() { return Object.assign({}, fx); }, N};
+const hash = location.hash || '', hm = /t=([^&]+)/.exec(hash), pm = /p=([\d.]+)/.exec(hash), jump = hm ? hm[1] : null;
+if (jump === 'end' || RM) { seek(N); ended = true; playing = false; tick(performance.now(), true); }
+else if (jump && !isNaN(+jump)) { seek(+jump); playing = false; const now = performance.now(); if (pm) { for (const e of FX) if (e.at + 1 === +jump) fx[e.key] = now - e.dur * (+pm[1]); } tick(now, true); if (pm) { frozen = true; pinT = now; } }
+else { seek(0); playing = true; run(); }
+})();
+
+</script>
+</body></html>

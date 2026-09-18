@@ -153,5 +153,185 @@
    "through 2026-09-18",
    "this is live, not a replay"
   ]
+ },
+ "intraday_QQQ_20260918.html": {
+  "mode": "intraday",
+  "sym": "QQQ",
+  "date": "2026-09-18",
+  "built": "2026-09-18T18:26",
+  "size": 44646,
+  "meta": {
+   "entry": 716.43,
+   "time_ct": "11:50",
+   "at_low": true,
+   "bheod": 0.74,
+   "ceod": 0.69,
+   "cnd": null,
+   "live": [],
+   "pre": false,
+   "fail": false,
+   "gone": false,
+   "pick": {
+    "kind": "named",
+    "order": 0,
+    "tag": "Brandon's trade"
+   }
+  },
+  "strip": [
+   "QQQ",
+   "INTRADAY",
+   "2026-09-18 \u00b7 Fri",
+   "5-minute candles, 1 = 5 minutes \u00b7 times Central"
+  ]
+ },
+ "intraday_COIN_20260917.html": {
+  "mode": "intraday",
+  "sym": "COIN",
+  "date": "2026-09-17",
+  "built": "2026-09-18T18:26",
+  "size": 44230,
+  "meta": {
+   "entry": 167.92,
+   "time_ct": "07:05",
+   "at_low": false,
+   "bheod": 3.75,
+   "ceod": 3.61,
+   "cnd": 15.68,
+   "live": [],
+   "pre": true,
+   "fail": false,
+   "gone": false,
+   "pick": {
+    "kind": "named",
+    "order": 1,
+    "tag": "Kevin's entry day"
+   }
+  },
+  "strip": [
+   "COIN",
+   "INTRADAY",
+   "2026-09-17 \u00b7 Thu",
+   "5-minute candles, 1 = 5 minutes \u00b7 times Central"
+  ]
+ },
+ "intraday_RIOT_20260115.html": {
+  "mode": "intraday",
+  "sym": "RIOT",
+  "date": "2026-01-15",
+  "built": "2026-09-18T18:26",
+  "size": 43368,
+  "meta": {
+   "entry": 16.655,
+   "time_ct": "09:50",
+   "at_low": true,
+   "bheod": 4.05,
+   "ceod": -0.6,
+   "cnd": 15.461,
+   "live": [],
+   "pre": false,
+   "fail": false,
+   "gone": true,
+   "pick": {
+    "kind": "pct",
+    "order": 2,
+    "tag": "90th percentile"
+   }
+  },
+  "strip": [
+   "RIOT",
+   "INTRADAY",
+   "2026-01-15 \u00b7 Thu",
+   "5-minute candles, 1 = 5 minutes \u00b7 times Central"
+  ]
+ },
+ "intraday_MARA_20260810.html": {
+  "mode": "intraday",
+  "sym": "MARA",
+  "date": "2026-08-10",
+  "built": "2026-09-18T18:26",
+  "size": 43808,
+  "meta": {
+   "entry": 9.43,
+   "time_ct": "13:15",
+   "at_low": true,
+   "bheod": 1.7,
+   "ceod": 1.22,
+   "cnd": 2.598,
+   "live": [],
+   "pre": false,
+   "fail": false,
+   "gone": false,
+   "pick": {
+    "kind": "pct",
+    "order": 3,
+    "tag": "60th percentile"
+   }
+  },
+  "strip": [
+   "MARA",
+   "INTRADAY",
+   "2026-08-10 \u00b7 Mon",
+   "5-minute candles, 1 = 5 minutes \u00b7 times Central"
+  ]
+ },
+ "intraday_HOOD_20260327.html": {
+  "mode": "intraday",
+  "sym": "HOOD",
+  "date": "2026-03-27",
+  "built": "2026-09-18T18:26",
+  "size": 43840,
+  "meta": {
+   "entry": 67.24,
+   "time_ct": "10:05",
+   "at_low": true,
+   "bheod": 1.0,
+   "ceod": -1.81,
+   "cnd": -3.108,
+   "live": [],
+   "pre": false,
+   "fail": false,
+   "gone": true,
+   "pick": {
+    "kind": "pct",
+    "order": 4,
+    "tag": "40th percentile"
+   }
+  },
+  "strip": [
+   "HOOD",
+   "INTRADAY",
+   "2026-03-27 \u00b7 Fri",
+   "5-minute candles, 1 = 5 minutes \u00b7 times Central"
+  ]
+ },
+ "intraday_NBIS_20260326.html": {
+  "mode": "intraday",
+  "sym": "NBIS",
+  "date": "2026-03-26",
+  "built": "2026-09-18T18:26",
+  "size": 44515,
+  "meta": {
+   "entry": 106.29,
+   "time_ct": "13:15",
+   "at_low": true,
+   "bheod": 0.24,
+   "ceod": -0.24,
+   "cnd": -5.062,
+   "live": [],
+   "pre": false,
+   "fail": true,
+   "gone": false,
+   "pick": {
+    "kind": "pct",
+    "order": 5,
+    "tag": "10th percentile"
+   }
+  },
+  "strip": [
+   "NBIS",
+   "INTRADAY",
+   "2026-03-26 \u00b7 Thu",
+   "5-minute candles, 1 = 5 minutes \u00b7 times Central"
+  ]
  }
 }
