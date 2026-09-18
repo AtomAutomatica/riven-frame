@@ -1,0 +1,157 @@
+{
+ "past_COIN_20260917.html": {
+  "mode": "past",
+  "sym": "COIN",
+  "date": "2026-09-17",
+  "built": "2026-09-18T18:05",
+  "size": 47914,
+  "meta": {
+   "h20": 12.8,
+   "c20": 11.7,
+   "under": 172,
+   "so_far": true,
+   "after": 1,
+   "dir": "up",
+   "ru_h20": null,
+   "ru_c20": null
+  },
+  "strip": [
+   "COIN",
+   "PAST",
+   "2025-12-30 \u2192 2026-09-18",
+   "daily candles, 1 = 1 session"
+  ]
+ },
+ "past_BLUE_20220804.html": {
+  "mode": "past",
+  "sym": "BLUE",
+  "date": "2022-08-04",
+  "built": "2026-09-18T18:05",
+  "size": 48493,
+  "meta": {
+   "h20": 78.6,
+   "c20": 43.0,
+   "under": 203,
+   "so_far": false,
+   "after": 40,
+   "dir": "up",
+   "ru_h20": 78.6,
+   "ru_c20": 43.0
+  },
+  "strip": [
+   "BLUE",
+   "PAST",
+   "2021-11-16 \u2192 2022-09-30",
+   "daily candles, 1 = 1 session"
+  ]
+ },
+ "past_DLO_20230814.html": {
+  "mode": "past",
+  "sym": "DLO",
+  "date": "2023-08-14",
+  "built": "2026-09-18T18:05",
+  "size": 49135,
+  "meta": {
+   "h20": 77.2,
+   "c20": 55.5,
+   "under": 186,
+   "so_far": false,
+   "after": 40,
+   "dir": "up",
+   "ru_h20": 77.2,
+   "ru_c20": 55.5
+  },
+  "strip": [
+   "DLO",
+   "PAST",
+   "2022-11-23 \u2192 2023-10-10",
+   "daily candles, 1 = 1 session"
+  ]
+ },
+ "past_MSTR_20260529.html": {
+  "mode": "past",
+  "sym": "MSTR",
+  "date": "2026-05-29",
+  "built": "2026-09-18T18:05",
+  "size": 50700,
+  "meta": {
+   "h20": -3.3,
+   "c20": -41.7,
+   "under": 177,
+   "so_far": false,
+   "after": 40,
+   "dir": "down",
+   "ru_h20": -3.3,
+   "ru_c20": -41.7
+  },
+  "strip": [
+   "MSTR",
+   "PAST",
+   "2025-09-11 \u2192 2026-07-28",
+   "daily candles, 1 = 1 session"
+  ]
+ },
+ "forward_TW.html": {
+  "mode": "forward",
+  "sym": "TW",
+  "date": null,
+  "built": "2026-09-18T18:05",
+  "size": 49704,
+  "meta": {
+   "dist": 0.7,
+   "s50": 103.24,
+   "under": 162,
+   "breakout": "2026-09-18",
+   "volx": 1.5,
+   "through": "2026-09-18"
+  },
+  "strip": [
+   "TW",
+   "FORWARD",
+   "through 2026-09-18",
+   "this is live, not a replay"
+  ]
+ },
+ "forward_KR.html": {
+  "mode": "forward",
+  "sym": "KR",
+  "date": null,
+  "built": "2026-09-18T18:05",
+  "size": 48621,
+  "meta": {
+   "dist": 3.5,
+   "s50": 57.99,
+   "under": 172,
+   "breakout": "2026-09-11",
+   "volx": 2.1,
+   "through": "2026-09-18"
+  },
+  "strip": [
+   "KR",
+   "FORWARD",
+   "through 2026-09-18",
+   "this is live, not a replay"
+  ]
+ },
+ "forward_MSTR.html": {
+  "mode": "forward",
+  "sym": "MSTR",
+  "date": null,
+  "built": "2026-09-18T18:05",
+  "size": 49967,
+  "meta": {
+   "dist": 38.9,
+   "s50": 110.82,
+   "under": 196,
+   "breakout": "2026-08-19",
+   "volx": 3.1,
+   "through": "2026-09-18"
+  },
+  "strip": [
+   "MSTR",
+   "FORWARD",
+   "through 2026-09-18",
+   "this is live, not a replay"
+  ]
+ }
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Candle Replays</title><meta name="description" content="Past and forward candle replays of the first retest of the 50: prove it in the past, then watch it live.">
+<style>
+:root{--bg:#0d0d0d;--ink:#e8e6e1;--mute:#8a877f;--dim:#5c5a55;--rule:#2a2a2a;--card:#111;--amber:#f5b041;--blue:#4c8bf5;--green:#2ecc71;--red:#ef5350;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--mono);-webkit-text-size-adjust:100%}
+body{font-size:16px;line-height:1.5;overflow-x:hidden}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 60px}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.top .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.nav a{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border:1px solid var(--rule);padding:8px 10px;min-height:36px;display:inline-flex;align-items:center}
+.strip{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin:18px 0 10px;font-size:13px;color:var(--mute)}
+.strip .sym{font-size:clamp(28px,7vw,44px);line-height:1;color:var(--ink);letter-spacing:-.02em}
+.strip .mode{font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--amber);color:var(--amber)}
+.strip .mode.fwd{border-color:var(--green);color:var(--green)}
+.strip .live{color:var(--green)}
+.stages{display:grid;grid-template-columns:repeat(var(--ns),1fr);gap:4px;margin:8px 0}
+.stage{border:1px solid var(--rule);padding:7px 3px;text-align:center;cursor:pointer;min-height:42px;background:transparent;color:var(--mute);font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;transition:color .2s,border-color .2s}
+.stage b{display:block;font-size:15px;color:var(--dim);letter-spacing:0;margin-bottom:1px;transition:color .2s}
+.stage.on{color:var(--ink);border-color:var(--amber)}.stage.on b{color:var(--amber)}.stage.done b{color:var(--ink)}
+.stage .t{display:none}@media(min-width:760px){.stage .t{display:block}}
+.chart{border:1px solid var(--rule);background:var(--card);position:relative}
+canvas{display:block;width:100%;height:clamp(400px,112vw,600px)}
+.prog{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--amber);transform-origin:left center;transform:scaleX(0)}
+.cap{border:1px solid var(--rule);border-top:0;background:var(--card);padding:12px 14px;min-height:92px}
+.cap .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.cap .k.g{color:var(--green)}.cap .k.r{color:var(--red)}
+.cap p{margin:0;font-size:15px;color:var(--ink);overflow-wrap:anywhere}.cap b{color:var(--ink)}
+.ctl{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--mute);padding:0 14px;min-height:42px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}.btn.pri{border-color:var(--amber);color:var(--amber)}.btn.pri:hover{background:var(--amber);color:var(--bg)}
+.btn.sm{padding:0 10px;min-height:36px;font-size:11px;color:var(--mute)}.btn.sm.on{color:var(--amber);border-color:var(--amber)}
+.grp{display:flex;gap:4px}.clock{font-size:12px;color:var(--mute);margin-left:auto;font-variant-numeric:tabular-nums}
+.scrub{width:100%;margin:10px 0 0;-webkit-appearance:none;appearance:none;height:28px;background:transparent;cursor:pointer}
+.scrub::-webkit-slider-runnable-track{height:3px;background:var(--rule)}.scrub::-moz-range-track{height:3px;background:var(--rule)}
+.scrub::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--amber);border:3px solid var(--bg);margin-top:-9.5px}
+.scrub::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--amber);border:3px solid var(--bg)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mute);margin:8px 0 0}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid rgba(232,230,225,.6);vertical-align:middle;margin-right:5px}
+.legend i.s20{border-top:1px solid rgba(76,139,245,.6)}.legend i.tint{border-top:6px solid rgba(239,83,80,.14)}.legend i.tg{border-top:2px dashed var(--green)}.legend i.kl{border-top:2px dashed var(--red)}
+h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:6px}@media(min-width:760px){.nums{grid-template-columns:repeat(3,1fr)}}
+.nums div{border:1px solid var(--rule);background:var(--card);padding:10px 12px}
+.nums .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.nums .v{font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.next{border:1px solid var(--green);background:var(--card);padding:14px 16px}
+.next .h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.next ul{margin:0;padding-left:18px;font-size:15px}.next li{margin:5px 0;overflow-wrap:anywhere}
+.src{font-size:12px;color:var(--mute);line-height:1.7;padding-left:18px}.src code{color:var(--ink);word-break:break-all}
+.foot{margin-top:30px;padding-top:10px;border-top:1px solid var(--rule);font-size:12px;color:var(--dim)}
+@media(prefers-reduced-motion:reduce){.stage,.btn{transition:none}}
+
+.cards{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:760px){.cards{grid-template-columns:1fr 1fr}}
+.card{display:block;border:1px solid var(--rule);background:var(--card);padding:16px 18px;color:var(--ink);min-height:96px}
+.card:hover{border-color:var(--amber);text-decoration:none}
+.card .s{font-size:30px;line-height:1;letter-spacing:-.02em}.card .s small{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-left:10px;vertical-align:middle}
+.card.f .s small{color:var(--green)}
+.card .d{font-size:12px;color:var(--mute);margin:6px 0 4px}.card .o{font-size:14px;color:var(--ink);overflow-wrap:anywhere}
+.card .o .g{color:var(--green)}.card .o .r{color:var(--red)}.card .o .y{color:var(--amber)}
+h1{font-size:clamp(28px,7vw,48px);line-height:1.05;margin:26px 0 6px;letter-spacing:-.02em}h1 span{color:var(--amber)}
+.sub{color:var(--mute);font-size:14px;margin:0 0 6px;overflow-wrap:anywhere}
+</style></head><body>
+<div class="top"><div class="in"><div class="brand">Riven · Replay</div><nav class="nav"><a href="../frame_plan_animated.html">The frame</a></nav></div></div>
+<div class="wrap">
+  <h1>THE RETEST,<br><span>replayed</span></h1>
+  <p class="sub">Daily candles drawn one session at a time. PAST pages carry the outcome — prove it happened. FORWARD pages hold on today's bar with the retest line, the target and the kill — prove it next. The cell, measured: n 348, 20-day best-high median +8.0%, P(+10%) 36.2% (data/qlab/kevin_ru_instances.json[ru]).</p>
+  <h2>Past — the outcome is on the page</h2>
+  <div class="cards"><a class="card" href="past_COIN_20260917.html"><div class="s">COIN<small>past</small></div><div class="d">retest of the 50 on 2026-09-17 · 172 / 252 sessions under the 50</div><div class="o">20d best high <span class="g">+12.8%</span> · close +20d <span class="g">+11.7%</span> (so far, 1 session)</div></a><a class="card" href="past_MSTR_20260529.html"><div class="s">MSTR<small>past</small></div><div class="d">retest of the 50 on 2026-05-29 · 177 / 252 sessions under the 50</div><div class="o">20d best high <span class="r">-3.3%</span> · close +20d <span class="r">-41.7%</span></div></a><a class="card" href="past_DLO_20230814.html"><div class="s">DLO<small>past</small></div><div class="d">retest of the 50 on 2023-08-14 · 186 / 252 sessions under the 50</div><div class="o">20d best high <span class="g">+77.2%</span> · close +20d <span class="g">+55.5%</span></div></a><a class="card" href="past_BLUE_20220804.html"><div class="s">BLUE<small>past</small></div><div class="d">retest of the 50 on 2022-08-04 · 203 / 252 sessions under the 50</div><div class="o">20d best high <span class="g">+78.6%</span> · close +20d <span class="g">+43.0%</span></div></a></div>
+  <h2>Forward — live, not a replay</h2>
+  <div class="cards"><a class="card f" href="forward_TW.html"><div class="s">TW<small>forward</small></div><div class="d">through 2026-09-18 · 162 / 252 sessions under the 50 · breakout 2026-09-18 1.5x vol</div><div class="o"><span class="g">+0.7%</span> from the retest line (103.24) · target <span class="g">+8%</span> · kill <span class="r">close under the 50</span></div></a><a class="card f" href="forward_KR.html"><div class="s">KR<small>forward</small></div><div class="d">through 2026-09-18 · 172 / 252 sessions under the 50 · breakout 2026-09-11 2.1x vol</div><div class="o"><span class="g">+3.5%</span> from the retest line (57.99) · target <span class="g">+8%</span> · kill <span class="r">close under the 50</span></div></a><a class="card f" href="forward_MSTR.html"><div class="s">MSTR<small>forward</small></div><div class="d">through 2026-09-18 · 196 / 252 sessions under the 50 · breakout 2026-08-19 3.1x vol</div><div class="o"><span class="g">+38.9%</span> from the retest line (110.82) · target <span class="g">+8%</span> · kill <span class="r">close under the 50</span></div></a></div>
+  <div class="foot">bars: Alpaca SIP daily, split-adjusted · stage math: qlab/kevin_recipe.py · not advice · built 2026-09-18T18:05 by Riven</div>
+</div></body></html>

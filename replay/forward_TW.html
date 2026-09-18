@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TW — the retest line, live</title>
+<meta name="description" content="Live: the stages found so far and the retest line, target and kill for TW.">
+<style>
+:root{--bg:#0d0d0d;--ink:#e8e6e1;--mute:#8a877f;--dim:#5c5a55;--rule:#2a2a2a;--card:#111;--amber:#f5b041;--blue:#4c8bf5;--green:#2ecc71;--red:#ef5350;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--mono);-webkit-text-size-adjust:100%}
+body{font-size:16px;line-height:1.5;overflow-x:hidden}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 60px}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.top .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.nav a{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border:1px solid var(--rule);padding:8px 10px;min-height:36px;display:inline-flex;align-items:center}
+.strip{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin:18px 0 10px;font-size:13px;color:var(--mute)}
+.strip .sym{font-size:clamp(28px,7vw,44px);line-height:1;color:var(--ink);letter-spacing:-.02em}
+.strip .mode{font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--amber);color:var(--amber)}
+.strip .mode.fwd{border-color:var(--green);color:var(--green)}
+.strip .live{color:var(--green)}
+.stages{display:grid;grid-template-columns:repeat(var(--ns),1fr);gap:4px;margin:8px 0}
+.stage{border:1px solid var(--rule);padding:7px 3px;text-align:center;cursor:pointer;min-height:42px;background:transparent;color:var(--mute);font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;transition:color .2s,border-color .2s}
+.stage b{display:block;font-size:15px;color:var(--dim);letter-spacing:0;margin-bottom:1px;transition:color .2s}
+.stage.on{color:var(--ink);border-color:var(--amber)}.stage.on b{color:var(--amber)}.stage.done b{color:var(--ink)}
+.stage .t{display:none}@media(min-width:760px){.stage .t{display:block}}
+.chart{border:1px solid var(--rule);background:var(--card);position:relative}
+canvas{display:block;width:100%;height:clamp(400px,112vw,600px)}
+.prog{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--amber);transform-origin:left center;transform:scaleX(0)}
+.cap{border:1px solid var(--rule);border-top:0;background:var(--card);padding:12px 14px;min-height:92px}
+.cap .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.cap .k.g{color:var(--green)}.cap .k.r{color:var(--red)}
+.cap p{margin:0;font-size:15px;color:var(--ink);overflow-wrap:anywhere}.cap b{color:var(--ink)}
+.ctl{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--mute);padding:0 14px;min-height:42px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}.btn.pri{border-color:var(--amber);color:var(--amber)}.btn.pri:hover{background:var(--amber);color:var(--bg)}
+.btn.sm{padding:0 10px;min-height:36px;font-size:11px;color:var(--mute)}.btn.sm.on{color:var(--amber);border-color:var(--amber)}
+.grp{display:flex;gap:4px}.clock{font-size:12px;color:var(--mute);margin-left:auto;font-variant-numeric:tabular-nums}
+.scrub{width:100%;margin:10px 0 0;-webkit-appearance:none;appearance:none;height:28px;background:transparent;cursor:pointer}
+.scrub::-webkit-slider-runnable-track{height:3px;background:var(--rule)}.scrub::-moz-range-track{height:3px;background:var(--rule)}
+.scrub::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--amber);border:3px solid var(--bg);margin-top:-9.5px}
+.scrub::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--amber);border:3px solid var(--bg)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mute);margin:8px 0 0}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid rgba(232,230,225,.6);vertical-align:middle;margin-right:5px}
+.legend i.s20{border-top:1px solid rgba(76,139,245,.6)}.legend i.tint{border-top:6px solid rgba(239,83,80,.14)}.legend i.tg{border-top:2px dashed var(--green)}.legend i.kl{border-top:2px dashed var(--red)}
+h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:6px}@media(min-width:760px){.nums{grid-template-columns:repeat(3,1fr)}}
+.nums div{border:1px solid var(--rule);background:var(--card);padding:10px 12px}
+.nums .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.nums .v{font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.next{border:1px solid var(--green);background:var(--card);padding:14px 16px}
+.next .h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.next ul{margin:0;padding-left:18px;font-size:15px}.next li{margin:5px 0;overflow-wrap:anywhere}
+.src{font-size:12px;color:var(--mute);line-height:1.7;padding-left:18px}.src code{color:var(--ink);word-break:break-all}
+.foot{margin-top:30px;padding-top:10px;border-top:1px solid var(--rule);font-size:12px;color:var(--dim)}
+@media(prefers-reduced-motion:reduce){.stage,.btn{transition:none}}
+</style></head>
+<body>
+<div class="top"><div class="in"><div class="brand">Riven · Replay</div><nav class="nav"><a href="index.html">All replays</a></nav></div></div>
+<div class="wrap">
+  <div class="strip"><span class="sym">TW</span><span class="mode fwd">FORWARD</span><span>through 2026-09-18</span><span class="live">this is live, not a replay</span></div>
+  <div class="stages" id="stages" style="--ns:4"></div>
+  <div class="chart"><canvas id="cv" aria-label="Daily candle replay of TW with the stages of the setup"></canvas><div class="prog" id="prog"></div></div>
+  <div class="cap" id="cap"></div>
+  <div class="ctl">
+    <button class="btn pri" id="play" type="button">Pause</button>
+    <button class="btn" id="restart" type="button">Restart</button>
+    <span class="grp"><button class="btn sm" data-speed="0.5" type="button">0.5×</button><button class="btn sm on" data-speed="1" type="button">1×</button><button class="btn sm" data-speed="2" type="button">2×</button></span>
+    <span class="grp"><button class="btn sm on" data-zoom="full" type="button">full</button><button class="btn sm" data-zoom="tight" type="button">tight</button></span>
+    <span class="clock" id="clock"></span>
+  </div>
+  <input class="scrub" id="scrub" type="range" min="0" max="1" step="0.05" value="0" aria-label="scrub the replay">
+  <div class="legend"><span><i></i>50-day (the retest line)</span><span><i class="s20"></i>20-day</span><span><i class="tint"></i>under the 50</span><span><i class="tg"></i>target</span><span><i class="kl"></i>kill</span><span>space = play/pause · ←/→ = 5 bars</span></div>
+  <h2>What happens next</h2><div class="next"><div class="h">the rule, not a prediction</div><ul><li>the buy is the <b>first touch of the line that holds</b> — a 5-minute divergent low at the line, not a limit order under it</li><li>ticket <b>near the money, 8–30 days out</b>; the level is the entry, the premium is not</li><li><b>exits by halves</b>: ½ into the pop, ½ at the level, the runner rides · kill = a daily close under the 50</li><li>the cell, measured: 20-day best-high median <b>+8.0%</b>, P(+10%) <b>36.2%</b>, close +20d median +0.6% (n 348) — a filter for judgment, not a proven edge</li></ul></div>
+  <h2>The numbers on the screen</h2>
+  <div class="nums"><div><div class="l">last close</div><div class="v">103.97</div></div><div><div class="l">50-day = the retest line</div><div class="v">103.24</div></div><div><div class="l">distance to the line</div><div class="v">+0.7%</div></div><div><div class="l">target (+8.0%)</div><div class="v">111.50</div></div><div><div class="l">kill</div><div class="v">close < 103.24</div></div><div><div class="l">sessions under the 50</div><div class="v">162 / 252</div></div></div>
+  <h2>Sources</h2>
+  <ol class="src"><li><code>data/bars_deep/TW.json (Alpaca SIP daily, split-adjusted)</code></li><li><code>qlab/kevin_finder.py (volume cross over the 50 in the last 60 sessions, under-the-50 count) · data/qlab/kevin_finder.json run 2026-09-18T16:50: +0.7% to the 50, breakout 2026-09-18 1.5x</code></li><li><code>qlab/cell_chart.py (daily double bottom, THE RETEST LINE layout)</code></li><li><code>qlab/kevin_recipe.py (what the first retest must look like to count)</code></li><li><code>data/qlab/kevin_ru_instances.json[ru] (n 348, 20d best-high median +8.0% → the TARGET line)</code></li></ol>
+  <div class="foot">bars: Alpaca SIP daily, split-adjusted · stage math: qlab/kevin_recipe.py · not advice · built 2026-09-18T18:05 by Riven</div>
+</div>
+<script>
+const DATA = {"mode":"forward","sym":"TW","built":"2026-09-18T18:05","strip":["TW","FORWARD","through 2026-09-18","this is live, not a replay"],"title":"TW \u2014 the retest line, live","N":200,"bars":{"d":["2025-12-02","2025-12-03","2025-12-04","2025-12-05","2025-12-08","2025-12-09","2025-12-10","2025-12-11","2025-12-12","2025-12-15","2025-12-16","2025-12-17","2025-12-18","2025-12-19","2025-12-22","2025-12-23","2025-12-24","2025-12-26","2025-12-29","2025-12-30","2025-12-31","2026-01-02","2026-01-05","2026-01-06","2026-01-07","2026-01-08","2026-01-09","2026-01-12","2026-01-13","2026-01-14","2026-01-15","2026-01-16","2026-01-20","2026-01-21","2026-01-22","2026-01-23","2026-01-26","2026-01-27","2026-01-28","2026-01-29","2026-01-30","2026-02-02","2026-02-03","2026-02-04","2026-02-05","2026-02-06","2026-02-09","2026-02-10","2026-02-11","2026-02-12","2026-02-13","2026-02-17","2026-02-18","2026-02-19","2026-02-20","2026-02-23","2026-02-24","2026-02-25","2026-02-26","2026-02-27","2026-03-02","2026-03-03","2026-03-04","2026-03-05","2026-03-06","2026-03-09","2026-03-10","2026-03-11","2026-03-12","2026-03-13","2026-03-16","2026-03-17","2026-03-18","2026-03-19","2026-03-20","2026-03-23","2026-03-24","2026-03-25","2026-03-26","2026-03-27","2026-03-30","2026-03-31","2026-04-01","2026-04-02","2026-04-06","2026-04-07","2026-04-08","2026-04-09","2026-04-10","2026-04-13","2026-04-14","2026-04-15","2026-04-16","2026-04-17","2026-04-20","2026-04-21","2026-04-22","2026-04-23","2026-04-24","2026-04-27","2026-04-28","2026-04-29","2026-04-30","2026-05-01","2026-05-04","2026-05-05","2026-05-06","2026-05-07","2026-05-08","2026-05-11","2026-05-12","2026-05-13","2026-05-14","2026-05-15","2026-05-18","2026-05-19","2026-05-20","2026-05-21","2026-05-22","2026-05-26","2026-05-27","2026-05-28","2026-05-29","2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28","2026-07-29","2026-07-30","2026-07-31","2026-08-03","2026-08-04","2026-08-05","2026-08-06","2026-08-07","2026-08-10","2026-08-11","2026-08-12","2026-08-13","2026-08-14","2026-08-17","2026-08-18","2026-08-19","2026-08-20","2026-08-21","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-31","2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18"],"o":[106.78,106.93,109.23,107.33,107.55,105.57,107.03,106.45,107.34,107.56,104.36,104.33,103.21,103.38,104.82,106.3,106.97,107.1,106.94,107.75,107.86,107.3,106.2,110.5,110.72,106.23,105.15,103.42,104.58,103.8,105.36,104.14,105.95,104.19,104.82,103.34,103.01,106.71,103.85,104.33,103.32,102.52,102.74,99,100.98,111,113.845,115.04,116.62,115.75,116.41,114.98,115.64,116.95,118.92,119.29,118,121.12,121.69,121.85,122.82,122.31,125.22,124.58,124.43,124.59,126.38,125.04,122.88,124.53,125.34,124.46,124.87,123.29,125.75,124.86,124.15,123.35,119.58,117.35,117.58,117,117.29,119.59,123.16,123.79,124.12,124.99,121.63,120.98,123.89,122.24,120.88,121.37,118.18,115.87,115.07,114.04,112.89,113.73,112.97,107.81,117.09,113.44,112.27,112.18,110.21,108.51,110.75,108.81,109.94,109.22,109.87,110.97,110.34,112.43,109.97,106.71,105.58,105.47,101.29,100.79,99.65,100.47,99.87,98.06,102.65,101.59,102.01,98.28,99.7,100.99,99.84,100.6,102.6,101.64,100.21,99.1,99.37,99.07,95.77,92.69,94.35,95.08,100.66,102.38,102.49,101.84,99.41,98.68,98.36,98.93,98.38,99.35,101.5,100.48,100.42,99.18,98.45,99.52,99.78,101.02,102.53,104,100,97.49,100.81,100.56,101.92,102.32,102.64,102.55,103.12,103.04,103.24,105.74,106.06,106.4,105.26,103.93,106.02,107.02,107.76,107.17,107.5,107.86,108.48,107.51,106.11,104.1,103.9,106.26,102.29,103.83,102.3,103.22,103.36,101.12,102.11,102.06],"h":[107.65,108.54,109.64,107.9,107.6,107.85,108.29,108.88,108.16,107.575,104.91,105.7,105.41,105.785,106.99,107.6855,107.88,107.88,108.82,108.5,108.43,107.3,110.99,111.885,110.98,107,106.32,105.1037,104.775,105.57,105.885,106.34,107.37,104.98,105.69,103.85,106.45,106.71,105.02,105.7,104.15,104.12,102.745,101.11,112.18,113.72,117.449,117.02,117,118.4,118.44,116.44,118.34,120.43,120.29,120.95,121.57,121.3,123.51,123.91,124.27,126.65,125.575,126.19,124.85,126.69,126.38,125.04,124.775,125.35,125.34,126.85,126.12,126.72,126.205,126.69,125.255,124.23,120.21,118.62,118.04,119.66,118.79,123.45,124.39,125.48,127.69,125.52,122.57,124.08,124.3426,122.565,122.48,121.37,118.48,115.87,116,114.5,113.62,114.08,113.15,118.26,117.51,114.38,114.135,113.28,111.01,111.2,111.5899,110.47,110.69,110.35,111.2,111.5,113.08,113.39,109.98,107.32,107.385,106.04,102.055,101.225,100.345,104.29,99.87,101.375,103.11,103.38,102.01,100.36,101.045,101.29,101.38,101.84,103.05,101.64,102.2899,99.69,100.77,99.5,96.23,93.76,95.43,99.7,102.585,104.735,103.325,103.055,102.3,99.72,101,100.22,100.85,102.565,101.79,102.49,101.63,100.63,100.65,100.66,100.615,102.34,105.36,108.755,101.98,101.96,101.81,102.17,103.08,103.445,103.46,104.91,104.61,104.585,106.06,106.7,106.9,106.89,106.41,106.795,107.455,108.825,108.53,109.8,108.55,109.46,108.51,108.9,107.14,106.51,106.52,107.185,103.02,103.83,102.95,104.695,103.36,102.6,103.04,104.475],"l":[106.15,106.467,106.91,106.56,104.86,105.48,106.2,106.45,105.88,103.985,103.6,104.04,103.09,103.16,104.78,106.205,106.265,106.66,106.94,107.48,107.355,105.47,105.91,110.365,105.155,103.69,103.8,103.42,102,103.26,104.025,103.08,102.93,103.265,103.2,102.435,103.01,103.22,103.1,102.12,101.74,102,98.41,97.055,100.98,109.55,113.008,113.406,112.36,114.67,112.725,113.96,111.17,116.08,118.13,117.43,117.25,118.84,121.11,120.78,121.45,122.05,122.15,123.83,122.665,123.59,123.8,121.69,122.275,123.475,123.24,124.09,123.25,122.36,123.91,123.95,122.65,119.6,117.25,116.04,115.85,115.73,116.12,118.445,122.84,123.61,122.7,121.52,119.745,119.9,121.08,119.31,119.9,116.25,114.53,113.77,112.95,111.86,110.72,111.09,111.035,107.05,113.08,111.45,111.5,109.56,107.85,108.045,108.48,108.26,109.09,105.9075,108.38,108.02,110.04,110.75,106.11,103.48,105.15,101.58,100,99.34,98.82,99.81,94.245,97.405,100.48,101.33,97.75,97.51,98.87,98.57,98.84,100.6,99.42,98.5874,99.15,97.97,98.81,95.96,91.42,92.0001,91.54,94.9,100.605,102.21,101.83,98.48,99.41,96.63,97.005,98.256,98.23,98.11,100,99.26,99.0185,97.17,98.115,98.8,98.35,100.51,102.05,103.39,94.2901,96.525,97.98,100.08,100.68,101.485,102.455,102.55,103.12,103.04,103.24,104.43,105.01,105.16,102.83,102.89,105.72,106.77,107.16,107.17,107.06,107.23,106.895,106.5,103.18,104.1,103.9,102.87,101.16,101.515,101,103.19,101.275,100.61,101.09,101.65],"c":[106.26,108.06,107.91,107.77,105.42,107.01,106.79,108.01,107.17,104.2,103.83,104.65,103.46,104.52,106.25,107.27,107.24,107.8,108.27,107.86,107.54,106.2,110.5,110.72,106.15,103.98,103.86,104.93,103.78,105.41,104.11,106.26,103.68,103.745,103.55,102.8,106.34,103.85,103.74,103.14,103.07,102.83,99.48,100.82,109.53,112.13,115.66,116.72,115.02,116.01,113.41,114.32,116.95,118.95,119.47,118,121.09,120.75,121.96,123.255,122.985,125.61,124.58,124.49,124.59,126.57,124.83,123.36,123.5,124.42,124.01,126.17,123.44,126.01,125.15,124.16,123.33,119.95,117.64,116.57,116.87,117.66,118.56,123.2,123.56,124.82,126.44,122.41,121.44,124.06,121.43,120.71,121.96,118.34,115.12,114.56,114.04,113.62,113.29,111.44,112.36,118.12,113.25,111.68,112.56,110.21,109.43,110.45,108.81,109.94,109.21,109.87,109.78,110.94,112.43,110.84,106.71,105.69,106.2,102.28,100.88,99.65,100.25,100.19,97.98,100.43,100.6,102.53,98.28,99.68,100.99,99,101.19,101.73,102.03,100.77,99.49,98.2,99.18,96.05,91.5,93.52,92.1,99.66,101.49,102.79,102.41,100.26,99.85,97.12,97.86,99.68,98.83,100.68,101.19,99.9,100.52,97.29,98.85,99.845,99.83,102.015,104.27,108.18,97.8,100.5,101,100.48,102.32,103.32,102.62,103.7,104.42,103.92,105.53,106.29,105.17,105.47,103.3,106.1,107.04,108.38,107.71,107.51,108.1,108.87,107.7,106.71,103.47,105.34,106.2,103,102.94,102.47,101.44,104.2,101.55,102.37,102.06,103.97],"v":[802977,1245564,1007899,757130,846713,938702,1181885,841088,1067308,1909473,1325405,1406039,2071733,2376699,1019248,1161798,326218,648483,649853,740282,822882,1168844,1490100,1803988,2050705,1460517,1320443,1158794,1113211,1694066,1518174,1943046,1501061,1602398,695833,933524,1220203,1283630,1332072,2015012,1512689,1485609,1923886,1889242,3378758,2395563,1955584,1890149,1627803,1897587,1692474,1121894,2509168,2260254,1004221,1610939,1607853,1449042,1332693,1538573,1293270,1719113,1505914,1268575,1337475,1891949,1649673,1773301,1298039,800374,933190,1043792,1191628,1708326,1564068,828384,1181709,1168312,2231337,1069173,911568,1664414,1304159,1610214,778312,1115025,1435143,1495608,1167738,1307490,1219328,1503645,1398329,1425207,1354193,1432693,1511249,1060861,1465047,1914356,1723742,3343537,1590255,1097861,1208326,1030678,1108208,1596486,927366,1215062,1168513,1387212,956523,1060935,1251246,2288413,2223138,2418528,1928498,2252434,2121908,2659711,2694206,2700653,3056214,2692438,1674221,2372439,1897138,1781605,1128533,2061510,1234382,1087396,1378303,1549783,1560901,967674,1396444,1496709,2482062,2497842,1881480,3381863,2490266,1141751,1065634,2255601,1422460,1621446,1041551,1327626,1181705,2932262,1266785,1128160,1110339,1009599,1047500,806667,760460,722503,1042796,2408569,7272703,3439388,2420623,1660460,1580967,1456693,877183,785184,565785,1265795,1169237,836768,830042,882208,1773827,1464472,1423852,1062658,995062,1030875,1141644,941656,1320850,1190984,1129759,1216107,1531596,1159296,1281177,1548955,1036748,827750,860342,1463743,1223663,1840497],"s20":[107.85,108.01,108.19,108.23,108.05,107.92,107.74,107.65,107.5,107.24,106.95,106.7,106.5,106.38,106.37,106.48,106.47,106.46,106.43,106.49,106.55,106.46,106.59,106.74,106.77,106.62,106.47,106.32,106.15,106.21,106.22,106.31,106.32,106.28,106.14,105.92,105.87,105.68,105.45,105.21,104.99,104.82,104.27,103.78,103.95,104.35,104.94,105.53,106.09,106.62,107.09,107.49,108.16,108.92,109.71,110.47,111.21,112.05,112.97,113.97,114.97,116.11,117.36,118.54,119.3,120.02,120.48,120.81,121.23,121.65,122.18,122.78,123.1,123.45,123.74,124.05,124.16,124.12,123.9,123.57,123.26,122.86,122.56,122.5,122.45,122.36,122.44,122.39,122.29,122.27,122.14,121.87,121.8,121.41,120.91,120.43,119.97,119.65,119.43,119.18,118.95,118.97,118.71,118.13,117.58,116.85,116.0,115.4,114.77,114.07,113.45,112.91,112.3,111.93,111.8,111.61,111.25,110.85,110.5,110.04,109.46,108.54,107.89,107.32,106.59,106.1,105.66,105.26,104.73,104.22,103.81,103.27,102.84,102.38,101.86,101.35,100.99,100.62,100.27,99.95,99.49,99.18,98.77,98.75,98.92,99.04,99.13,99.02,99.09,98.97,98.81,98.84,98.73,98.67,98.63,98.59,98.64,98.59,98.58,98.77,99.18,99.61,100.22,100.64,100.46,100.34,100.27,100.28,100.41,100.72,100.96,101.16,101.44,101.6,101.82,102.13,102.37,102.78,103.0,103.31,103.67,103.99,104.16,104.13,104.64,105.06,105.4,105.71,105.77,105.87,106.05,106.01,105.94,105.86,105.66,105.56,105.37,105.22,105.16,105.05],"s50":[108.12,108.05,107.99,107.94,107.82,107.74,107.65,107.66,107.64,107.53,107.53,107.54,107.45,107.36,107.35,107.32,107.31,107.3,107.34,107.36,107.33,107.29,107.29,107.29,107.2,107.08,107.0,106.98,106.98,106.98,106.95,106.98,106.97,106.9,106.79,106.66,106.58,106.46,106.33,106.2,106.07,105.94,105.78,105.66,105.72,105.86,106.02,106.2,106.32,106.51,106.65,106.77,106.96,107.18,107.46,107.68,107.97,108.22,108.52,108.9,109.28,109.7,110.12,110.52,110.89,111.27,111.63,111.94,112.24,112.57,112.9,113.3,113.56,113.87,114.25,114.65,115.04,115.34,115.62,115.84,116.1,116.32,116.62,117.01,117.41,117.85,118.25,118.62,118.98,119.4,119.76,120.12,120.57,120.92,121.03,121.08,121.05,120.99,120.95,120.86,120.84,120.92,120.84,120.7,120.56,120.4,120.17,119.96,119.7,119.43,119.16,118.84,118.55,118.28,118.03,117.72,117.36,117.0,116.66,116.21,115.75,115.22,114.76,114.24,113.7,113.22,112.77,112.42,112.03,111.7,111.38,111.0,110.66,110.23,109.8,109.32,108.78,108.29,107.85,107.29,106.69,106.14,105.55,105.17,104.9,104.67,104.43,104.17,103.9,103.61,103.32,102.95,102.66,102.44,102.22,102.01,101.83,101.57,101.37,101.17,100.98,100.82,100.71,100.66,100.37,100.16,100.04,99.94,99.86,99.88,99.92,100.0,100.08,100.16,100.31,100.43,100.52,100.58,100.68,100.8,100.93,101.11,101.24,101.36,101.48,101.64,101.81,101.98,102.06,102.25,102.54,102.73,102.95,103.0,103.0,103.03,103.01,103.06,103.1,103.24],"rsi":[43.4,50.0,49.5,49.0,41.3,47.3,46.6,51.0,48.1,39.4,38.5,41.8,38.5,42.8,48.9,52.2,52.1,54.0,55.5,53.8,52.4,47.0,60.9,61.5,46.6,41.5,41.2,44.7,41.8,47.0,43.7,50.0,43.7,43.9,43.4,41.5,52.0,45.8,45.5,44.1,43.9,43.2,35.4,40.1,60.2,64.1,68.6,69.8,65.4,66.7,60.3,61.7,65.5,68.0,68.7,64.7,68.8,67.9,69.5,71.1,70.3,73.6,70.3,70.0,70.1,73.0,66.9,62.1,62.4,64.2,62.8,67.0,58.0,63.0,60.4,57.4,55.0,46.4,41.6,39.5,40.4,42.8,45.4,56.7,57.4,59.9,63.0,52.3,50.1,55.5,49.7,48.2,50.9,43.7,38.4,37.5,36.7,36.1,35.5,32.5,35.4,50.1,41.5,39.2,41.2,37.6,36.5,39.1,36.5,39.4,38.2,40.0,39.9,43.2,47.4,43.7,36.0,34.4,35.9,30.1,28.3,26.8,28.8,28.7,25.7,33.9,34.4,40.4,33.2,37.2,40.7,37.3,43.0,44.3,45.1,42.4,39.8,37.4,40.4,34.7,28.4,34.1,32.1,48.9,52.0,54.1,53.3,49.2,48.5,43.6,45.2,49.0,47.4,51.3,52.3,49.4,50.8,44.0,47.6,49.9,49.9,54.8,59.3,65.7,45.4,49.7,50.5,49.7,52.8,54.4,53.0,54.9,56.2,55.0,58.1,59.4,56.5,57.1,51.4,57.3,59.1,61.6,59.6,59.0,60.3,62.0,58.0,54.8,45.9,50.9,53.0,45.1,45.0,43.9,41.5,49.5,43.4,45.6,44.9,50.1],"under":[1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,0]},"futurePad":30,"stages":[{"key":"under","n":"01","t":"A year under the 50","at":-1,"sub":"<b>162<\/b> of the last 252 sessions closed under the 50-day (the shaded stretch)."},{"key":"db","n":"02","t":"Double bottom, RSI higher","at":181,"sub":"double bottom <b>105.91<\/b> (5/13) \u2192 <b>102.83<\/b> (8/19), 67 sessions apart \u00b7 RSI <b>40 \u2192 51<\/b>, higher on the second low."},{"key":"brk","n":"03","t":"Breakout on volume","at":199,"sub":"close <b>103.97<\/b> over the 50 (103.24) on <b>1.5\u00d7<\/b> the 20-day average volume, 9/18 \u00b7 no retest of the 50 since."},{"key":"hold","n":"04","t":"The retest line \u2014 waiting for the first touch","at":199,"sub":"50-day <b>103.24<\/b> \u00b7 last close <b>103.97<\/b> = <b>+0.7%<\/b> from the line \u00b7 TARGET <b>111.50<\/b> (+8.0%, the cell's median 20-day best high) \u00b7 KILL = a daily close under <b>103.24<\/b>."}],"holds":[],"db":{"a":111,"b2":178,"loA":105.9075,"loB":102.83,"rsiA":40.0,"rsiB":51.4,"dA":"2026-05-13","dB":"2026-08-19"},"brk":{"i":199,"volx":1.5,"close":103.97,"s50":103.24,"date":"2026-09-18","onVolume":true},"buy":null,"outcome":null,"fwd":{"i":199,"date":"2026-09-18","close":103.97,"s50":103.24,"s20":105.05,"dist":0.7,"target":111.5,"target_pct":8.0,"kill":103.24,"under":162,"rsi":50.1,"finder":{"dist":0.7,"sma50":103.24,"breakout":"2026-09-18","volx":1.5,"under":162,"run":"2026-09-18T16:50"}},"priors":[{"i":81,"date":"2026-03-31","close":117.66,"h20":8.5,"c20":0.4}],"cell":{"n":348,"h20_med":8.0,"p10":36.2,"p20":10.6,"c20_med":0.6,"win":51.7,"src":"data/qlab/kevin_ru_instances.json[ru]"},"next":["the buy is the <b>first touch of the line that holds<\/b> \u2014 a 5-minute divergent low at the line, not a limit order under it","ticket <b>near the money, 8\u201330 days out<\/b>; the level is the entry, the premium is not","<b>exits by halves<\/b>: \u00bd into the pop, \u00bd at the level, the runner rides \u00b7 kill = a daily close under the 50","the cell, measured: 20-day best-high median <b>+8.0%<\/b>, P(+10%) <b>36.2%<\/b>, close +20d median +0.6% (n 348) \u2014 a filter for judgment, not a proven edge"],"nums":[["last close","103.97"],["50-day = the retest line","103.24"],["distance to the line","+0.7%"],["target (+8.0%)","111.50"],["kill","close < 103.24"],["sessions under the 50","162 / 252"]],"sources":["data/bars_deep/TW.json (Alpaca SIP daily, split-adjusted)","qlab/kevin_finder.py (volume cross over the 50 in the last 60 sessions, under-the-50 count) \u00b7 data/qlab/kevin_finder.json run 2026-09-18T16:50: +0.7% to the 50, breakout 2026-09-18 1.5x","qlab/cell_chart.py (daily double bottom, THE RETEST LINE layout)","qlab/kevin_recipe.py (what the first retest must look like to count)","data/qlab/kevin_ru_instances.json[ru] (n 348, 20d best-high median +8.0% \u2192 the TARGET line)"],"meta":{"dist":0.7,"s50":103.24,"under":162,"breakout":"2026-09-18","volx":1.5,"through":"2026-09-18"}};
+
+(function(){
+const D = DATA, B = D.bars, N = D.N, M = D.mode;
+const $ = s => document.querySelector(s);
+const COL = {bg:'#0d0d0d', ink:'#e8e6e1', mute:'#8a877f', dim:'#5c5a55', rule:'#2a2a2a', amber:'#f5b041', blue:'#4c8bf5', green:'#2ecc71', red:'#ef5350'};
+const RGB = {green:'46,204,113', red:'239,83,80', amber:'245,176,65', blue:'76,139,245', ink:'232,230,225'};
+const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
+const RATE = 12;                                   // candles per second at 1x
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cv = $('#cv'), ctx = cv.getContext('2d');
+let W = 0, H = 0, dpr = 1, pos = 0, playing = false, speed = 1, holdUntil = 0, lastT = 0, raf = 0, ended = false, scrubbing = false;
+let v0 = 0, v1 = N - 1, cam = null, snap = true;
+const fx = {}, held = new Set();
+const OUT = D.outcome, BUY = D.buy, FWD = D.fwd;
+const dirCol = OUT ? (OUT.dir === 'up' ? 'green' : 'red') : 'green';
+const AXIS_TAGS = ['0000.0'].concat(OUT ? [(OUT.bh_pct >= 0 ? '+' : '') + OUT.bh_pct.toFixed(1) + '%'] : [], FWD ? ['+' + FWD.target_pct.toFixed(0) + '% ' + (FWD.target >= 1000 ? FWD.target.toFixed(0) : FWD.target >= 100 ? FWD.target.toFixed(1) : FWD.target.toFixed(2)), 'KILL ' + (FWD.kill >= 1000 ? FWD.kill.toFixed(0) : FWD.kill >= 100 ? FWD.kill.toFixed(1) : FWD.kill.toFixed(2))] : []);
+
+/* effects: fire when the candle at `at` is fully drawn (pos >= at+1); p = progress 0..1 */
+const FX = [];
+if (D.db) FX.push({key:'db', at:D.stages.find(s=>s.key==='db').at, dur:600});
+if (D.brk) FX.push({key:'brk', at:D.brk.i, dur:900});
+if (BUY) { FX.push({key:'burst', at:BUY.i, dur:600}); FX.push({key:'arrow', at:BUY.i, delay:320, dur:520}); FX.push({key:'cell', at:BUY.i, delay:700, dur:400}); }
+if (OUT) { FX.push({key:'target', at:OUT.bh_i, dur:480}); FX.push({key:'exit', at:D.stages[D.stages.length-1].at, dur:350}); }
+if (FWD) { FX.push({key:'ftarget', at:FWD.i, dur:520}); FX.push({key:'fkill', at:FWD.i, delay:180, dur:640}); FX.push({key:'fdist', at:FWD.i, delay:600, dur:300}); }
+(D.priors||[]).forEach((p,k) => FX.push({key:'prior'+k, at:p.i, dur:300}));
+const FXD = {}; FX.forEach(e => FXD[e.key] = e);
+function P(key, t) { const e = FXD[key]; if (!e) return 0; const s = fx[key]; if (s === undefined) return 0; if (s === -1e9) return 1; return Math.max(0, Math.min(1, (t - s) / e.dur)); }
+function since(key, t) { const e = FXD[key]; const s = fx[key]; if (s === undefined) return -1; if (s === -1e9) return 1e9; return t - s - e.dur; }
+const ease = p => 1 - Math.pow(1 - p, 3);
+
+function triggers(t) {
+  for (const e of FX) if (fx[e.key] === undefined && pos >= e.at + 1) fx[e.key] = t + (e.delay || 0);
+  for (const h of D.holds) if (!held.has(h.at) && pos >= h.at + 1) { held.add(h.at); holdUntil = t + h.ms; }
+}
+function seek(p, t) {
+  pos = Math.max(0, Math.min(N, p)); t = t || performance.now();
+  for (const e of FX) fx[e.key] = (pos >= e.at + 1) ? -1e9 : undefined;
+  held.clear(); for (const h of D.holds) if (pos >= h.at + 1) held.add(h.at);
+  holdUntil = 0; ended = false; snap = true;
+}
+
+/* layout */
+function size() {
+  dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  const r = cv.getBoundingClientRect(); W = Math.round(r.width); H = Math.round(r.height);
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function L() {
+  const fsm = W > 700 ? 12 : 10; ctx.font = 'bold ' + fsm + 'px ' + MONO;
+  const padL = 6, padR = Math.max(W > 700 ? 64 : 54, Math.ceil(Math.max(...AXIS_TAGS.map(s => ctx.measureText(s).width))) + 16), padT = 10, padB = 20, gap = 8;
+  const inner = H - padT - padB - 2 * gap; const ph = Math.round(inner * .66), vh = Math.round(inner * .15), rh = inner - ph - vh;
+  const plotW = W - padL - padR, slot = plotW / (v1 - v0 + 1 + (D.futurePad || 0));
+  return {padL, padR, padT, padB, plotW, slot, pL: padL, pR: padL + plotW, pT: padT, pB: padT + ph, vT: padT + ph + gap, vB: padT + ph + gap + vh, rT: padT + ph + gap + vh + gap, rB: H - padB, ph, vh, rh,
+          x: k => padL + (k - v0 + .5) * slot, fs: W > 700 ? 13 : 11, fsm};
+}
+function camTarget(l) {
+  const upto = Math.min(v1, Math.max(v0 + 30, Math.ceil(pos) - 1));
+  let lo = Infinity, hi = -Infinity;
+  for (let k = v0; k <= upto; k++) { lo = Math.min(lo, B.l[k]); hi = Math.max(hi, B.h[k]); if (B.s50[k] != null) { lo = Math.min(lo, B.s50[k]); hi = Math.max(hi, B.s50[k]); } }
+  if (FWD && pos >= N) { lo = Math.min(lo, FWD.kill * .985); hi = Math.max(hi, FWD.target * 1.01); }
+  if (BUY && pos >= BUY.i + 1) hi = Math.max(hi, BUY.close * 1.08);
+  const pad = (hi - lo) * .07 || 1; return {lo: lo - pad, hi: hi + pad * 1.6};
+}
+function updateCam(l, dt) {
+  const tg = camTarget(l);
+  if (!cam || snap) { cam = tg; snap = false; return; }
+  const k = 1 - Math.exp(-dt / 160); cam.lo += (tg.lo - cam.lo) * k; cam.hi += (tg.hi - cam.hi) * k;
+}
+function niceStep(range, n) { const raw = range / n, p = Math.pow(10, Math.floor(Math.log10(raw))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= raw) return m * p; return 10 * p; }
+const fmtP = v => v >= 1000 ? v.toFixed(0) : v >= 100 ? v.toFixed(1) : v.toFixed(2);
+const sgn = v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+const md = d => (+d.slice(5, 7)) + '/' + (+d.slice(8, 10));
+
+function text(s, x, y, col, size, bold, align, base) { ctx.font = (bold ? 'bold ' : '') + size + 'px ' + MONO; ctx.fillStyle = col; ctx.textAlign = align || 'left'; ctx.textBaseline = base || 'alphabetic'; ctx.fillText(s, x, y); }
+function tag(s, x, y, bg, fg, size, align) { ctx.font = 'bold ' + size + 'px ' + MONO; const w = ctx.measureText(s).width + 10, h = size + 8; let x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x; ctx.fillStyle = bg; ctx.fillRect(x0, y - h / 2, w, h); text(s, x0 + 5, y, fg, size, true, 'left', 'middle'); return {x0, w, h}; }
+function clampX(x, w, l) { return Math.max(l.pL + 2, Math.min(l.pR - w - 2, x)); }
+/* price-panel labels: each one records its box; a later label that would overlap an earlier one is nudged up or down a row */
+let boxes = [], LL = null;
+function label(s, x, y, col, size, bold, align, prefer) {
+  ctx.font = (bold ? 'bold ' : '') + size + 'px ' + MONO; const w = ctx.measureText(s).width, h = size + 2;
+  let x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x; x0 = clampX(x0, w, LL); let yy = y;
+  const hit = () => boxes.some(b => x0 < b.x + b.w + 6 && x0 + w + 6 > b.x && yy - h < b.y + b.h + 3 && yy + 3 > b.y);
+  const y0 = y, dir = prefer === 'up' ? -1 : 1, lim = v => Math.max(LL.pT + h, Math.min(LL.pB - 3, v));
+  for (let i = 0; i < 8 && hit(); i++) yy = lim(yy + dir * (h + 5));
+  if (hit()) { yy = y0; for (let i = 0; i < 8 && hit(); i++) yy = lim(yy - dir * (h + 5)); }
+  yy = lim(yy); boxes.push({x: x0, y: yy - h, w, h}); text(s, x0, yy, col, size, bold, 'left'); return yy;
+}
+
+function draw(t, dt) {
+  const l = L(); updateCam(l, dt); const y = p => l.pB - (p - cam.lo) / (cam.hi - cam.lo) * l.ph; boxes = []; LL = l;
+  ctx.clearRect(0, 0, W, H); ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+  const drawn = Math.min(N, pos), full = Math.floor(drawn), yb = Math.max(1, Math.floor(l.slot * .68)), bw = l.slot < 2.2 ? 1 : yb;
+  const kEnd = Math.min(v1, full);
+  // the stretch under the 50 — tinted as it passes
+  ctx.fillStyle = 'rgba(' + RGB.red + ',.075)'; let run = -1;
+  for (let k = v0; k <= kEnd + 1; k++) {
+    const u = k <= kEnd && B.under[k];
+    if (u && run < 0) run = k;
+    if (!u && run >= 0) { ctx.fillRect(l.x(run) - l.slot / 2, l.pT, (k - run) * l.slot, l.ph); run = -1; }
+  }
+  // grid + price axis
+  const step = niceStep(cam.hi - cam.lo, W > 700 ? 6 : 5); ctx.strokeStyle = COL.rule; ctx.lineWidth = 1;
+  for (let p = Math.ceil(cam.lo / step) * step; p < cam.hi; p += step) { const yy = Math.round(y(p)) + .5; ctx.beginPath(); ctx.moveTo(l.pL, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); text(fmtP(p), l.pR + 6, yy, COL.dim, l.fsm, false, 'left', 'middle'); }
+  ctx.strokeStyle = COL.rule; [l.vT, l.vB, l.rT, l.rB].forEach(yy => { ctx.beginPath(); ctx.moveTo(l.pL, Math.round(yy) + .5); ctx.lineTo(l.pR, Math.round(yy) + .5); ctx.stroke(); });
+  // dates
+  const every = Math.max(1, Math.round((v1 - v0 + 1) / (W > 700 ? 9 : 5))); let lastYr = '';
+  for (let k = v0; k <= v1; k += every) { const d = B.d[k], yr = d.slice(2, 4), s = md(d) + (yr !== lastYr ? "'" + yr : ''); lastYr = yr; text(s, l.x(k), H - 6, COL.dim, l.fsm, false, 'center'); ctx.strokeStyle = COL.rule; ctx.beginPath(); ctx.moveTo(Math.round(l.x(k)) + .5, l.rB); ctx.lineTo(Math.round(l.x(k)) + .5, l.rB + 4); ctx.stroke(); }
+  // RSI panel
+  const ry = v => l.rB - (v - 10) / 80 * l.rh; ctx.setLineDash([3, 4]); ctx.strokeStyle = '#333';
+  [30, 70].forEach(v => { ctx.beginPath(); ctx.moveTo(l.pL, ry(v)); ctx.lineTo(l.pR, ry(v)); ctx.stroke(); }); ctx.setLineDash([]);
+  text('RSI 14', l.pL + 4, l.rT + 3, COL.dim, l.fsm, false, 'left', 'top'); text('vol', l.pL + 4, l.vT + 3, COL.dim, l.fsm, false, 'left', 'top');
+  ctx.strokeStyle = 'rgba(179,157,219,.85)'; ctx.lineWidth = 1.2; ctx.beginPath(); let started = false;
+  for (let k = v0; k <= kEnd; k++) { const r = B.rsi[k]; if (r == null) continue; if (!started) { ctx.moveTo(l.x(k), ry(r)); started = true; } else ctx.lineTo(l.x(k), ry(r)); } ctx.stroke();
+  // volume
+  let vmax = 0; for (let k = v0; k <= v1; k++) vmax = Math.max(vmax, B.v[k]);
+  for (let k = v0; k <= kEnd; k++) { const up = B.c[k] >= B.o[k], h = B.v[k] / vmax * l.vh; const brkBar = D.brk && k === D.brk.i && P('brk', t) > 0; ctx.fillStyle = brkBar ? COL.amber : 'rgba(' + (up ? RGB.green : RGB.red) + ',.45)'; ctx.fillRect(l.x(k) - bw / 2, l.vB - h, Math.max(1, bw), h); }
+  // moving averages: the 50 as a very light thin line, the 20 fainter
+  function ma(arr, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); let st = false; for (let k = v0; k <= kEnd; k++) { const v = arr[k]; if (v == null) continue; if (!st) { ctx.moveTo(l.x(k), y(v)); st = true; } else ctx.lineTo(l.x(k), y(v)); } ctx.stroke(); }
+  ma(B.s20, 'rgba(' + RGB.blue + ',.38)', 1);
+  if (FWD && pos >= N) { const a = .18 + .16 * (.5 + .5 * Math.sin(t / 380)); ctx.save(); ctx.shadowColor = COL.amber; ctx.shadowBlur = 10; ma(B.s50, 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')', 5); ctx.restore(); }
+  ma(B.s50, 'rgba(' + RGB.ink + ',.62)', 1.25);
+  // candles, one session at a time; the one being drawn fades in
+  for (let k = v0; k <= Math.min(v1, full); k++) {
+    const a = k < full ? 1 : (drawn - full); if (a <= 0) continue;
+    const up = B.c[k] >= B.o[k], col = up ? RGB.green : RGB.red, x = l.x(k), xr = bw === 1 ? Math.round(x) + .5 : x;
+    ctx.strokeStyle = 'rgba(' + col + ',' + (.9 * a).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(xr, y(B.h[k])); ctx.lineTo(xr, y(B.l[k])); ctx.stroke();
+    if (bw > 1) { const y1 = y(Math.max(B.o[k], B.c[k])), y2 = y(Math.min(B.o[k], B.c[k])); ctx.fillStyle = 'rgba(' + col + ',' + (.92 * a).toFixed(3) + ')'; ctx.fillRect(x - bw / 2, y1, bw, Math.max(1, y2 - y1)); }
+  }
+  // ── effects ──
+  const db = D.db, pDb = db ? P('db', t) : 0;
+  if (db && pDb > 0) {
+    const x1 = l.x(db.a), y1 = y(db.loA), x2 = l.x(db.b2), y2 = y(db.loB), e = ease(pDb);
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.amber; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + (x2 - x1) * e, y1 + (y2 - y1) * e); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = COL.amber; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(x1, ry(db.rsiA)); ctx.lineTo(x1 + (x2 - x1) * e, ry(db.rsiA) + (ry(db.rsiB) - ry(db.rsiA)) * e); ctx.stroke();
+    if (pDb >= 1) label('double bottom ' + fmtP(db.loA) + ' → ' + fmtP(db.loB) + ' · RSI ' + Math.round(db.rsiA) + ' → ' + Math.round(db.rsiB), (x1 + x2) / 2, Math.max(y1, y2) + l.fsm + 8, COL.amber, l.fsm, true, 'center', 'down');
+  }
+  const pBrk = D.brk ? P('brk', t) : 0;
+  if (D.brk && pBrk > 0) {
+    const k = D.brk.i, x = l.x(k), a = pBrk < 1 ? .35 + .65 * Math.abs(Math.sin(pBrk * Math.PI * 3)) : .95;
+    ctx.save(); ctx.shadowColor = COL.amber; ctx.shadowBlur = pBrk < 1 ? 18 : 6; ctx.strokeStyle = 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')'; ctx.lineWidth = 2; ctx.strokeRect(x - Math.max(bw, 3) / 2 - 2, y(B.h[k]) - 2, Math.max(bw, 3) + 4, y(B.l[k]) - y(B.h[k]) + 4); ctx.restore();
+    label('BREAKOUT ' + (D.brk.volx != null ? D.brk.volx + '× vol' : ''), x, y(B.h[k]) - 10, COL.amber, l.fs, true, 'center', 'up');
+  }
+  // the cell's +8% line from the buy
+  if (BUY && P('cell', t) > 0) { const pc = P('cell', t), lvl = BUY.close * (1 + D.cell.h20_med / 100); ctx.setLineDash([2, 5]); ctx.strokeStyle = 'rgba(' + RGB.ink + ',' + (.35 * pc).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(l.x(BUY.i), y(lvl)); ctx.lineTo(l.pR, y(lvl)); ctx.stroke(); ctx.setLineDash([]); label('cell median +' + D.cell.h20_med + '%', l.x(BUY.i) + 6, y(lvl) - 4, 'rgba(' + RGB.ink + ',' + (.6 * pc).toFixed(3) + ')', l.fsm, false, 'left', 'up'); }
+  // priors: earlier scored retests of this name inside the window
+  (D.priors || []).forEach((p, k) => { if (P('prior' + k, t) <= 0) return; const x = l.x(p.i), yy = y(p.close), col = p.c20 >= 0 ? COL.green : COL.red; ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.stroke(); label('prior retest ' + md(p.date) + ' → ' + sgn(p.c20) + ' at +20d', x, yy + (p.c20 >= 0 ? -10 : l.fsm + 10), col, l.fsm, false, 'center', p.c20 >= 0 ? 'up' : 'down'); });
+  // THE BUY: burst + arrow in the direction of what actually happened
+  if (BUY) {
+    const pb = P('burst', t), x = l.x(BUY.i), yy = y(BUY.close), col = dirCol;
+    if (pb > 0 && pb < 1) { const r = 6 + pb * .30 * l.ph, g = ctx.createRadialGradient(x, yy, 0, x, yy, r); g.addColorStop(0, 'rgba(' + RGB[col] + ',' + (.85 * (1 - pb)).toFixed(3) + ')'); g.addColorStop(.6, 'rgba(' + RGB[col] + ',' + (.35 * (1 - pb)).toFixed(3) + ')'); g.addColorStop(1, 'rgba(' + RGB[col] + ',0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, yy, r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'rgba(' + RGB[col] + ',' + (1 - pb).toFixed(3) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, yy, r * .8, 0, Math.PI * 2); ctx.stroke(); }
+    if (pb > 0) { ctx.fillStyle = COL[col]; ctx.strokeStyle = COL.bg; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    const pa = P('arrow', t);
+    if (pa > 0) { const up = OUT.dir === 'up', len = ease(pa) * .22 * l.ph, dx = ease(pa) * .10 * l.ph, x2 = x + dx, y2 = yy + (up ? -len : len); ctx.strokeStyle = COL[col]; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x2, y2); ctx.stroke(); if (pa > .5) { const ang = Math.atan2(y2 - yy, x2 - x), ah = 9; ctx.fillStyle = COL[col]; ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ah * Math.cos(ang - .5), y2 - ah * Math.sin(ang - .5)); ctx.lineTo(x2 - ah * Math.cos(ang + .5), y2 - ah * Math.sin(ang + .5)); ctx.closePath(); ctx.fill(); } }
+    if (pb > .5) { const up = OUT.dir === 'up'; label('BUY ' + fmtP(BUY.close) + ' · 50-day ' + fmtP(BUY.s50), x, up ? y(BUY.low) + l.fs + 8 : y(BUY.high) - 8, COL[col], l.fs, true, 'center', up ? 'down' : 'up'); }
+  }
+  // THE MOVE: the 20-day best-high line zooms in from the right and lands on the price scale
+  if (OUT && P('target', t) > 0) {
+    const pt = P('target', t), e = ease(pt), yy = y(OUT.bh_price), xs = l.pR - (l.pR - l.x(BUY.i)) * e, col = OUT.bh_pct >= 0 ? COL.green : COL.red, after = since('target', t), lw = after > 0 ? 1.2 + 1.5 * Math.max(0, 1 - after / 220) : 2.6;
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]);
+    tag(sgn(OUT.bh_pct), l.pR + 2 + (1 - e) * 40, yy, col, COL.bg, l.fsm, 'left');
+    if (pt >= 1) label('best high ' + fmtP(OUT.bh_price) + ' · ' + md(OUT.bh_date) + (OUT.so_far ? ' (so far)' : ''), l.pR - 4, yy - 5, col, l.fsm, true, 'right', 'up');
+  }
+  if (OUT && P('exit', t) > 0) {
+    const pe = P('exit', t);
+    if (OUT.kill_i != null && OUT.dir === 'down') { const x = l.x(OUT.kill_i), yy = y(OUT.kill_close); ctx.strokeStyle = COL.red; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 6, yy - 6); ctx.lineTo(x + 6, yy + 6); ctx.moveTo(x + 6, yy - 6); ctx.lineTo(x - 6, yy + 6); ctx.stroke(); label('KILL · close ' + fmtP(OUT.kill_close) + ' under the 50 · ' + md(OUT.kill_date), x, yy + l.fs + 12, COL.red, l.fs, true, 'center', 'down'); }
+    else { const x = l.x(OUT.c20_i), yy = y(OUT.c20); ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.stroke(); label('close ' + OUT.h20_lbl + ' ' + sgn(OUT.c20_pct) + ' · ½ · ½ · runner', x, yy + l.fs + 12, COL.ink, l.fs, true, 'center', 'down'); }
+  }
+  // FORWARD hold: the retest line into the future, TARGET and KILL zooming in from the right, the distance label
+  if (FWD && pos >= N) {
+    const xl = l.x(FWD.i), a = .45 + .35 * (.5 + .5 * Math.sin(t / 380));
+    ctx.setLineDash([2, 4]); ctx.strokeStyle = 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xl, y(FWD.s50)); ctx.lineTo(l.pR, y(FWD.s50)); ctx.stroke(); ctx.setLineDash([]);
+    const ptg = P('ftarget', t); if (ptg > 0) { const e = ease(ptg), yy = y(FWD.target), xs = l.pR - (l.pR - xl) * e; ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.green; ctx.lineWidth = ptg < 1 ? 2.4 : 1.4; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]); tag('+' + FWD.target_pct.toFixed(0) + '% ' + fmtP(FWD.target), l.pR + 2 + (1 - e) * 40, yy, COL.green, COL.bg, l.fsm, 'left'); if (ptg >= 1) label('TARGET · cell median 20d best high', l.pR - 4, yy - 5, COL.green, l.fsm, true, 'right', 'up'); }
+    const pk = P('fkill', t); if (pk > 0) { const e = ease(pk), yy = y(FWD.kill), xs = l.pR - (l.pR - xl) * e; ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.red; ctx.lineWidth = pk < 1 ? 2.4 : 1.4; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]); tag('KILL ' + fmtP(FWD.kill), l.pR + 2 + (1 - e) * 40, yy, COL.red, COL.bg, l.fsm, 'left'); if (pk >= 1) label('KILL · a daily close under the 50', l.pR - 4, yy + l.fsm + 4, COL.red, l.fsm, true, 'right', 'down'); }
+    const pd = P('fdist', t); if (pd > 0) { const col = FWD.dist >= 0 ? COL.green : COL.red, s = sgn(FWD.dist) + ' from the line', s2 = 'THE RETEST LINE ' + fmtP(FWD.s50); ctx.globalAlpha = pd; label(s2, l.pR - 4, y(FWD.s50) - 6, COL.amber, l.fs, true, 'right', 'up'); label(s, xl, Math.min(y(FWD.kill), y(B.l[FWD.i])) - 10, col, l.fs, true, 'center', 'up'); ctx.globalAlpha = 1; ctx.fillStyle = COL.amber; ctx.beginPath(); ctx.arc(xl, y(B.c[FWD.i]), 4, 0, Math.PI * 2); ctx.fill(); }
+    text('← today', xl + 6, l.pB - 6, COL.dim, l.fsm, false, 'left');
+  }
+  $('#prog').style.transform = 'scaleX(' + (pos / N).toFixed(4) + ')';
+}
+
+/* stage bar + caption */
+const stEls = [];
+function buildStages() {
+  const sw = $('#stages'); sw.style.setProperty('--ns', D.stages.length);
+  D.stages.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'stage'; b.innerHTML = '<b>' + s.n + '</b><span class="t">' + s.t + '</span>'; b.addEventListener('click', () => { seek(Math.max(0, s.at + 1)); pause(); tick(performance.now(), true); }); sw.appendChild(b); stEls.push(b); });
+}
+let capIdx = -1;
+function ui() {
+  let cur = 0; D.stages.forEach((s, i) => { if (pos >= s.at + 1) cur = i; });
+  stEls.forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); });
+  if (cur !== capIdx) { capIdx = cur; const s = D.stages[cur]; const kc = s.key === 'buy' ? (OUT.dir === 'up' ? ' g' : ' r') : s.key === 'kill' ? ' r' : s.key === 'hold' ? ' g' : ''; $('#cap').innerHTML = '<div class="k' + kc + '">' + s.n + ' · ' + s.t + '</div><p>' + s.sub + '</p>'; }
+  const k = Math.min(N, Math.max(1, Math.ceil(pos))); $('#clock').textContent = 'bar ' + k + ' / ' + N + ' · ' + B.d[k - 1];
+  if (!scrubbing) $('#scrub').value = pos;
+  $('#play').textContent = ended ? 'Replay' : playing ? 'Pause' : 'Play';
+}
+let frozen = false;
+function tick(t, force) {
+  if (frozen && !force) return;
+  const dt = Math.max(0, Math.min(64, lastT ? t - lastT : 16)); lastT = t;
+  if (playing && t >= holdUntil) pos = Math.min(N, pos + RATE * speed * dt / 1000);
+  triggers(t); draw(t, dt); ui();
+  const live = FX.some(e => fx[e.key] !== undefined && fx[e.key] !== -1e9 && t < fx[e.key] + e.dur + 260);
+  if (pos >= N && playing && !live && t >= holdUntil) { playing = false; ended = true; ui(); }
+  const keep = playing || live || (FWD && pos >= N) || (cam && Math.abs(cam.hi - camTarget(L()).hi) > (cam.hi - cam.lo) * .002);
+  if (keep && !RM) raf = requestAnimationFrame(tick); else raf = 0;
+}
+function run() { if (!raf) { lastT = 0; raf = requestAnimationFrame(tick); } }
+function play() { if (ended || pos >= N) { seek(0); ended = false; } playing = true; run(); ui(); }
+function pause() { playing = false; ui(); }
+$('#play').addEventListener('click', () => playing ? pause() : play());
+$('#restart').addEventListener('click', () => { seek(0); playing = true; run(); });
+document.querySelectorAll('[data-speed]').forEach(b => b.addEventListener('click', () => { speed = +b.dataset.speed; document.querySelectorAll('[data-speed]').forEach(x => x.classList.toggle('on', x === b)); }));
+document.querySelectorAll('[data-zoom]').forEach(b => b.addEventListener('click', () => { const z = b.dataset.zoom; document.querySelectorAll('[data-zoom]').forEach(x => x.classList.toggle('on', x === b)); if (z === 'tight') { const a = D.db ? D.db.a : (D.brk ? D.brk.i : 0); v0 = Math.max(0, a - 12); } else v0 = 0; snap = true; tick(performance.now(), true); }));
+const sc = $('#scrub'); sc.max = N; sc.step = 0.05;
+sc.addEventListener('input', () => { scrubbing = true; seek(+sc.value); playing = false; tick(performance.now(), true); scrubbing = false; });
+sc.addEventListener('change', () => { scrubbing = false; });
+window.addEventListener('keydown', e => { if (e.target && /input|button|textarea/i.test(e.target.tagName) && e.code !== 'Space') return; if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); } else if (e.code === 'ArrowRight') { seek(pos + 5); tick(performance.now(), true); } else if (e.code === 'ArrowLeft') { seek(pos - 5); tick(performance.now(), true); } });
+window.addEventListener('resize', () => { size(); snap = true; tick(performance.now(), true); });
+
+/* boot: #t=end (or #t=<bar>) jumps to that frame, drawn synchronously for screenshots; reduced motion draws it all at once */
+buildStages(); size();
+window.__replay = {tick: t => tick(t, true), seek, freeze: () => { frozen = true; }, get pos() { return pos; }, get playing() { return playing; }, get fx() { return Object.assign({}, fx); }, N};
+const hash = /t=([^&]+)/.exec(location.hash || ''); const jump = hash ? hash[1] : null;
+if (jump === 'end' || RM) { seek(N); ended = true; playing = false; tick(performance.now(), true); if (FWD && !RM) run(); }
+else if (jump && !isNaN(+jump)) { seek(+jump); playing = false; tick(performance.now(), true); }
+else { seek(0); playing = true; run(); }
+})();
+
+</script>
+</body></html>

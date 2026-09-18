@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DLO — the retest of 2023-08-14, replayed</title>
+<meta name="description" content="Replay of DLO's first retest of the 50 on 2023-08-14, with the outcome.">
+<style>
+:root{--bg:#0d0d0d;--ink:#e8e6e1;--mute:#8a877f;--dim:#5c5a55;--rule:#2a2a2a;--card:#111;--amber:#f5b041;--blue:#4c8bf5;--green:#2ecc71;--red:#ef5350;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--mono);-webkit-text-size-adjust:100%}
+body{font-size:16px;line-height:1.5;overflow-x:hidden}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 60px}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.top .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.nav a{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border:1px solid var(--rule);padding:8px 10px;min-height:36px;display:inline-flex;align-items:center}
+.strip{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin:18px 0 10px;font-size:13px;color:var(--mute)}
+.strip .sym{font-size:clamp(28px,7vw,44px);line-height:1;color:var(--ink);letter-spacing:-.02em}
+.strip .mode{font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--amber);color:var(--amber)}
+.strip .mode.fwd{border-color:var(--green);color:var(--green)}
+.strip .live{color:var(--green)}
+.stages{display:grid;grid-template-columns:repeat(var(--ns),1fr);gap:4px;margin:8px 0}
+.stage{border:1px solid var(--rule);padding:7px 3px;text-align:center;cursor:pointer;min-height:42px;background:transparent;color:var(--mute);font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;transition:color .2s,border-color .2s}
+.stage b{display:block;font-size:15px;color:var(--dim);letter-spacing:0;margin-bottom:1px;transition:color .2s}
+.stage.on{color:var(--ink);border-color:var(--amber)}.stage.on b{color:var(--amber)}.stage.done b{color:var(--ink)}
+.stage .t{display:none}@media(min-width:760px){.stage .t{display:block}}
+.chart{border:1px solid var(--rule);background:var(--card);position:relative}
+canvas{display:block;width:100%;height:clamp(400px,112vw,600px)}
+.prog{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--amber);transform-origin:left center;transform:scaleX(0)}
+.cap{border:1px solid var(--rule);border-top:0;background:var(--card);padding:12px 14px;min-height:92px}
+.cap .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.cap .k.g{color:var(--green)}.cap .k.r{color:var(--red)}
+.cap p{margin:0;font-size:15px;color:var(--ink);overflow-wrap:anywhere}.cap b{color:var(--ink)}
+.ctl{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--mute);padding:0 14px;min-height:42px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}.btn.pri{border-color:var(--amber);color:var(--amber)}.btn.pri:hover{background:var(--amber);color:var(--bg)}
+.btn.sm{padding:0 10px;min-height:36px;font-size:11px;color:var(--mute)}.btn.sm.on{color:var(--amber);border-color:var(--amber)}
+.grp{display:flex;gap:4px}.clock{font-size:12px;color:var(--mute);margin-left:auto;font-variant-numeric:tabular-nums}
+.scrub{width:100%;margin:10px 0 0;-webkit-appearance:none;appearance:none;height:28px;background:transparent;cursor:pointer}
+.scrub::-webkit-slider-runnable-track{height:3px;background:var(--rule)}.scrub::-moz-range-track{height:3px;background:var(--rule)}
+.scrub::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--amber);border:3px solid var(--bg);margin-top:-9.5px}
+.scrub::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--amber);border:3px solid var(--bg)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mute);margin:8px 0 0}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid rgba(232,230,225,.6);vertical-align:middle;margin-right:5px}
+.legend i.s20{border-top:1px solid rgba(76,139,245,.6)}.legend i.tint{border-top:6px solid rgba(239,83,80,.14)}.legend i.tg{border-top:2px dashed var(--green)}.legend i.kl{border-top:2px dashed var(--red)}
+h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:6px}@media(min-width:760px){.nums{grid-template-columns:repeat(3,1fr)}}
+.nums div{border:1px solid var(--rule);background:var(--card);padding:10px 12px}
+.nums .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.nums .v{font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.next{border:1px solid var(--green);background:var(--card);padding:14px 16px}
+.next .h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.next ul{margin:0;padding-left:18px;font-size:15px}.next li{margin:5px 0;overflow-wrap:anywhere}
+.src{font-size:12px;color:var(--mute);line-height:1.7;padding-left:18px}.src code{color:var(--ink);word-break:break-all}
+.foot{margin-top:30px;padding-top:10px;border-top:1px solid var(--rule);font-size:12px;color:var(--dim)}
+@media(prefers-reduced-motion:reduce){.stage,.btn{transition:none}}
+</style></head>
+<body>
+<div class="top"><div class="in"><div class="brand">Riven · Replay</div><nav class="nav"><a href="index.html">All replays</a></nav></div></div>
+<div class="wrap">
+  <div class="strip"><span class="sym">DLO</span><span class="mode">PAST</span><span>2022-11-23 → 2023-10-10</span><span class="">daily candles, 1 = 1 session</span></div>
+  <div class="stages" id="stages" style="--ns:6"></div>
+  <div class="chart"><canvas id="cv" aria-label="Daily candle replay of DLO with the stages of the setup"></canvas><div class="prog" id="prog"></div></div>
+  <div class="cap" id="cap"></div>
+  <div class="ctl">
+    <button class="btn pri" id="play" type="button">Pause</button>
+    <button class="btn" id="restart" type="button">Restart</button>
+    <span class="grp"><button class="btn sm" data-speed="0.5" type="button">0.5×</button><button class="btn sm on" data-speed="1" type="button">1×</button><button class="btn sm" data-speed="2" type="button">2×</button></span>
+    <span class="grp"><button class="btn sm on" data-zoom="full" type="button">full</button><button class="btn sm" data-zoom="tight" type="button">tight</button></span>
+    <span class="clock" id="clock"></span>
+  </div>
+  <input class="scrub" id="scrub" type="range" min="0" max="1" step="0.05" value="0" aria-label="scrub the replay">
+  <div class="legend"><span><i></i>50-day (the retest line)</span><span><i class="s20"></i>20-day</span><span><i class="tint"></i>under the 50</span><span>space = play/pause · ←/→ = 5 bars</span></div>
+  
+  <h2>The numbers on the screen</h2>
+  <div class="nums"><div><div class="l">buy (close)</div><div class="v">13.67</div></div><div><div class="l">50-day at the buy</div><div class="v">13.02</div></div><div><div class="l">20-day at the buy</div><div class="v">14.23</div></div><div><div class="l">best high +20d</div><div class="v">+77.2%</div></div><div><div class="l">close +20d</div><div class="v">+55.5%</div></div><div><div class="l">sessions under the 50</div><div class="v">186 / 252</div></div></div>
+  <h2>Sources</h2>
+  <ol class="src"><li><code>data/bars_deep/DLO.json (Alpaca SIP daily, split-adjusted)</code></li><li><code>qlab/kevin_recipe.py::recipe_at (double bottom, breakout, depth) — the same call that scored the instances file</code></li><li><code>qlab/kevin_finder.py (volume cross over the 50, under-the-50 count)</code></li><li><code>qlab/cell_chart.py (the retest-line layout)</code></li><li><code>data/qlab/kevin_ru_instances.json[ru] (n 348, 20d best-high median +8.0%, P(+10%) 36.2%)</code></li><li><code>instances row: ru list</code></li></ol>
+  <div class="foot">bars: Alpaca SIP daily, split-adjusted · stage math: qlab/kevin_recipe.py · not advice · built 2026-09-18T18:05 by Riven</div>
+</div>
+<script>
+const DATA = {"mode":"past","sym":"DLO","signal_date":"2023-08-14","built":"2026-09-18T18:05","strip":["DLO","PAST","2022-11-23 \u2192 2023-10-10","daily candles, 1 = 1 session"],"title":"DLO \u2014 the retest of 2023-08-14, replayed","N":220,"bars":{"d":["2022-11-23","2022-11-25","2022-11-28","2022-11-29","2022-11-30","2022-12-01","2022-12-02","2022-12-05","2022-12-06","2022-12-07","2022-12-08","2022-12-09","2022-12-12","2022-12-13","2022-12-14","2022-12-15","2022-12-16","2022-12-19","2022-12-20","2022-12-21","2022-12-22","2022-12-23","2022-12-27","2022-12-28","2022-12-29","2022-12-30","2023-01-03","2023-01-04","2023-01-05","2023-01-06","2023-01-09","2023-01-10","2023-01-11","2023-01-12","2023-01-13","2023-01-17","2023-01-18","2023-01-19","2023-01-20","2023-01-23","2023-01-24","2023-01-25","2023-01-26","2023-01-27","2023-01-30","2023-01-31","2023-02-01","2023-02-02","2023-02-03","2023-02-06","2023-02-07","2023-02-08","2023-02-09","2023-02-10","2023-02-13","2023-02-14","2023-02-15","2023-02-16","2023-02-17","2023-02-21","2023-02-22","2023-02-23","2023-02-24","2023-02-27","2023-02-28","2023-03-01","2023-03-02","2023-03-03","2023-03-06","2023-03-07","2023-03-08","2023-03-09","2023-03-10","2023-03-13","2023-03-14","2023-03-15","2023-03-16","2023-03-17","2023-03-20","2023-03-21","2023-03-22","2023-03-23","2023-03-24","2023-03-27","2023-03-28","2023-03-29","2023-03-30","2023-03-31","2023-04-03","2023-04-04","2023-04-05","2023-04-06","2023-04-10","2023-04-11","2023-04-12","2023-04-13","2023-04-14","2023-04-17","2023-04-18","2023-04-19","2023-04-20","2023-04-21","2023-04-24","2023-04-25","2023-04-26","2023-04-27","2023-04-28","2023-05-01","2023-05-02","2023-05-03","2023-05-04","2023-05-05","2023-05-08","2023-05-09","2023-05-10","2023-05-11","2023-05-12","2023-05-15","2023-05-16","2023-05-17","2023-05-18","2023-05-19","2023-05-22","2023-05-23","2023-05-24","2023-05-25","2023-05-26","2023-05-30","2023-05-31","2023-06-01","2023-06-02","2023-06-05","2023-06-06","2023-06-07","2023-06-08","2023-06-09","2023-06-12","2023-06-13","2023-06-14","2023-06-15","2023-06-16","2023-06-20","2023-06-21","2023-06-22","2023-06-23","2023-06-26","2023-06-27","2023-06-28","2023-06-29","2023-06-30","2023-07-03","2023-07-05","2023-07-06","2023-07-07","2023-07-10","2023-07-11","2023-07-12","2023-07-13","2023-07-14","2023-07-17","2023-07-18","2023-07-19","2023-07-20","2023-07-21","2023-07-24","2023-07-25","2023-07-26","2023-07-27","2023-07-28","2023-07-31","2023-08-01","2023-08-02","2023-08-03","2023-08-04","2023-08-07","2023-08-08","2023-08-09","2023-08-10","2023-08-11","2023-08-14","2023-08-15","2023-08-16","2023-08-17","2023-08-18","2023-08-21","2023-08-22","2023-08-23","2023-08-24","2023-08-25","2023-08-28","2023-08-29","2023-08-30","2023-08-31","2023-09-01","2023-09-05","2023-09-06","2023-09-07","2023-09-08","2023-09-11","2023-09-12","2023-09-13","2023-09-14","2023-09-15","2023-09-18","2023-09-19","2023-09-20","2023-09-21","2023-09-22","2023-09-25","2023-09-26","2023-09-27","2023-09-28","2023-09-29","2023-10-02","2023-10-03","2023-10-04","2023-10-05","2023-10-06","2023-10-09","2023-10-10"],"o":[13.15,13.75,13.93,13.36,13.65,14.18,12.21,12.6,12.91,12.295,12.02,12.68,12.89,13.89,13.65,14.22,13.2,13.49,14.01,14.16,14.77,15.1,14.95,15.11,14.89,15.29,15.85,15.62,15.71,15.22,15.91,15.94,15.54,16.17,16.23,16.39,16.32,16.05,16.22,16.5,16.18,16,16.25,16.17,16.3,16.4,16.58,16.99,16.71,16.41,16.51,16.98,16.96,16.14,16.23,16.16,16.3,16.57,15.66,15.33,15.54,15.56,15.01,15.15,14.93,14.85,15.16,14.48,15.16,14.99,14.52,15.35,15.01,13.75,14.96,14.95,14.86,14.16,14.53,15.03,15.82,15.56,15.19,15.6,15.35,15.31,15.73,15.65,16.12,17.46,14.67,12.35,13.33,14.3,14.3,13.44,13.99,13.93,14.22,13.69,13.41,13.5,14.1,14.08,13.66,13.62,13.71,14.06,13.67,13.35,13.68,13.89,13.95,14.31,14.62,13.81,13.6,13.91,14.69,14.78,15.73,14.34,14.19,14.66,14.1,14.25,13.79,11.71,12.2,11.58,11.15,10.34,9.75,9.97,10.77,11.61,11.71,12.35,12.55,12.41,12.69,12.83,12.64,12.49,12.33,12.18,12.14,12.2,12.28,12.15,12.09,12.38,12.16,11.96,12.07,12.3,13.25,13.51,13.83,13.64,14.23,14.66,14.35,14.66,14.71,15.17,15.17,15.42,14.9,15.05,15.06,14.82,13.85,14.2,13.74,13.43,13.35,12.77,12.56,12.58,13.42,19.66,20.68,19.17,19.78,18.92,18.78,18.97,18.57,19.48,20.23,20.95,22.2,21.57,21.42,21.3,21.15,21.44,21.3,21.26,21.52,21.8,21.07,20.03,20.02,19.87,19.02,19.03,18.74,18.59,18.77,19.14,19.65,19.22,19.18,19.2,19.05,18.56,18.14,18.51],"h":[13.95,14.37,14.68,13.68,14.69,14.66,12.94,13.82,13.1885,12.37,12.9,13.34,13.385,14.17,14.48,14.34,13.65,13.74,15.43,15.29,15.32,15.39,15.16,15.34,16.005,15.78,16.04,16.135,15.71,15.83,16.44,16.19,16.11,16.46,16.755,17.06,16.46,16.265,16.7669,16.75,16.68,16.28,16.43,17.02,16.79,16.9118,17.05,17.99,17.19,16.85,16.92,17.04,17.05,16.36,16.66,16.785,16.91,16.81,15.89,15.565,15.58,15.62,15.12,15.16,15.11,15.31,15.64,15.35,15.39,15.12,15.49,15.58,15.01,15.42,15.58,15.76,14.93,14.675,15.085,16.1899,16.1385,15.85,15.48,16.02,15.54,15.79,15.93,17.06,17.45,17.48,15.24,14.09,14.26,14.55,14.48,14.45,14.2299,14.2,14.2794,13.85,13.81,14.13,14.24,14.13,13.88,13.955,14.138,14.26,13.7,14.07,13.97,14.125,14.62,14.64,14.69,13.845,13.99,14.735,14.8,14.78,15.84,15.075,14.8752,14.79,14.22,14.25,13.8,12.62,12.37,11.67,11.19,10.37,10.15,10.62,11.62,12.4085,12.28,12.849,12.86,12.77,12.975,12.89,12.65,12.55,12.53,12.33,12.2,12.34,12.3,12.27,12.4,12.48,12.16,12.32,12.17,13.27,13.91,13.88,13.86,14.15,14.56,14.87,14.64,14.87,14.935,15.555,15.41,15.42,15.28,15.24,15.2081,14.91,14.22,14.2,13.85,13.51,13.41,12.84,12.84,14.52,15.72,24.2168,21.09,19.87,20.05,19.19,19.37,19.04,19.855,20.501,21.42,22.125,22.25,21.77,21.8522,21.59,21.99,21.44,21.75,21.94,21.81,23,21.31,20.62,20.09,20.0799,19.28,19.4237,19.1,19.03,19.07,19.9,19.99,19.86,19.26,19.2,19.09,18.8,18.59,19.55],"l":[13.01,13.57,12.78,12.92,13.54,11.8,11.47,12.39,12.11,11.81,11.9,12.64,12.82,13.66,13.42,13.16,13.16,12.97,13.93,14.1003,14.6,14.98,14.44,14.68,14.64,15.26,15.11,15.43,15,14.96,15.82,15.55,15.54,15.74,16.085,15.9675,15.94,15.36,16.13,16.22,16.18,15.591,15.995,16.15,16.22,16.32,16.28,16.98,16.47,16.32,16.22,16.63,16.35,16.04,16.05,16.1,16.3,15.81,15.5,14.94,15.24,15.19,14.8475,14.88,14.9,14.84,15,14.45,15,14.35,14.47,14.9145,13.7701,13.4904,14.96,14.92,14.19,14.07,14.37,15.03,15.43,15.09,15.08,15.26,15.055,15.23,15.35,15.51,16.04,16.6,11.89,12.35,13.24,13.8533,13.515,13.41,13.63,13.74,13.5,13.558,13.41,13.32,13.93,13.5,13.5,13.51,13.69,13.61,13.375,13.24,13.4,13.63,13.815,14.29,14.26,13.38,13.468,13.81,14.31,13.99,13.79,13.99,14.19,14.16,13.71,13.72,9.04,11.7,11.31,10.835,10.21,9.21,9.48,9.96,10.54,11.49,11.67,12.1,12.25,12.34,12.645,12.45,12.305,12.175,12.125,11.99,12.01,12.01,12,12.01,12.08,12.2,11.59,11.94,11.9,12.1894,13.25,13.33,13.48,13.55,14.06,14.27,14.255,14.39,14.69,14.91,14.835,14.66,14.79,14.95,14.89,14.24,13.84,13.67,13.6,13.18,12.725,12.4902,12.5175,12.34,12.895,19.51,18.9123,18.81,18.73,18.6,18.61,18.34,18.55,19.47,19.95,20.802,21.2,21.0301,21.1418,21.2013,20.77,20.5056,21.03,21.06,21.0645,20.6501,20.12,20.02,19.46,19.37,18.56,18.79,18.56,18.56,18.435,19.02,19.07,19.06,18.57,18.72,18.15,17.98,17.93,18.51],"c":[13.9,14.3,13.18,13.5,14.6,12.39,12.8,12.91,12.34,11.9,12.69,13.03,13.37,13.76,14.41,13.31,13.55,13.19,14.6,14.95,15.18,15.08,15.02,14.72,15.67,15.57,15.37,15.86,15.015,15.72,15.88,15.84,16.05,16.33,16.28,16.18,16.16,16.05,16.49,16.29,16.4,16.01,16.17,16.73,16.3,16.59,16.95,17.14,16.74,16.51,16.9,16.74,16.37,16.19,16.34,16.45,16.88,15.85,15.64,15.39,15.35,15.4,14.97,15.01,14.94,15.3,15.5,15.17,15.01,14.45,15.4,15.02,14.05,14.96,15.27,15.02,14.28,14.62,15.06,15.82,15.45,15.32,15.37,15.32,15.07,15.55,15.5,16.22,17.37,16.94,12.49,13.465,14.19,14.25,13.55,13.97,13.91,14.14,13.71,13.64,13.55,14.11,14.18,13.51,13.51,13.74,14,13.79,13.42,13.61,13.5,13.82,14.5,14.43,14.43,13.64,13.91,14.715,14.6,14,14.2,14.11,14.68,14.24,14.17,13.8,11.41,12.37,11.64,10.95,10.46,9.82,9.97,10.5,11.61,11.72,12.08,12.84,12.61,12.61,12.82,12.6,12.47,12.405,12.14,12.01,12.11,12.18,12.07,12.205,12.38,12.34,11.94,12.07,12.15,13.05,13.51,13.79,13.6,14.14,14.54,14.45,14.6,14.8,14.805,15.33,15.2,14.68,15.09,15.17,15.09,14.35,13.99,13.72,13.67,13.33,12.76,12.73,12.68,13.67,15.5,20.45,19.22,19.64,18.89,18.67,18.9,18.5,19.48,20.18,20.95,22,21.44,21.61,21.31,21.44,21.5,20.95,21.46,21.26,21.52,21.06,20.3,20.22,19.72,19.37,18.89,18.87,18.98,18.74,19.05,19.45,19.17,19.62,18.81,19.07,18.76,18.44,18.54,19.36],"v":[2917309,1384057,3708676,2970677,2429298,7177598,6254473,4165981,3552029,2080643,2796615,1338215,1416721,2437378,2029049,2282104,2257236,2798470,5837283,2832695,1107431,724437,1649129,1333948,1531238,772279,752644,1215358,1160413,793991,992349,750579,1051541,1225315,1375863,1422775,909899,998069,590723,792064,520206,921167,872875,761987,819464,1136880,1872429,1639979,1136837,734747,597793,426162,792288,807415,742086,1240759,1952909,1545584,1000113,1719744,999905,851114,1103556,1025651,787419,1150514,877269,2020268,1428677,1064724,1977372,1441070,1829222,2554437,1757789,2026662,1612445,2089606,1865625,1965186,807850,585954,715949,709154,510455,1494568,1965715,2659235,2410988,3154281,13685165,5466613,1932509,1089879,1163056,1489959,1541007,839594,1377311,863947,767171,1580122,838799,1421075,918108,1561059,1247383,684466,922331,966197,637495,3216674,1568033,919942,1162372,2462092,1269266,875052,1067925,2459254,3919509,2016517,1675629,1071686,817146,678835,10927943,3593021,2648908,3546221,4315785,2875447,4624421,2677522,3189204,3841243,2631074,2953652,2007505,1324190,2134528,732635,1537928,1195969,1554257,808806,951765,1211840,595533,466337,252351,832035,1107656,940042,679998,1169686,1047538,868167,711401,617635,1006071,722080,854697,580669,628809,1066869,584586,591622,766668,1083191,559006,855937,1044003,678801,827534,1080059,1590091,1846571,3019188,5999275,8699820,38811443,4641004,2819833,2198430,1451638,2553797,2043756,1279470,2052308,2457813,5039598,2396902,1915707,1660748,1697437,2502548,2797299,2233341,2539848,1111401,2328864,1508550,1061958,1186690,599180,1440347,1007014,1040902,1012121,762013,968326,1162133,1056008,670001,364229,661652,1485072,822900,874587],"s20":[18.84,18.46,18.02,17.58,17.14,16.67,16.22,15.84,15.43,15.01,14.69,14.26,13.78,13.34,13.0,13.14,13.29,13.31,13.34,13.43,13.5,13.54,13.63,13.69,13.74,13.9,14.03,14.18,14.31,14.5,14.66,14.8,14.94,15.07,15.16,15.3,15.43,15.58,15.67,15.74,15.8,15.85,15.9,16.0,16.03,16.09,16.16,16.23,16.31,16.35,16.41,16.45,16.47,16.46,16.46,16.48,16.51,16.5,16.46,16.41,16.36,16.33,16.27,16.19,16.12,16.05,15.98,15.88,15.8,15.69,15.62,15.53,15.42,15.35,15.3,15.23,15.1,15.04,15.01,15.03,15.03,15.03,15.05,15.07,15.07,15.09,15.09,15.14,15.26,15.38,15.23,15.16,15.16,15.13,15.04,14.99,14.97,14.95,14.88,14.77,14.68,14.62,14.56,14.47,14.39,14.3,14.22,14.1,13.9,13.74,13.79,13.8,13.82,13.83,13.87,13.86,13.86,13.89,13.93,13.95,13.98,13.98,14.01,14.04,14.08,14.08,13.95,13.88,13.79,13.66,13.5,13.3,13.08,12.88,12.74,12.64,12.55,12.46,12.36,12.29,12.22,12.14,12.03,11.94,11.84,11.75,11.79,11.78,11.8,11.86,11.96,12.08,12.18,12.26,12.29,12.35,12.43,12.47,12.52,12.6,12.68,12.78,12.88,13.0,13.14,13.3,13.46,13.58,13.73,13.88,14.02,14.12,14.22,14.3,14.38,14.39,14.36,14.3,14.26,14.23,14.28,14.58,14.81,15.05,15.26,15.42,15.61,15.8,16.02,16.27,16.56,16.95,17.32,17.71,18.1,18.5,18.94,19.35,19.79,20.17,20.47,20.5,20.55,20.58,20.62,20.66,20.66,20.68,20.65,20.58,20.48,20.36,20.24,20.14,20.02,19.9,19.76,19.64,19.49,19.4],"s50":[20.76,20.51,20.27,20.04,19.84,19.6,19.39,19.2,19.03,18.85,18.67,18.52,18.38,18.23,18.05,17.85,17.64,17.46,17.31,17.19,17.07,16.97,16.88,16.76,16.66,16.56,16.46,16.36,16.25,16.13,16.01,15.89,15.77,15.65,15.51,15.4,15.29,15.2,15.12,15.04,14.98,14.87,14.73,14.62,14.52,14.64,14.77,14.86,14.91,14.98,15.04,15.09,15.15,15.21,15.24,15.32,15.4,15.46,15.53,15.6,15.65,15.7,15.73,15.76,15.77,15.81,15.85,15.88,15.89,15.88,15.89,15.89,15.87,15.87,15.86,15.85,15.83,15.81,15.81,15.81,15.8,15.79,15.78,15.76,15.73,15.72,15.71,15.71,15.73,15.74,15.66,15.61,15.57,15.52,15.47,15.41,15.35,15.29,15.23,15.18,15.11,15.06,15.01,14.96,14.9,14.85,14.79,14.75,14.7,14.67,14.63,14.6,14.59,14.58,14.57,14.54,14.5,14.5,14.49,14.48,14.45,14.44,14.45,14.43,14.41,14.39,14.33,14.29,14.22,14.12,14.02,13.91,13.8,13.71,13.64,13.56,13.49,13.42,13.33,13.24,13.25,13.23,13.2,13.16,13.13,13.09,13.06,13.02,12.98,12.96,12.93,12.9,12.85,12.82,12.8,12.78,12.77,12.77,12.78,12.79,12.81,12.82,12.82,12.83,12.84,12.87,12.9,12.9,12.91,12.93,12.95,12.95,12.94,12.93,12.92,12.91,12.93,12.94,12.96,13.02,13.12,13.33,13.52,13.7,13.84,13.98,14.12,14.23,14.37,14.52,14.68,14.87,15.05,15.24,15.42,15.61,15.8,15.97,16.16,16.34,16.52,16.7,16.86,17.03,17.18,17.3,17.41,17.51,17.62,17.71,17.8,17.9,18.0,18.09,18.17,18.25,18.32,18.39,18.46,18.55],"rsi":[37.3,38.7,36.3,37.5,41.5,36.4,38.0,38.4,37.0,35.9,39.4,40.8,42.4,44.2,47.1,43.0,44.1,42.7,49.5,51.0,52.0,51.5,51.2,49.5,54.6,54.0,52.7,55.5,50.0,54.1,55.0,54.7,56.0,57.7,57.3,56.4,56.2,55.1,58.6,56.4,57.4,53.0,54.5,59.5,54.6,57.1,60.2,61.7,56.7,54.1,57.7,55.8,51.4,49.4,51.1,52.4,57.1,45.5,43.5,41.3,40.9,41.6,37.5,38.1,37.4,43.1,46.1,42.2,40.4,34.9,47.9,44.1,36.2,46.0,48.9,46.7,40.9,44.3,48.5,54.7,51.4,50.3,50.8,50.3,47.8,52.6,52.1,58.7,66.6,61.8,34.4,40.6,44.8,45.1,41.9,44.5,44.2,45.7,43.3,42.9,42.4,46.8,47.4,42.8,42.8,44.9,47.3,45.6,42.7,44.6,43.7,47.1,53.6,52.9,52.9,45.0,47.9,55.4,54.2,48.3,50.2,49.3,54.8,50.3,49.6,45.9,30.4,39.3,35.6,32.4,30.4,27.9,29.4,34.4,43.5,44.3,47.0,52.3,50.6,50.6,52.2,50.4,49.3,48.7,46.4,45.2,46.3,47.1,45.9,47.7,49.9,49.4,44.4,46.3,47.5,58.5,62.9,65.2,62.3,66.8,69.7,68.3,69.4,70.9,71.0,74.7,72.2,63.1,66.7,67.4,66.0,54.6,50.0,46.9,46.3,42.5,36.9,36.7,36.2,50.0,65.1,81.4,72.4,73.5,68.3,66.8,67.6,64.7,68.3,70.6,72.9,75.7,71.5,72.0,69.6,70.0,70.3,65.4,67.6,65.8,67.1,62.8,56.4,55.7,51.7,49.1,45.6,45.5,46.5,44.6,47.6,51.2,48.7,52.8,45.7,48.1,45.5,43.0,44.0,51.9],"under":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},"futurePad":4,"stages":[{"key":"under","n":"01","t":"A year under the 50","at":-1,"sub":"<b>186<\/b> of the last 252 sessions closed under the 50-day (the shaded stretch) \u2014 that is what makes the cell."},{"key":"db","n":"02","t":"Double bottom, RSI higher","at":155,"sub":"double bottom <b>11.89<\/b> (4/5) \u2192 <b>11.59<\/b> (7/6), 62 sessions apart \u00b7 RSI <b>34 \u2192 44<\/b>, higher on the second low \u2014 confirmed 3 bars later (pivot 3/3)."},{"key":"brk","n":"03","t":"Breakout over the 50","at":159,"sub":"close <b>14.14<\/b> over the 50 (12.79) on <b>0.6\u00d7<\/b> the 20-day average volume, 7/17 \u00b7 +34.2% off the second low by the retest."},{"key":"buy","n":"04","t":"First retest of the 50 = the buy","at":179,"sub":"low <b>12.34<\/b> touched the 50 (<b>13.02<\/b>), close <b>13.67<\/b> back above it, still under the 20 (14.23) \u00b7 12.1% off the post-breakout high \u00b7 RSI 50 \u00b7 2023-08-14."},{"key":"move","n":"05","t":"The move","at":181,"sub":"best high <b>24.22<\/b> on 8/16 = <b>+77.2%<\/b> from the buy (+20d) \u00b7 the cell's median 20-day best high is +8.0% (n 348, P(+10%) 36%)."},{"key":"exit","n":"06","t":"Exit by halves","at":199,"sub":"\u00bd into the pop, \u00bd at the level, the runner rides \u00b7 close +20d <b>+55.5%<\/b> (9/12) \u00b7 kill = a daily close back under the 50 \u2014 never printed in the window."}],"holds":[{"at":179,"ms":1100},{"at":181,"ms":900}],"db":{"a":90,"b2":152,"loA":11.89,"loB":11.59,"rsiA":34.4,"rsiB":44.4,"dA":"2023-04-05","dB":"2023-07-06"},"brk":{"i":159,"volx":0.6,"close":14.14,"s50":12.79,"date":"2023-07-17","onVolume":false},"buy":{"i":179,"close":13.67,"low":12.34,"high":14.52,"low3":12.34,"s50":13.02,"s20":14.23,"depth":12.1,"run":34.2,"rsi":50.0,"under":186,"date":"2023-08-14"},"outcome":{"dir":"up","bh_i":181,"bh_price":24.2168,"bh_pct":77.2,"bh_date":"2023-08-16","c20_i":199,"c20":21.26,"c20_pct":55.5,"c20_date":"2023-09-12","so_far":false,"after":40,"kill_i":null,"kill_close":null,"kill_date":null,"h20_lbl":"+20d"},"priors":[],"cell":{"n":348,"h20_med":8.0,"p10":36.2,"p20":10.6,"c20_med":0.6,"win":51.7,"src":"data/qlab/kevin_ru_instances.json[ru]"},"nums":[["buy (close)","13.67"],["50-day at the buy","13.02"],["20-day at the buy","14.23"],["best high +20d","+77.2%"],["close +20d","+55.5%"],["sessions under the 50","186 / 252"]],"sources":["data/bars_deep/DLO.json (Alpaca SIP daily, split-adjusted)","qlab/kevin_recipe.py::recipe_at (double bottom, breakout, depth) \u2014 the same call that scored the instances file","qlab/kevin_finder.py (volume cross over the 50, under-the-50 count)","qlab/cell_chart.py (the retest-line layout)","data/qlab/kevin_ru_instances.json[ru] (n 348, 20d best-high median +8.0%, P(+10%) 36.2%)","instances row: ru list"],"meta":{"h20":77.2,"c20":55.5,"under":186,"so_far":false,"after":40,"dir":"up","ru_h20":77.2,"ru_c20":55.5}};
+
+(function(){
+const D = DATA, B = D.bars, N = D.N, M = D.mode;
+const $ = s => document.querySelector(s);
+const COL = {bg:'#0d0d0d', ink:'#e8e6e1', mute:'#8a877f', dim:'#5c5a55', rule:'#2a2a2a', amber:'#f5b041', blue:'#4c8bf5', green:'#2ecc71', red:'#ef5350'};
+const RGB = {green:'46,204,113', red:'239,83,80', amber:'245,176,65', blue:'76,139,245', ink:'232,230,225'};
+const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
+const RATE = 12;                                   // candles per second at 1x
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cv = $('#cv'), ctx = cv.getContext('2d');
+let W = 0, H = 0, dpr = 1, pos = 0, playing = false, speed = 1, holdUntil = 0, lastT = 0, raf = 0, ended = false, scrubbing = false;
+let v0 = 0, v1 = N - 1, cam = null, snap = true;
+const fx = {}, held = new Set();
+const OUT = D.outcome, BUY = D.buy, FWD = D.fwd;
+const dirCol = OUT ? (OUT.dir === 'up' ? 'green' : 'red') : 'green';
+const AXIS_TAGS = ['0000.0'].concat(OUT ? [(OUT.bh_pct >= 0 ? '+' : '') + OUT.bh_pct.toFixed(1) + '%'] : [], FWD ? ['+' + FWD.target_pct.toFixed(0) + '% ' + (FWD.target >= 1000 ? FWD.target.toFixed(0) : FWD.target >= 100 ? FWD.target.toFixed(1) : FWD.target.toFixed(2)), 'KILL ' + (FWD.kill >= 1000 ? FWD.kill.toFixed(0) : FWD.kill >= 100 ? FWD.kill.toFixed(1) : FWD.kill.toFixed(2))] : []);
+
+/* effects: fire when the candle at `at` is fully drawn (pos >= at+1); p = progress 0..1 */
+const FX = [];
+if (D.db) FX.push({key:'db', at:D.stages.find(s=>s.key==='db').at, dur:600});
+if (D.brk) FX.push({key:'brk', at:D.brk.i, dur:900});
+if (BUY) { FX.push({key:'burst', at:BUY.i, dur:600}); FX.push({key:'arrow', at:BUY.i, delay:320, dur:520}); FX.push({key:'cell', at:BUY.i, delay:700, dur:400}); }
+if (OUT) { FX.push({key:'target', at:OUT.bh_i, dur:480}); FX.push({key:'exit', at:D.stages[D.stages.length-1].at, dur:350}); }
+if (FWD) { FX.push({key:'ftarget', at:FWD.i, dur:520}); FX.push({key:'fkill', at:FWD.i, delay:180, dur:640}); FX.push({key:'fdist', at:FWD.i, delay:600, dur:300}); }
+(D.priors||[]).forEach((p,k) => FX.push({key:'prior'+k, at:p.i, dur:300}));
+const FXD = {}; FX.forEach(e => FXD[e.key] = e);
+function P(key, t) { const e = FXD[key]; if (!e) return 0; const s = fx[key]; if (s === undefined) return 0; if (s === -1e9) return 1; return Math.max(0, Math.min(1, (t - s) / e.dur)); }
+function since(key, t) { const e = FXD[key]; const s = fx[key]; if (s === undefined) return -1; if (s === -1e9) return 1e9; return t - s - e.dur; }
+const ease = p => 1 - Math.pow(1 - p, 3);
+
+function triggers(t) {
+  for (const e of FX) if (fx[e.key] === undefined && pos >= e.at + 1) fx[e.key] = t + (e.delay || 0);
+  for (const h of D.holds) if (!held.has(h.at) && pos >= h.at + 1) { held.add(h.at); holdUntil = t + h.ms; }
+}
+function seek(p, t) {
+  pos = Math.max(0, Math.min(N, p)); t = t || performance.now();
+  for (const e of FX) fx[e.key] = (pos >= e.at + 1) ? -1e9 : undefined;
+  held.clear(); for (const h of D.holds) if (pos >= h.at + 1) held.add(h.at);
+  holdUntil = 0; ended = false; snap = true;
+}
+
+/* layout */
+function size() {
+  dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  const r = cv.getBoundingClientRect(); W = Math.round(r.width); H = Math.round(r.height);
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function L() {
+  const fsm = W > 700 ? 12 : 10; ctx.font = 'bold ' + fsm + 'px ' + MONO;
+  const padL = 6, padR = Math.max(W > 700 ? 64 : 54, Math.ceil(Math.max(...AXIS_TAGS.map(s => ctx.measureText(s).width))) + 16), padT = 10, padB = 20, gap = 8;
+  const inner = H - padT - padB - 2 * gap; const ph = Math.round(inner * .66), vh = Math.round(inner * .15), rh = inner - ph - vh;
+  const plotW = W - padL - padR, slot = plotW / (v1 - v0 + 1 + (D.futurePad || 0));
+  return {padL, padR, padT, padB, plotW, slot, pL: padL, pR: padL + plotW, pT: padT, pB: padT + ph, vT: padT + ph + gap, vB: padT + ph + gap + vh, rT: padT + ph + gap + vh + gap, rB: H - padB, ph, vh, rh,
+          x: k => padL + (k - v0 + .5) * slot, fs: W > 700 ? 13 : 11, fsm};
+}
+function camTarget(l) {
+  const upto = Math.min(v1, Math.max(v0 + 30, Math.ceil(pos) - 1));
+  let lo = Infinity, hi = -Infinity;
+  for (let k = v0; k <= upto; k++) { lo = Math.min(lo, B.l[k]); hi = Math.max(hi, B.h[k]); if (B.s50[k] != null) { lo = Math.min(lo, B.s50[k]); hi = Math.max(hi, B.s50[k]); } }
+  if (FWD && pos >= N) { lo = Math.min(lo, FWD.kill * .985); hi = Math.max(hi, FWD.target * 1.01); }
+  if (BUY && pos >= BUY.i + 1) hi = Math.max(hi, BUY.close * 1.08);
+  const pad = (hi - lo) * .07 || 1; return {lo: lo - pad, hi: hi + pad * 1.6};
+}
+function updateCam(l, dt) {
+  const tg = camTarget(l);
+  if (!cam || snap) { cam = tg; snap = false; return; }
+  const k = 1 - Math.exp(-dt / 160); cam.lo += (tg.lo - cam.lo) * k; cam.hi += (tg.hi - cam.hi) * k;
+}
+function niceStep(range, n) { const raw = range / n, p = Math.pow(10, Math.floor(Math.log10(raw))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= raw) return m * p; return 10 * p; }
+const fmtP = v => v >= 1000 ? v.toFixed(0) : v >= 100 ? v.toFixed(1) : v.toFixed(2);
+const sgn = v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+const md = d => (+d.slice(5, 7)) + '/' + (+d.slice(8, 10));
+
+function text(s, x, y, col, size, bold, align, base) { ctx.font = (bold ? 'bold ' : '') + size + 'px ' + MONO; ctx.fillStyle = col; ctx.textAlign = align || 'left'; ctx.textBaseline = base || 'alphabetic'; ctx.fillText(s, x, y); }
+function tag(s, x, y, bg, fg, size, align) { ctx.font = 'bold ' + size + 'px ' + MONO; const w = ctx.measureText(s).width + 10, h = size + 8; let x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x; ctx.fillStyle = bg; ctx.fillRect(x0, y - h / 2, w, h); text(s, x0 + 5, y, fg, size, true, 'left', 'middle'); return {x0, w, h}; }
+function clampX(x, w, l) { return Math.max(l.pL + 2, Math.min(l.pR - w - 2, x)); }
+/* price-panel labels: each one records its box; a later label that would overlap an earlier one is nudged up or down a row */
+let boxes = [], LL = null;
+function label(s, x, y, col, size, bold, align, prefer) {
+  ctx.font = (bold ? 'bold ' : '') + size + 'px ' + MONO; const w = ctx.measureText(s).width, h = size + 2;
+  let x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x; x0 = clampX(x0, w, LL); let yy = y;
+  const hit = () => boxes.some(b => x0 < b.x + b.w + 6 && x0 + w + 6 > b.x && yy - h < b.y + b.h + 3 && yy + 3 > b.y);
+  const y0 = y, dir = prefer === 'up' ? -1 : 1, lim = v => Math.max(LL.pT + h, Math.min(LL.pB - 3, v));
+  for (let i = 0; i < 8 && hit(); i++) yy = lim(yy + dir * (h + 5));
+  if (hit()) { yy = y0; for (let i = 0; i < 8 && hit(); i++) yy = lim(yy - dir * (h + 5)); }
+  yy = lim(yy); boxes.push({x: x0, y: yy - h, w, h}); text(s, x0, yy, col, size, bold, 'left'); return yy;
+}
+
+function draw(t, dt) {
+  const l = L(); updateCam(l, dt); const y = p => l.pB - (p - cam.lo) / (cam.hi - cam.lo) * l.ph; boxes = []; LL = l;
+  ctx.clearRect(0, 0, W, H); ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+  const drawn = Math.min(N, pos), full = Math.floor(drawn), yb = Math.max(1, Math.floor(l.slot * .68)), bw = l.slot < 2.2 ? 1 : yb;
+  const kEnd = Math.min(v1, full);
+  // the stretch under the 50 — tinted as it passes
+  ctx.fillStyle = 'rgba(' + RGB.red + ',.075)'; let run = -1;
+  for (let k = v0; k <= kEnd + 1; k++) {
+    const u = k <= kEnd && B.under[k];
+    if (u && run < 0) run = k;
+    if (!u && run >= 0) { ctx.fillRect(l.x(run) - l.slot / 2, l.pT, (k - run) * l.slot, l.ph); run = -1; }
+  }
+  // grid + price axis
+  const step = niceStep(cam.hi - cam.lo, W > 700 ? 6 : 5); ctx.strokeStyle = COL.rule; ctx.lineWidth = 1;
+  for (let p = Math.ceil(cam.lo / step) * step; p < cam.hi; p += step) { const yy = Math.round(y(p)) + .5; ctx.beginPath(); ctx.moveTo(l.pL, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); text(fmtP(p), l.pR + 6, yy, COL.dim, l.fsm, false, 'left', 'middle'); }
+  ctx.strokeStyle = COL.rule; [l.vT, l.vB, l.rT, l.rB].forEach(yy => { ctx.beginPath(); ctx.moveTo(l.pL, Math.round(yy) + .5); ctx.lineTo(l.pR, Math.round(yy) + .5); ctx.stroke(); });
+  // dates
+  const every = Math.max(1, Math.round((v1 - v0 + 1) / (W > 700 ? 9 : 5))); let lastYr = '';
+  for (let k = v0; k <= v1; k += every) { const d = B.d[k], yr = d.slice(2, 4), s = md(d) + (yr !== lastYr ? "'" + yr : ''); lastYr = yr; text(s, l.x(k), H - 6, COL.dim, l.fsm, false, 'center'); ctx.strokeStyle = COL.rule; ctx.beginPath(); ctx.moveTo(Math.round(l.x(k)) + .5, l.rB); ctx.lineTo(Math.round(l.x(k)) + .5, l.rB + 4); ctx.stroke(); }
+  // RSI panel
+  const ry = v => l.rB - (v - 10) / 80 * l.rh; ctx.setLineDash([3, 4]); ctx.strokeStyle = '#333';
+  [30, 70].forEach(v => { ctx.beginPath(); ctx.moveTo(l.pL, ry(v)); ctx.lineTo(l.pR, ry(v)); ctx.stroke(); }); ctx.setLineDash([]);
+  text('RSI 14', l.pL + 4, l.rT + 3, COL.dim, l.fsm, false, 'left', 'top'); text('vol', l.pL + 4, l.vT + 3, COL.dim, l.fsm, false, 'left', 'top');
+  ctx.strokeStyle = 'rgba(179,157,219,.85)'; ctx.lineWidth = 1.2; ctx.beginPath(); let started = false;
+  for (let k = v0; k <= kEnd; k++) { const r = B.rsi[k]; if (r == null) continue; if (!started) { ctx.moveTo(l.x(k), ry(r)); started = true; } else ctx.lineTo(l.x(k), ry(r)); } ctx.stroke();
+  // volume
+  let vmax = 0; for (let k = v0; k <= v1; k++) vmax = Math.max(vmax, B.v[k]);
+  for (let k = v0; k <= kEnd; k++) { const up = B.c[k] >= B.o[k], h = B.v[k] / vmax * l.vh; const brkBar = D.brk && k === D.brk.i && P('brk', t) > 0; ctx.fillStyle = brkBar ? COL.amber : 'rgba(' + (up ? RGB.green : RGB.red) + ',.45)'; ctx.fillRect(l.x(k) - bw / 2, l.vB - h, Math.max(1, bw), h); }
+  // moving averages: the 50 as a very light thin line, the 20 fainter
+  function ma(arr, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); let st = false; for (let k = v0; k <= kEnd; k++) { const v = arr[k]; if (v == null) continue; if (!st) { ctx.moveTo(l.x(k), y(v)); st = true; } else ctx.lineTo(l.x(k), y(v)); } ctx.stroke(); }
+  ma(B.s20, 'rgba(' + RGB.blue + ',.38)', 1);
+  if (FWD && pos >= N) { const a = .18 + .16 * (.5 + .5 * Math.sin(t / 380)); ctx.save(); ctx.shadowColor = COL.amber; ctx.shadowBlur = 10; ma(B.s50, 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')', 5); ctx.restore(); }
+  ma(B.s50, 'rgba(' + RGB.ink + ',.62)', 1.25);
+  // candles, one session at a time; the one being drawn fades in
+  for (let k = v0; k <= Math.min(v1, full); k++) {
+    const a = k < full ? 1 : (drawn - full); if (a <= 0) continue;
+    const up = B.c[k] >= B.o[k], col = up ? RGB.green : RGB.red, x = l.x(k), xr = bw === 1 ? Math.round(x) + .5 : x;
+    ctx.strokeStyle = 'rgba(' + col + ',' + (.9 * a).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(xr, y(B.h[k])); ctx.lineTo(xr, y(B.l[k])); ctx.stroke();
+    if (bw > 1) { const y1 = y(Math.max(B.o[k], B.c[k])), y2 = y(Math.min(B.o[k], B.c[k])); ctx.fillStyle = 'rgba(' + col + ',' + (.92 * a).toFixed(3) + ')'; ctx.fillRect(x - bw / 2, y1, bw, Math.max(1, y2 - y1)); }
+  }
+  // ── effects ──
+  const db = D.db, pDb = db ? P('db', t) : 0;
+  if (db && pDb > 0) {
+    const x1 = l.x(db.a), y1 = y(db.loA), x2 = l.x(db.b2), y2 = y(db.loB), e = ease(pDb);
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.amber; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + (x2 - x1) * e, y1 + (y2 - y1) * e); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = COL.amber; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(x1, ry(db.rsiA)); ctx.lineTo(x1 + (x2 - x1) * e, ry(db.rsiA) + (ry(db.rsiB) - ry(db.rsiA)) * e); ctx.stroke();
+    if (pDb >= 1) label('double bottom ' + fmtP(db.loA) + ' → ' + fmtP(db.loB) + ' · RSI ' + Math.round(db.rsiA) + ' → ' + Math.round(db.rsiB), (x1 + x2) / 2, Math.max(y1, y2) + l.fsm + 8, COL.amber, l.fsm, true, 'center', 'down');
+  }
+  const pBrk = D.brk ? P('brk', t) : 0;
+  if (D.brk && pBrk > 0) {
+    const k = D.brk.i, x = l.x(k), a = pBrk < 1 ? .35 + .65 * Math.abs(Math.sin(pBrk * Math.PI * 3)) : .95;
+    ctx.save(); ctx.shadowColor = COL.amber; ctx.shadowBlur = pBrk < 1 ? 18 : 6; ctx.strokeStyle = 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')'; ctx.lineWidth = 2; ctx.strokeRect(x - Math.max(bw, 3) / 2 - 2, y(B.h[k]) - 2, Math.max(bw, 3) + 4, y(B.l[k]) - y(B.h[k]) + 4); ctx.restore();
+    label('BREAKOUT ' + (D.brk.volx != null ? D.brk.volx + '× vol' : ''), x, y(B.h[k]) - 10, COL.amber, l.fs, true, 'center', 'up');
+  }
+  // the cell's +8% line from the buy
+  if (BUY && P('cell', t) > 0) { const pc = P('cell', t), lvl = BUY.close * (1 + D.cell.h20_med / 100); ctx.setLineDash([2, 5]); ctx.strokeStyle = 'rgba(' + RGB.ink + ',' + (.35 * pc).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(l.x(BUY.i), y(lvl)); ctx.lineTo(l.pR, y(lvl)); ctx.stroke(); ctx.setLineDash([]); label('cell median +' + D.cell.h20_med + '%', l.x(BUY.i) + 6, y(lvl) - 4, 'rgba(' + RGB.ink + ',' + (.6 * pc).toFixed(3) + ')', l.fsm, false, 'left', 'up'); }
+  // priors: earlier scored retests of this name inside the window
+  (D.priors || []).forEach((p, k) => { if (P('prior' + k, t) <= 0) return; const x = l.x(p.i), yy = y(p.close), col = p.c20 >= 0 ? COL.green : COL.red; ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.stroke(); label('prior retest ' + md(p.date) + ' → ' + sgn(p.c20) + ' at +20d', x, yy + (p.c20 >= 0 ? -10 : l.fsm + 10), col, l.fsm, false, 'center', p.c20 >= 0 ? 'up' : 'down'); });
+  // THE BUY: burst + arrow in the direction of what actually happened
+  if (BUY) {
+    const pb = P('burst', t), x = l.x(BUY.i), yy = y(BUY.close), col = dirCol;
+    if (pb > 0 && pb < 1) { const r = 6 + pb * .30 * l.ph, g = ctx.createRadialGradient(x, yy, 0, x, yy, r); g.addColorStop(0, 'rgba(' + RGB[col] + ',' + (.85 * (1 - pb)).toFixed(3) + ')'); g.addColorStop(.6, 'rgba(' + RGB[col] + ',' + (.35 * (1 - pb)).toFixed(3) + ')'); g.addColorStop(1, 'rgba(' + RGB[col] + ',0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, yy, r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'rgba(' + RGB[col] + ',' + (1 - pb).toFixed(3) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, yy, r * .8, 0, Math.PI * 2); ctx.stroke(); }
+    if (pb > 0) { ctx.fillStyle = COL[col]; ctx.strokeStyle = COL.bg; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    const pa = P('arrow', t);
+    if (pa > 0) { const up = OUT.dir === 'up', len = ease(pa) * .22 * l.ph, dx = ease(pa) * .10 * l.ph, x2 = x + dx, y2 = yy + (up ? -len : len); ctx.strokeStyle = COL[col]; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x2, y2); ctx.stroke(); if (pa > .5) { const ang = Math.atan2(y2 - yy, x2 - x), ah = 9; ctx.fillStyle = COL[col]; ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ah * Math.cos(ang - .5), y2 - ah * Math.sin(ang - .5)); ctx.lineTo(x2 - ah * Math.cos(ang + .5), y2 - ah * Math.sin(ang + .5)); ctx.closePath(); ctx.fill(); } }
+    if (pb > .5) { const up = OUT.dir === 'up'; label('BUY ' + fmtP(BUY.close) + ' · 50-day ' + fmtP(BUY.s50), x, up ? y(BUY.low) + l.fs + 8 : y(BUY.high) - 8, COL[col], l.fs, true, 'center', up ? 'down' : 'up'); }
+  }
+  // THE MOVE: the 20-day best-high line zooms in from the right and lands on the price scale
+  if (OUT && P('target', t) > 0) {
+    const pt = P('target', t), e = ease(pt), yy = y(OUT.bh_price), xs = l.pR - (l.pR - l.x(BUY.i)) * e, col = OUT.bh_pct >= 0 ? COL.green : COL.red, after = since('target', t), lw = after > 0 ? 1.2 + 1.5 * Math.max(0, 1 - after / 220) : 2.6;
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]);
+    tag(sgn(OUT.bh_pct), l.pR + 2 + (1 - e) * 40, yy, col, COL.bg, l.fsm, 'left');
+    if (pt >= 1) label('best high ' + fmtP(OUT.bh_price) + ' · ' + md(OUT.bh_date) + (OUT.so_far ? ' (so far)' : ''), l.pR - 4, yy - 5, col, l.fsm, true, 'right', 'up');
+  }
+  if (OUT && P('exit', t) > 0) {
+    const pe = P('exit', t);
+    if (OUT.kill_i != null && OUT.dir === 'down') { const x = l.x(OUT.kill_i), yy = y(OUT.kill_close); ctx.strokeStyle = COL.red; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 6, yy - 6); ctx.lineTo(x + 6, yy + 6); ctx.moveTo(x + 6, yy - 6); ctx.lineTo(x - 6, yy + 6); ctx.stroke(); label('KILL · close ' + fmtP(OUT.kill_close) + ' under the 50 · ' + md(OUT.kill_date), x, yy + l.fs + 12, COL.red, l.fs, true, 'center', 'down'); }
+    else { const x = l.x(OUT.c20_i), yy = y(OUT.c20); ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.stroke(); label('close ' + OUT.h20_lbl + ' ' + sgn(OUT.c20_pct) + ' · ½ · ½ · runner', x, yy + l.fs + 12, COL.ink, l.fs, true, 'center', 'down'); }
+  }
+  // FORWARD hold: the retest line into the future, TARGET and KILL zooming in from the right, the distance label
+  if (FWD && pos >= N) {
+    const xl = l.x(FWD.i), a = .45 + .35 * (.5 + .5 * Math.sin(t / 380));
+    ctx.setLineDash([2, 4]); ctx.strokeStyle = 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xl, y(FWD.s50)); ctx.lineTo(l.pR, y(FWD.s50)); ctx.stroke(); ctx.setLineDash([]);
+    const ptg = P('ftarget', t); if (ptg > 0) { const e = ease(ptg), yy = y(FWD.target), xs = l.pR - (l.pR - xl) * e; ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.green; ctx.lineWidth = ptg < 1 ? 2.4 : 1.4; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]); tag('+' + FWD.target_pct.toFixed(0) + '% ' + fmtP(FWD.target), l.pR + 2 + (1 - e) * 40, yy, COL.green, COL.bg, l.fsm, 'left'); if (ptg >= 1) label('TARGET · cell median 20d best high', l.pR - 4, yy - 5, COL.green, l.fsm, true, 'right', 'up'); }
+    const pk = P('fkill', t); if (pk > 0) { const e = ease(pk), yy = y(FWD.kill), xs = l.pR - (l.pR - xl) * e; ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.red; ctx.lineWidth = pk < 1 ? 2.4 : 1.4; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]); tag('KILL ' + fmtP(FWD.kill), l.pR + 2 + (1 - e) * 40, yy, COL.red, COL.bg, l.fsm, 'left'); if (pk >= 1) label('KILL · a daily close under the 50', l.pR - 4, yy + l.fsm + 4, COL.red, l.fsm, true, 'right', 'down'); }
+    const pd = P('fdist', t); if (pd > 0) { const col = FWD.dist >= 0 ? COL.green : COL.red, s = sgn(FWD.dist) + ' from the line', s2 = 'THE RETEST LINE ' + fmtP(FWD.s50); ctx.globalAlpha = pd; label(s2, l.pR - 4, y(FWD.s50) - 6, COL.amber, l.fs, true, 'right', 'up'); label(s, xl, Math.min(y(FWD.kill), y(B.l[FWD.i])) - 10, col, l.fs, true, 'center', 'up'); ctx.globalAlpha = 1; ctx.fillStyle = COL.amber; ctx.beginPath(); ctx.arc(xl, y(B.c[FWD.i]), 4, 0, Math.PI * 2); ctx.fill(); }
+    text('← today', xl + 6, l.pB - 6, COL.dim, l.fsm, false, 'left');
+  }
+  $('#prog').style.transform = 'scaleX(' + (pos / N).toFixed(4) + ')';
+}
+
+/* stage bar + caption */
+const stEls = [];
+function buildStages() {
+  const sw = $('#stages'); sw.style.setProperty('--ns', D.stages.length);
+  D.stages.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'stage'; b.innerHTML = '<b>' + s.n + '</b><span class="t">' + s.t + '</span>'; b.addEventListener('click', () => { seek(Math.max(0, s.at + 1)); pause(); tick(performance.now(), true); }); sw.appendChild(b); stEls.push(b); });
+}
+let capIdx = -1;
+function ui() {
+  let cur = 0; D.stages.forEach((s, i) => { if (pos >= s.at + 1) cur = i; });
+  stEls.forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); });
+  if (cur !== capIdx) { capIdx = cur; const s = D.stages[cur]; const kc = s.key === 'buy' ? (OUT.dir === 'up' ? ' g' : ' r') : s.key === 'kill' ? ' r' : s.key === 'hold' ? ' g' : ''; $('#cap').innerHTML = '<div class="k' + kc + '">' + s.n + ' · ' + s.t + '</div><p>' + s.sub + '</p>'; }
+  const k = Math.min(N, Math.max(1, Math.ceil(pos))); $('#clock').textContent = 'bar ' + k + ' / ' + N + ' · ' + B.d[k - 1];
+  if (!scrubbing) $('#scrub').value = pos;
+  $('#play').textContent = ended ? 'Replay' : playing ? 'Pause' : 'Play';
+}
+let frozen = false;
+function tick(t, force) {
+  if (frozen && !force) return;
+  const dt = Math.max(0, Math.min(64, lastT ? t - lastT : 16)); lastT = t;
+  if (playing && t >= holdUntil) pos = Math.min(N, pos + RATE * speed * dt / 1000);
+  triggers(t); draw(t, dt); ui();
+  const live = FX.some(e => fx[e.key] !== undefined && fx[e.key] !== -1e9 && t < fx[e.key] + e.dur + 260);
+  if (pos >= N && playing && !live && t >= holdUntil) { playing = false; ended = true; ui(); }
+  const keep = playing || live || (FWD && pos >= N) || (cam && Math.abs(cam.hi - camTarget(L()).hi) > (cam.hi - cam.lo) * .002);
+  if (keep && !RM) raf = requestAnimationFrame(tick); else raf = 0;
+}
+function run() { if (!raf) { lastT = 0; raf = requestAnimationFrame(tick); } }
+function play() { if (ended || pos >= N) { seek(0); ended = false; } playing = true; run(); ui(); }
+function pause() { playing = false; ui(); }
+$('#play').addEventListener('click', () => playing ? pause() : play());
+$('#restart').addEventListener('click', () => { seek(0); playing = true; run(); });
+document.querySelectorAll('[data-speed]').forEach(b => b.addEventListener('click', () => { speed = +b.dataset.speed; document.querySelectorAll('[data-speed]').forEach(x => x.classList.toggle('on', x === b)); }));
+document.querySelectorAll('[data-zoom]').forEach(b => b.addEventListener('click', () => { const z = b.dataset.zoom; document.querySelectorAll('[data-zoom]').forEach(x => x.classList.toggle('on', x === b)); if (z === 'tight') { const a = D.db ? D.db.a : (D.brk ? D.brk.i : 0); v0 = Math.max(0, a - 12); } else v0 = 0; snap = true; tick(performance.now(), true); }));
+const sc = $('#scrub'); sc.max = N; sc.step = 0.05;
+sc.addEventListener('input', () => { scrubbing = true; seek(+sc.value); playing = false; tick(performance.now(), true); scrubbing = false; });
+sc.addEventListener('change', () => { scrubbing = false; });
+window.addEventListener('keydown', e => { if (e.target && /input|button|textarea/i.test(e.target.tagName) && e.code !== 'Space') return; if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); } else if (e.code === 'ArrowRight') { seek(pos + 5); tick(performance.now(), true); } else if (e.code === 'ArrowLeft') { seek(pos - 5); tick(performance.now(), true); } });
+window.addEventListener('resize', () => { size(); snap = true; tick(performance.now(), true); });
+
+/* boot: #t=end (or #t=<bar>) jumps to that frame, drawn synchronously for screenshots; reduced motion draws it all at once */
+buildStages(); size();
+window.__replay = {tick: t => tick(t, true), seek, freeze: () => { frozen = true; }, get pos() { return pos; }, get playing() { return playing; }, get fx() { return Object.assign({}, fx); }, N};
+const hash = /t=([^&]+)/.exec(location.hash || ''); const jump = hash ? hash[1] : null;
+if (jump === 'end' || RM) { seek(N); ended = true; playing = false; tick(performance.now(), true); if (FWD && !RM) run(); }
+else if (jump && !isNaN(+jump)) { seek(+jump); playing = false; tick(performance.now(), true); }
+else { seek(0); playing = true; run(); }
+})();
+
+</script>
+</body></html>

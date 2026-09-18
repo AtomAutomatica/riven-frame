@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MSTR — the retest of 2026-05-29, replayed</title>
+<meta name="description" content="Replay of MSTR's first retest of the 50 on 2026-05-29, with the outcome.">
+<style>
+:root{--bg:#0d0d0d;--ink:#e8e6e1;--mute:#8a877f;--dim:#5c5a55;--rule:#2a2a2a;--card:#111;--amber:#f5b041;--blue:#4c8bf5;--green:#2ecc71;--red:#ef5350;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--mono);-webkit-text-size-adjust:100%}
+body{font-size:16px;line-height:1.5;overflow-x:hidden}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 60px}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.top .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.nav a{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border:1px solid var(--rule);padding:8px 10px;min-height:36px;display:inline-flex;align-items:center}
+.strip{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin:18px 0 10px;font-size:13px;color:var(--mute)}
+.strip .sym{font-size:clamp(28px,7vw,44px);line-height:1;color:var(--ink);letter-spacing:-.02em}
+.strip .mode{font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--amber);color:var(--amber)}
+.strip .mode.fwd{border-color:var(--green);color:var(--green)}
+.strip .live{color:var(--green)}
+.stages{display:grid;grid-template-columns:repeat(var(--ns),1fr);gap:4px;margin:8px 0}
+.stage{border:1px solid var(--rule);padding:7px 3px;text-align:center;cursor:pointer;min-height:42px;background:transparent;color:var(--mute);font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;transition:color .2s,border-color .2s}
+.stage b{display:block;font-size:15px;color:var(--dim);letter-spacing:0;margin-bottom:1px;transition:color .2s}
+.stage.on{color:var(--ink);border-color:var(--amber)}.stage.on b{color:var(--amber)}.stage.done b{color:var(--ink)}
+.stage .t{display:none}@media(min-width:760px){.stage .t{display:block}}
+.chart{border:1px solid var(--rule);background:var(--card);position:relative}
+canvas{display:block;width:100%;height:clamp(400px,112vw,600px)}
+.prog{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--amber);transform-origin:left center;transform:scaleX(0)}
+.cap{border:1px solid var(--rule);border-top:0;background:var(--card);padding:12px 14px;min-height:92px}
+.cap .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.cap .k.g{color:var(--green)}.cap .k.r{color:var(--red)}
+.cap p{margin:0;font-size:15px;color:var(--ink);overflow-wrap:anywhere}.cap b{color:var(--ink)}
+.ctl{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--mute);padding:0 14px;min-height:42px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}.btn.pri{border-color:var(--amber);color:var(--amber)}.btn.pri:hover{background:var(--amber);color:var(--bg)}
+.btn.sm{padding:0 10px;min-height:36px;font-size:11px;color:var(--mute)}.btn.sm.on{color:var(--amber);border-color:var(--amber)}
+.grp{display:flex;gap:4px}.clock{font-size:12px;color:var(--mute);margin-left:auto;font-variant-numeric:tabular-nums}
+.scrub{width:100%;margin:10px 0 0;-webkit-appearance:none;appearance:none;height:28px;background:transparent;cursor:pointer}
+.scrub::-webkit-slider-runnable-track{height:3px;background:var(--rule)}.scrub::-moz-range-track{height:3px;background:var(--rule)}
+.scrub::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--amber);border:3px solid var(--bg);margin-top:-9.5px}
+.scrub::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--amber);border:3px solid var(--bg)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mute);margin:8px 0 0}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid rgba(232,230,225,.6);vertical-align:middle;margin-right:5px}
+.legend i.s20{border-top:1px solid rgba(76,139,245,.6)}.legend i.tint{border-top:6px solid rgba(239,83,80,.14)}.legend i.tg{border-top:2px dashed var(--green)}.legend i.kl{border-top:2px dashed var(--red)}
+h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:6px}@media(min-width:760px){.nums{grid-template-columns:repeat(3,1fr)}}
+.nums div{border:1px solid var(--rule);background:var(--card);padding:10px 12px}
+.nums .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.nums .v{font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.next{border:1px solid var(--green);background:var(--card);padding:14px 16px}
+.next .h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.next ul{margin:0;padding-left:18px;font-size:15px}.next li{margin:5px 0;overflow-wrap:anywhere}
+.src{font-size:12px;color:var(--mute);line-height:1.7;padding-left:18px}.src code{color:var(--ink);word-break:break-all}
+.foot{margin-top:30px;padding-top:10px;border-top:1px solid var(--rule);font-size:12px;color:var(--dim)}
+@media(prefers-reduced-motion:reduce){.stage,.btn{transition:none}}
+</style></head>
+<body>
+<div class="top"><div class="in"><div class="brand">Riven · Replay</div><nav class="nav"><a href="index.html">All replays</a></nav></div></div>
+<div class="wrap">
+  <div class="strip"><span class="sym">MSTR</span><span class="mode">PAST</span><span>2025-09-11 → 2026-07-28</span><span class="">daily candles, 1 = 1 session</span></div>
+  <div class="stages" id="stages" style="--ns:6"></div>
+  <div class="chart"><canvas id="cv" aria-label="Daily candle replay of MSTR with the stages of the setup"></canvas><div class="prog" id="prog"></div></div>
+  <div class="cap" id="cap"></div>
+  <div class="ctl">
+    <button class="btn pri" id="play" type="button">Pause</button>
+    <button class="btn" id="restart" type="button">Restart</button>
+    <span class="grp"><button class="btn sm" data-speed="0.5" type="button">0.5×</button><button class="btn sm on" data-speed="1" type="button">1×</button><button class="btn sm" data-speed="2" type="button">2×</button></span>
+    <span class="grp"><button class="btn sm on" data-zoom="full" type="button">full</button><button class="btn sm" data-zoom="tight" type="button">tight</button></span>
+    <span class="clock" id="clock"></span>
+  </div>
+  <input class="scrub" id="scrub" type="range" min="0" max="1" step="0.05" value="0" aria-label="scrub the replay">
+  <div class="legend"><span><i></i>50-day (the retest line)</span><span><i class="s20"></i>20-day</span><span><i class="tint"></i>under the 50</span><span>space = play/pause · ←/→ = 5 bars</span></div>
+  
+  <h2>The numbers on the screen</h2>
+  <div class="nums"><div><div class="l">buy (close)</div><div class="v">159.09</div></div><div><div class="l">50-day at the buy</div><div class="v">155.78</div></div><div><div class="l">20-day at the buy</div><div class="v">173.58</div></div><div><div class="l">best high +20d</div><div class="v">-3.3%</div></div><div><div class="l">close +20d</div><div class="v">-41.7%</div></div><div><div class="l">sessions under the 50</div><div class="v">177 / 252</div></div></div>
+  <h2>Sources</h2>
+  <ol class="src"><li><code>data/bars_deep/MSTR.json (Alpaca SIP daily, split-adjusted)</code></li><li><code>qlab/kevin_recipe.py::recipe_at (double bottom, breakout, depth) — the same call that scored the instances file</code></li><li><code>qlab/kevin_finder.py (volume cross over the 50, under-the-50 count)</code></li><li><code>qlab/cell_chart.py (the retest-line layout)</code></li><li><code>data/qlab/kevin_ru_instances.json[ru] (n 348, 20d best-high median +8.0%, P(+10%) 36.2%)</code></li><li><code>instances row: ru list</code></li></ol>
+  <div class="foot">bars: Alpaca SIP daily, split-adjusted · stage math: qlab/kevin_recipe.py · not advice · built 2026-09-18T18:05 by Riven · <a href="forward_MSTR.html">forward MSTR</a></div>
+</div>
+<script>
+const DATA = {"mode":"past","sym":"MSTR","signal_date":"2026-05-29","built":"2026-09-18T18:05","strip":["MSTR","PAST","2025-09-11 \u2192 2026-07-28","daily candles, 1 = 1 session"],"title":"MSTR \u2014 the retest of 2026-05-29, replayed","N":220,"bars":{"d":["2025-09-11","2025-09-12","2025-09-15","2025-09-16","2025-09-17","2025-09-18","2025-09-19","2025-09-22","2025-09-23","2025-09-24","2025-09-25","2025-09-26","2025-09-29","2025-09-30","2025-10-01","2025-10-02","2025-10-03","2025-10-06","2025-10-07","2025-10-08","2025-10-09","2025-10-10","2025-10-13","2025-10-14","2025-10-15","2025-10-16","2025-10-17","2025-10-20","2025-10-21","2025-10-22","2025-10-23","2025-10-24","2025-10-27","2025-10-28","2025-10-29","2025-10-30","2025-10-31","2025-11-03","2025-11-04","2025-11-05","2025-11-06","2025-11-07","2025-11-10","2025-11-11","2025-11-12","2025-11-13","2025-11-14","2025-11-17","2025-11-18","2025-11-19","2025-11-20","2025-11-21","2025-11-24","2025-11-25","2025-11-26","2025-11-28","2025-12-01","2025-12-02","2025-12-03","2025-12-04","2025-12-05","2025-12-08","2025-12-09","2025-12-10","2025-12-11","2025-12-12","2025-12-15","2025-12-16","2025-12-17","2025-12-18","2025-12-19","2025-12-22","2025-12-23","2025-12-24","2025-12-26","2025-12-29","2025-12-30","2025-12-31","2026-01-02","2026-01-05","2026-01-06","2026-01-07","2026-01-08","2026-01-09","2026-01-12","2026-01-13","2026-01-14","2026-01-15","2026-01-16","2026-01-20","2026-01-21","2026-01-22","2026-01-23","2026-01-26","2026-01-27","2026-01-28","2026-01-29","2026-01-30","2026-02-02","2026-02-03","2026-02-04","2026-02-05","2026-02-06","2026-02-09","2026-02-10","2026-02-11","2026-02-12","2026-02-13","2026-02-17","2026-02-18","2026-02-19","2026-02-20","2026-02-23","2026-02-24","2026-02-25","2026-02-26","2026-02-27","2026-03-02","2026-03-03","2026-03-04","2026-03-05","2026-03-06","2026-03-09","2026-03-10","2026-03-11","2026-03-12","2026-03-13","2026-03-16","2026-03-17","2026-03-18","2026-03-19","2026-03-20","2026-03-23","2026-03-24","2026-03-25","2026-03-26","2026-03-27","2026-03-30","2026-03-31","2026-04-01","2026-04-02","2026-04-06","2026-04-07","2026-04-08","2026-04-09","2026-04-10","2026-04-13","2026-04-14","2026-04-15","2026-04-16","2026-04-17","2026-04-20","2026-04-21","2026-04-22","2026-04-23","2026-04-24","2026-04-27","2026-04-28","2026-04-29","2026-04-30","2026-05-01","2026-05-04","2026-05-05","2026-05-06","2026-05-07","2026-05-08","2026-05-11","2026-05-12","2026-05-13","2026-05-14","2026-05-15","2026-05-18","2026-05-19","2026-05-20","2026-05-21","2026-05-22","2026-05-26","2026-05-27","2026-05-28","2026-05-29","2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-13","2026-07-14","2026-07-15","2026-07-16","2026-07-17","2026-07-20","2026-07-21","2026-07-22","2026-07-23","2026-07-24","2026-07-27","2026-07-28"],"o":[326.87,329.15,329.4,329.23,335.66,335.86,347.45,337.02,337.06,330.63,316.61,301.3,313.73,320.835,332.47,348.57,350.865,362.95,358.88,335.615,327.4,323.175,306.67,301,303.6,299.9,279.27,297.21,293.95,293.02,285.47,290.43,299.5,295.14,284.375,269.985,269.98,264.19,255.16,250.2,252.14,222.66,249.68,236.455,233.9,223.8,200.58,197.025,196.36,202.36,192.44,172.74,171.62,173.71,173.69,182.99,168.26,177.75,183.4,186.02,183.335,182.1,181.49,189.32,179.79,182.97,176,164.97,167.745,167.81,163.4,168.82,162.25,157.2,159.89,157.945,155.82,156.24,154.59,163.415,166.88,163.445,158.625,166.75,156.27,164.45,178.64,179.125,171.925,165.17,161.27,163.725,160.94,159.41,160.305,164.45,155.95,139.995,139.765,140.135,130.01,120.25,114.95,127.37,133.66,133.685,127.57,126.995,129.01,127.625,123.49,130.51,127.895,121.71,130.045,133.7,128.945,129.135,133.335,143.825,145.04,134.895,136,141.925,139.81,137.16,143.86,145.35,145.965,144.99,135.02,139.47,138.605,138.73,140.4,136.55,129.88,129.55,123.16,126.18,119.8,124.57,125.32,133.665,127.825,130.05,126.65,137.925,139.75,143.21,154.63,162.295,170.61,174.925,175.88,176.875,170.92,163.87,165.71,161.77,170.8,180.9,189.55,184.565,184.41,178.68,189.2,191.325,182.03,177.85,182.11,169.175,163.99,166,164.28,164.09,160.83,156.76,148.98,149.925,148.465,142.685,134.5,126.745,124.25,125.84,122.85,116.3,116.105,119.49,133.22,129.38,123.01,117.64,116.21,106.535,102.48,94.685,83.23,85.67,86.205,87.695,99.85,95.135,101.18,93.681,94.06,98.755,91.49,94.76,99.785,96,91.3,95.62,101.31,100.06,97,93.37,94.54,95.47],"h":[329.75,336.1301,331.33,335.44,340.11,358.25,352.92,341.59,339,337.0599,317,310,327.99,324.4999,343.73,353.22,358.54,365.21,359.44,336.36,328.99,323.43,315.95,312.7099,308.88,301.58,292.8,306.16,305.9899,297.96,289.07,292.15,299.8,297.2,286.175,271.365,276.3199,270.36,258.21,255.36,252.34,243.7325,249.96,239.24,234.84,226,208.84,204.15,213.83,203.95,193.53,181.19,179.84,176.76,180.63,187.29,172.175,188.37,190.44,191,185.39,185.59,198.3999,191.07,183.5,185.25,176.5,171.489,171.1631,169.51,167.75,170.67,162.73,159.28,159.91,162.93,159.38,156.8,160.79,167.7,167.14,170.16,170.62,167.2,163.82,173.76,190.2,179.25,173.88,165.72,165.72,164.64,168.9638,163.92,161.67,165.72,156,151.15,147.8751,140.23,130.8199,122,135.67,139.58,139.16,133.91,128.99,135.25,132.12,132.25,130.04,136.14,130.375,126.7399,137.86,135.75,131.12,140.14,136.46,149.54,146.44,136.36,140.19,142.46,142.67,138.8,147.26,148.24,152.27,146.7586,139.78,139.685,139.93,140.05,143.85,139.08,130.65,130.34,125.3,126.3,122.645,128.46,126.74,134.5,132.21,132.28,132.49,143.7,143.75,149.16,173.15,171.06,172.9,183.25,180.92,177.28,175.75,166.84,165.74,166.84,180.38,186.005,190.41,188.26,184.41,187.77,197,192.2374,182.48,193,182.23,169.175,168.49,169.23,168.71,165.66,167,157.55,153.64,162.06,153.87,142.8,138.18,131.47,125.2953,129,125.55,120.9399,121.1,128.6,136.25,131.695,125.4199,117.75,120,107.755,102.97,94.72,87.67,94.37,88.2602,98.525,104.11,104.7799,103.56,95.04,96.7999,100.12,93.64,98.03,101.95,96.61,95.9699,100.9199,104.6,101.95,97.51,93.68,99.16,98.37],"l":[322.77,327.6,320.45,324.84,323.205,334.625,337.07,329,327.77,323.14,292.36,297.71,311,316.19,331.2,341.15,344.4,354.7,328.16,322.3,318.22,303.57,300.59,297.34,294.62,282.19,279,294.4,291.52,276.6,278,286.11,293.0001,284.25,274,254,263,259.85,245.86,247.0201,235.03,219.68,234.6,230.55,219.8,207.03,194.56,189.5315,196,181.73,171.475,166.31,166.01,166.7801,169.7,175.0501,155.61,176.89,177.82,182.35,176.3,178,179.92,182.2,171.41,176.22,160.54,161.95,160.31,157.43,161.63,163.69,156.5,155.1,154.1219,155.32,154.1321,151.42,149.75,160.96,154.05,158.45,156.17,155.46,154.69,159.93,176.12,170.09,167.59,158.85,156.01,159.44,158.72,158.62,156.98,157,139.3601,139.9,138,126.7401,121.188,104.165,114.68,125.13,132.6775,123.915,120.64,125.76,125.91,123.615,121.87,129.41,122.83,118.4,128.94,128.64,127.8602,128.94,127.8,142.19,137.21,131.77,135.303,133.94,135.14,133.38,138.44,143.31,145.23,140.35,132.76,134.13,133.97,134.28,136.8,132.691,123.98,120.8,117.75,121.44,116.4,123.2,121.14,126.13,125.8,127.4,125.04,136.32,135.49,139.33,153.77,160.635,163.75,174,171.5401,169.0101,167.61,159.6801,156.1101,159.001,169.43,178.49,183.72,178.94,175.72,177.6,182.31,179.85,175.57,174.64,173.61,162.02,163.5,163.26,160.57,159.24,159.28,153.8221,144.3,148.2,144.29,134.11,125,125.65,114.31,123.145,114.206,115,113.2675,117.27,130.632,122.5,116.36,107.85,107.31,103.52,92.28,85,81.81,82.72,83.42,86.2,97.57,94.63,96.96,91.78,92.8348,93.35,90.02,93.56,96.3604,93.45,90.06,94.86,99.95,98.12,92.34,89.76,94.0206,93.115],"c":[326.02,331.44,327.79,335.09,329.71,349.12,344.75,335.93,327.78,323.31,300.7,309.06,326.42,322.21,338.41,352.33,351.63,359.69,328.4,330.8,320.29,304.79,315.47,300.67,296.76,283.84,289.87,296.61,301.91,280.81,284.92,289.08,295.63,284.64,275.36,254.57,269.51,264.67,246.99,255,237.2,241.93,238.88,231.35,224.61,208.54,199.75,195.42,206.8,186.5,177.13,170.5,179.04,172.19,175.64,177.18,171.42,181.33,188.39,186.01,178.99,183.69,188.99,184.64,183.3,176.45,162.08,167.5,160.38,158.24,164.82,164.32,157.88,158.71,158.81,155.39,155.61,151.95,157.16,164.72,157.97,161.83,166.97,157.33,162.23,172.99,179.33,170.91,173.71,160.23,163.81,160.98,163.11,160.58,161.58,158.45,143.19,149.71,139.63,133.26,129.09,106.99,134.93,138.44,133,126.07,123,133.88,128.67,125.2,129.45,131.05,123.71,124.61,135.65,133.4,129.5,137.65,132.68,146.44,139.81,133.53,138.95,138.46,138.33,137.34,139.67,147.52,150.28,140.56,138.24,135.66,138.2,136.25,139.13,132.93,126.03,121.44,124.8,122.78,119.83,127.69,123.72,128.3,128.86,128.64,132.36,137.41,143.54,148.94,166.52,170.81,163.97,179.36,172.47,171.02,169.2,165.71,158.19,165.45,177.17,183.8,186.9,186.82,179.84,187.59,195.94,184.42,178.03,186.97,177.42,166.63,164.63,165.81,164.85,159.89,159.93,154.2,151.64,159.09,149.78,136.08,126.545,129.37,120.44,127.2,117.02,115.35,120.15,123.97,131.14,122.81,116.56,112.53,109.46,103.84,94.13,85.33,82.31,92.68,86.93,93.39,100.77,100.77,97.36,93.87,93.89,94.64,92.1,97.58,97.47,94.03,94.85,97.82,101.95,100.01,93.63,91.67,98.65,96.16],"v":[7506188,10809904,9527674,8651259,9690985,19697259,17699698,10053535,9468789,9153097,22086992,11693362,12652008,7798818,13994829,13666759,12107918,9550967,19584106,12996276,11213175,13643730,11575024,11480498,10625605,13817949,13110673,9679688,7901979,15129499,9082117,7881709,8135934,7996793,10184055,15564196,14071785,11074628,15735129,9676192,14468335,16976057,9527228,8340252,10800418,16474524,23233803,19544953,22049488,28025372,27684354,29651281,23282608,19112667,20016529,15114321,42940226,31285555,26686140,16474436,20750666,16328140,24269606,22458960,19542363,14532100,25393373,21181041,19144896,17534711,22062408,19234491,15891201,7097556,12298168,14073500,12740204,15918113,20185581,22814647,22627814,28406918,25159399,27962568,16181956,27656216,40256997,21486492,19462498,25666720,18440819,11116020,14879278,14516490,13962174,14082562,34618495,22767966,27171514,26169018,25775590,60129688,57771017,34291586,23002117,25837795,20960669,24573898,18881039,17307658,15457214,17625403,18864826,15357169,24158199,18115475,14032421,25462894,19410656,37390063,21291703,19533638,20438175,18329957,15641975,15233681,23690776,22939325,18453537,21319817,19232731,28572605,21638657,19102476,18711975,15289832,21481443,15806076,21296090,15383594,17615001,18441455,14288662,17153366,14501170,13101501,12809197,20648895,13946196,17643089,52185484,22180744,22159791,31903007,19565779,14125709,13301783,13864534,15152630,12442856,21668210,18215002,15520989,14346865,15925118,15991200,16071566,14745444,12486955,15866047,19661342,19308597,10006593,9829567,10531753,12793566,11826506,11891857,16283399,19231817,17789346,31142982,21150156,24597073,41957034,20958751,23055790,15695624,17579251,16842258,19989549,17802134,18058341,35540276,25295837,22509795,40134651,45369067,45687737,45039705,35684638,34694964,34764440,27543703,18223243,17806763,13827146,16289655,12687980,18048167,14589452,11369260,13068476,16173999,20226629,13068755,17187071,13076787,17634637,13265863],"s20":[341.78,339.71,337.78,336.35,336.01,336.25,336.61,335.5,334.73,333.32,331.26,329.77,329.37,328.4,328.8,330.04,330.83,332.32,332.31,332.53,332.24,330.91,330.29,328.57,326.93,323.66,320.92,318.95,317.66,315.53,314.74,313.75,312.21,310.33,307.17,302.29,298.18,293.43,289.36,285.57,281.41,278.27,274.44,270.98,267.37,263.6,259.1,254.04,249.28,244.57,239.18,233.25,227.42,221.8,216.81,212.94,208.04,203.87,200.94,197.49,194.58,191.67,189.17,186.84,184.77,183.17,181.28,179.89,177.57,176.15,175.54,175.23,174.17,173.5,172.66,171.57,170.78,169.31,167.75,166.68,165.63,164.54,163.44,162.07,161.02,160.84,161.71,161.88,162.54,162.64,162.59,162.43,162.69,162.78,162.92,163.07,162.45,162.34,161.46,159.89,158.45,155.7,154.1,153.16,151.7,149.35,146.53,144.68,142.43,140.68,138.96,137.46,135.49,133.7,132.4,131.15,130.46,129.86,129.51,130.17,130.71,132.03,132.23,132.24,132.5,133.07,133.9,134.58,135.66,136.43,136.87,137.1,137.82,138.41,138.58,138.56,138.38,137.57,137.18,136.0,135.0,134.7,133.94,133.43,132.96,132.53,132.16,131.66,131.32,131.74,133.15,134.91,136.2,138.35,140.02,141.92,144.08,146.3,147.97,150.1,152.97,155.77,158.93,161.86,164.41,167.35,170.53,172.88,174.61,176.51,177.05,176.84,176.88,176.2,175.82,175.26,174.8,174.22,173.9,173.58,172.21,169.82,166.81,163.93,160.96,157.94,154.0,150.54,147.65,144.5,142.19,139.99,137.59,134.93,132.16,129.36,126.07,122.62,119.16,115.83,112.69,110.56,109.27,107.84,106.68,105.02,103.86,102.83,101.42,100.1,98.42,96.98,95.9,95.16,94.79,94.59,94.57,94.89,95.7,95.88],"s50":[382.16,380.74,379.22,378.01,376.66,375.34,373.8,371.82,369.36,366.98,363.87,361.03,359.09,357.01,355.25,354.05,352.78,351.86,350.35,349.07,347.58,345.63,344.61,342.84,341.27,339.27,337.03,335.06,333.09,330.82,328.72,327.05,325.63,324.05,322.83,321.03,319.67,317.8,315.88,313.95,311.85,309.91,308.0,305.8,303.69,301.3,298.58,295.89,293.46,290.66,287.68,284.46,281.49,278.23,275.15,271.71,268.24,265.15,262.36,259.62,257.18,254.68,251.93,249.18,246.07,242.56,238.76,234.92,231.56,228.11,225.0,222.19,219.04,216.2,213.44,210.87,208.19,205.29,202.4,200.08,197.54,194.99,192.42,189.87,187.61,185.98,184.17,182.3,180.83,178.94,177.47,175.85,174.34,172.92,171.66,170.66,169.53,168.61,167.27,166.21,165.24,163.97,163.09,162.42,161.56,160.54,159.57,158.62,157.43,156.21,155.22,154.17,152.86,151.66,150.71,149.85,149.2,148.6,148.05,147.81,147.31,146.7,146.32,145.91,145.5,145.14,144.82,144.73,144.6,144.11,143.72,143.2,142.62,142.2,141.74,140.93,139.87,138.88,137.9,137.15,136.27,135.61,134.82,134.17,133.52,132.92,132.71,132.46,132.54,132.85,133.6,134.88,135.46,136.28,137.07,137.96,138.89,139.53,140.12,140.92,141.88,142.93,144.19,145.44,146.32,147.41,148.73,149.67,150.58,151.39,152.14,152.8,153.32,153.86,154.39,154.84,155.25,155.38,155.41,155.78,156.01,156.02,155.79,155.65,155.28,155.16,154.98,154.86,154.77,154.79,155.02,154.92,154.77,154.46,154.07,153.58,152.81,151.77,150.54,149.42,147.83,146.28,145.02,143.44,141.94,140.4,138.89,137.47,136.15,134.79,133.2,131.4,129.56,127.78,126.22,124.47,122.43,120.57,118.98,117.17],"rsi":[37.1,40.4,39.0,43.4,41.0,51.4,49.3,45.3,41.9,40.1,32.6,37.3,45.7,44.1,51.0,56.0,55.7,58.6,46.2,47.1,43.6,39.0,43.4,39.2,38.1,34.7,37.5,40.5,42.9,36.7,38.5,40.5,43.5,39.8,37.0,31.7,38.6,37.3,32.9,36.5,32.3,34.5,33.7,31.9,30.3,26.8,25.2,24.3,30.7,26.4,24.7,23.6,28.2,26.8,28.7,29.6,28.2,34.1,38.0,37.2,34.9,37.7,40.8,39.0,38.5,35.8,30.9,34.5,32.1,31.4,36.1,35.9,33.3,34.0,34.1,32.5,32.7,31.0,36.2,42.8,38.9,42.1,46.2,40.5,44.3,51.6,55.3,49.8,51.6,43.8,46.1,44.5,46.0,44.5,45.3,43.2,35.0,40.2,35.5,32.8,31.2,24.3,41.8,43.6,41.5,38.9,37.8,44.0,41.8,40.4,42.9,43.9,40.5,41.1,48.1,46.8,44.7,49.8,47.0,54.7,50.8,47.5,50.5,50.2,50.2,49.5,51.1,56.2,57.9,50.6,49.0,47.2,49.2,47.7,50.1,45.4,40.7,38.0,41.1,39.8,37.9,45.4,42.6,46.7,47.2,47.0,50.5,54.9,59.5,63.2,72.0,73.6,66.8,72.9,67.0,65.8,64.2,61.2,55.2,59.4,65.0,67.7,68.9,68.9,62.7,66.3,69.7,60.6,56.2,60.5,54.4,48.4,47.4,48.1,47.5,44.6,44.7,41.3,39.9,45.8,40.4,34.1,30.5,32.8,29.5,34.8,31.0,30.4,34.3,37.2,42.5,38.4,35.7,34.0,32.8,30.5,27.1,24.4,23.6,32.4,30.3,35.3,40.6,40.6,38.9,37.2,37.2,37.9,36.5,41.6,41.6,39.2,40.1,43.2,47.4,45.7,40.6,39.1,46.4,44.4],"under":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},"futurePad":4,"stages":[{"key":"under","n":"01","t":"A year under the 50","at":-1,"sub":"<b>177<\/b> of the last 252 sessions closed under the 50-day (the shaded stretch) \u2014 that is what makes the cell."},{"key":"db","n":"02","t":"Double bottom, RSI higher","at":161,"sub":"double bottom <b>156.01<\/b> (1/21) \u2192 <b>156.11<\/b> (4/29), 68 sessions apart \u00b7 RSI <b>46 \u2192 55<\/b>, higher on the second low \u2014 confirmed 3 bars later (pivot 3/3)."},{"key":"brk","n":"03","t":"Breakout over the 50","at":165,"sub":"close <b>187.59<\/b> over the 50 (147.41) on <b>0.8\u00d7<\/b> the 20-day average volume, 5/8 \u00b7 +26.2% off the second low by the retest."},{"key":"buy","n":"04","t":"First retest of the 50 = the buy","at":179,"sub":"low <b>144.30<\/b> touched the 50 (<b>155.78<\/b>), close <b>159.09<\/b> back above it, still under the 20 (173.58) \u00b7 19.2% off the post-breakout high \u00b7 RSI 46 \u00b7 2026-05-29."},{"key":"move","n":"05","t":"The move","at":180,"sub":"best high <b>153.87<\/b> on 6/1 = <b>-3.3%<\/b> from the buy (+20d) \u00b7 the cell's median 20-day best high is +8.0% (n 348, P(+10%) 36%)."},{"key":"kill","n":"06","t":"Kill: close under the 50","at":180,"sub":"first daily close under the 50: <b>149.78<\/b> on 6/1 = <b>-5.9%<\/b> from the buy \u00b7 close +20d -41.7% \u00b7 the exit is the rule, not the hope."}],"holds":[{"at":179,"ms":1100},{"at":180,"ms":900}],"db":{"a":90,"b2":158,"loA":156.01,"loB":156.1101,"rsiA":46.1,"rsiB":55.2,"dA":"2026-01-21","dB":"2026-04-29"},"brk":{"i":165,"volx":0.8,"close":187.59,"s50":147.41,"date":"2026-05-08","onVolume":false},"buy":{"i":179,"close":159.09,"low":148.2,"high":162.06,"low3":144.3,"s50":155.78,"s20":173.58,"depth":19.2,"run":26.2,"rsi":45.8,"under":177,"date":"2026-05-29"},"outcome":{"dir":"down","bh_i":180,"bh_price":153.87,"bh_pct":-3.3,"bh_date":"2026-06-01","c20_i":199,"c20":92.68,"c20_pct":-41.7,"c20_date":"2026-06-29","so_far":false,"after":40,"kill_i":180,"kill_close":149.78,"kill_date":"2026-06-01","h20_lbl":"+20d"},"priors":[],"cell":{"n":348,"h20_med":8.0,"p10":36.2,"p20":10.6,"c20_med":0.6,"win":51.7,"src":"data/qlab/kevin_ru_instances.json[ru]"},"nums":[["buy (close)","159.09"],["50-day at the buy","155.78"],["20-day at the buy","173.58"],["best high +20d","-3.3%"],["close +20d","-41.7%"],["sessions under the 50","177 / 252"]],"sources":["data/bars_deep/MSTR.json (Alpaca SIP daily, split-adjusted)","qlab/kevin_recipe.py::recipe_at (double bottom, breakout, depth) \u2014 the same call that scored the instances file","qlab/kevin_finder.py (volume cross over the 50, under-the-50 count)","qlab/cell_chart.py (the retest-line layout)","data/qlab/kevin_ru_instances.json[ru] (n 348, 20d best-high median +8.0%, P(+10%) 36.2%)","instances row: ru list"],"meta":{"h20":-3.3,"c20":-41.7,"under":177,"so_far":false,"after":40,"dir":"down","ru_h20":-3.3,"ru_c20":-41.7}};
+
+(function(){
+const D = DATA, B = D.bars, N = D.N, M = D.mode;
+const $ = s => document.querySelector(s);
+const COL = {bg:'#0d0d0d', ink:'#e8e6e1', mute:'#8a877f', dim:'#5c5a55', rule:'#2a2a2a', amber:'#f5b041', blue:'#4c8bf5', green:'#2ecc71', red:'#ef5350'};
+const RGB = {green:'46,204,113', red:'239,83,80', amber:'245,176,65', blue:'76,139,245', ink:'232,230,225'};
+const MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
+const RATE = 12;                                   // candles per second at 1x
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cv = $('#cv'), ctx = cv.getContext('2d');
+let W = 0, H = 0, dpr = 1, pos = 0, playing = false, speed = 1, holdUntil = 0, lastT = 0, raf = 0, ended = false, scrubbing = false;
+let v0 = 0, v1 = N - 1, cam = null, snap = true;
+const fx = {}, held = new Set();
+const OUT = D.outcome, BUY = D.buy, FWD = D.fwd;
+const dirCol = OUT ? (OUT.dir === 'up' ? 'green' : 'red') : 'green';
+const AXIS_TAGS = ['0000.0'].concat(OUT ? [(OUT.bh_pct >= 0 ? '+' : '') + OUT.bh_pct.toFixed(1) + '%'] : [], FWD ? ['+' + FWD.target_pct.toFixed(0) + '% ' + (FWD.target >= 1000 ? FWD.target.toFixed(0) : FWD.target >= 100 ? FWD.target.toFixed(1) : FWD.target.toFixed(2)), 'KILL ' + (FWD.kill >= 1000 ? FWD.kill.toFixed(0) : FWD.kill >= 100 ? FWD.kill.toFixed(1) : FWD.kill.toFixed(2))] : []);
+
+/* effects: fire when the candle at `at` is fully drawn (pos >= at+1); p = progress 0..1 */
+const FX = [];
+if (D.db) FX.push({key:'db', at:D.stages.find(s=>s.key==='db').at, dur:600});
+if (D.brk) FX.push({key:'brk', at:D.brk.i, dur:900});
+if (BUY) { FX.push({key:'burst', at:BUY.i, dur:600}); FX.push({key:'arrow', at:BUY.i, delay:320, dur:520}); FX.push({key:'cell', at:BUY.i, delay:700, dur:400}); }
+if (OUT) { FX.push({key:'target', at:OUT.bh_i, dur:480}); FX.push({key:'exit', at:D.stages[D.stages.length-1].at, dur:350}); }
+if (FWD) { FX.push({key:'ftarget', at:FWD.i, dur:520}); FX.push({key:'fkill', at:FWD.i, delay:180, dur:640}); FX.push({key:'fdist', at:FWD.i, delay:600, dur:300}); }
+(D.priors||[]).forEach((p,k) => FX.push({key:'prior'+k, at:p.i, dur:300}));
+const FXD = {}; FX.forEach(e => FXD[e.key] = e);
+function P(key, t) { const e = FXD[key]; if (!e) return 0; const s = fx[key]; if (s === undefined) return 0; if (s === -1e9) return 1; return Math.max(0, Math.min(1, (t - s) / e.dur)); }
+function since(key, t) { const e = FXD[key]; const s = fx[key]; if (s === undefined) return -1; if (s === -1e9) return 1e9; return t - s - e.dur; }
+const ease = p => 1 - Math.pow(1 - p, 3);
+
+function triggers(t) {
+  for (const e of FX) if (fx[e.key] === undefined && pos >= e.at + 1) fx[e.key] = t + (e.delay || 0);
+  for (const h of D.holds) if (!held.has(h.at) && pos >= h.at + 1) { held.add(h.at); holdUntil = t + h.ms; }
+}
+function seek(p, t) {
+  pos = Math.max(0, Math.min(N, p)); t = t || performance.now();
+  for (const e of FX) fx[e.key] = (pos >= e.at + 1) ? -1e9 : undefined;
+  held.clear(); for (const h of D.holds) if (pos >= h.at + 1) held.add(h.at);
+  holdUntil = 0; ended = false; snap = true;
+}
+
+/* layout */
+function size() {
+  dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  const r = cv.getBoundingClientRect(); W = Math.round(r.width); H = Math.round(r.height);
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function L() {
+  const fsm = W > 700 ? 12 : 10; ctx.font = 'bold ' + fsm + 'px ' + MONO;
+  const padL = 6, padR = Math.max(W > 700 ? 64 : 54, Math.ceil(Math.max(...AXIS_TAGS.map(s => ctx.measureText(s).width))) + 16), padT = 10, padB = 20, gap = 8;
+  const inner = H - padT - padB - 2 * gap; const ph = Math.round(inner * .66), vh = Math.round(inner * .15), rh = inner - ph - vh;
+  const plotW = W - padL - padR, slot = plotW / (v1 - v0 + 1 + (D.futurePad || 0));
+  return {padL, padR, padT, padB, plotW, slot, pL: padL, pR: padL + plotW, pT: padT, pB: padT + ph, vT: padT + ph + gap, vB: padT + ph + gap + vh, rT: padT + ph + gap + vh + gap, rB: H - padB, ph, vh, rh,
+          x: k => padL + (k - v0 + .5) * slot, fs: W > 700 ? 13 : 11, fsm};
+}
+function camTarget(l) {
+  const upto = Math.min(v1, Math.max(v0 + 30, Math.ceil(pos) - 1));
+  let lo = Infinity, hi = -Infinity;
+  for (let k = v0; k <= upto; k++) { lo = Math.min(lo, B.l[k]); hi = Math.max(hi, B.h[k]); if (B.s50[k] != null) { lo = Math.min(lo, B.s50[k]); hi = Math.max(hi, B.s50[k]); } }
+  if (FWD && pos >= N) { lo = Math.min(lo, FWD.kill * .985); hi = Math.max(hi, FWD.target * 1.01); }
+  if (BUY && pos >= BUY.i + 1) hi = Math.max(hi, BUY.close * 1.08);
+  const pad = (hi - lo) * .07 || 1; return {lo: lo - pad, hi: hi + pad * 1.6};
+}
+function updateCam(l, dt) {
+  const tg = camTarget(l);
+  if (!cam || snap) { cam = tg; snap = false; return; }
+  const k = 1 - Math.exp(-dt / 160); cam.lo += (tg.lo - cam.lo) * k; cam.hi += (tg.hi - cam.hi) * k;
+}
+function niceStep(range, n) { const raw = range / n, p = Math.pow(10, Math.floor(Math.log10(raw))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= raw) return m * p; return 10 * p; }
+const fmtP = v => v >= 1000 ? v.toFixed(0) : v >= 100 ? v.toFixed(1) : v.toFixed(2);
+const sgn = v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+const md = d => (+d.slice(5, 7)) + '/' + (+d.slice(8, 10));
+
+function text(s, x, y, col, size, bold, align, base) { ctx.font = (bold ? 'bold ' : '') + size + 'px ' + MONO; ctx.fillStyle = col; ctx.textAlign = align || 'left'; ctx.textBaseline = base || 'alphabetic'; ctx.fillText(s, x, y); }
+function tag(s, x, y, bg, fg, size, align) { ctx.font = 'bold ' + size + 'px ' + MONO; const w = ctx.measureText(s).width + 10, h = size + 8; let x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x; ctx.fillStyle = bg; ctx.fillRect(x0, y - h / 2, w, h); text(s, x0 + 5, y, fg, size, true, 'left', 'middle'); return {x0, w, h}; }
+function clampX(x, w, l) { return Math.max(l.pL + 2, Math.min(l.pR - w - 2, x)); }
+/* price-panel labels: each one records its box; a later label that would overlap an earlier one is nudged up or down a row */
+let boxes = [], LL = null;
+function label(s, x, y, col, size, bold, align, prefer) {
+  ctx.font = (bold ? 'bold ' : '') + size + 'px ' + MONO; const w = ctx.measureText(s).width, h = size + 2;
+  let x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x; x0 = clampX(x0, w, LL); let yy = y;
+  const hit = () => boxes.some(b => x0 < b.x + b.w + 6 && x0 + w + 6 > b.x && yy - h < b.y + b.h + 3 && yy + 3 > b.y);
+  const y0 = y, dir = prefer === 'up' ? -1 : 1, lim = v => Math.max(LL.pT + h, Math.min(LL.pB - 3, v));
+  for (let i = 0; i < 8 && hit(); i++) yy = lim(yy + dir * (h + 5));
+  if (hit()) { yy = y0; for (let i = 0; i < 8 && hit(); i++) yy = lim(yy - dir * (h + 5)); }
+  yy = lim(yy); boxes.push({x: x0, y: yy - h, w, h}); text(s, x0, yy, col, size, bold, 'left'); return yy;
+}
+
+function draw(t, dt) {
+  const l = L(); updateCam(l, dt); const y = p => l.pB - (p - cam.lo) / (cam.hi - cam.lo) * l.ph; boxes = []; LL = l;
+  ctx.clearRect(0, 0, W, H); ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+  const drawn = Math.min(N, pos), full = Math.floor(drawn), yb = Math.max(1, Math.floor(l.slot * .68)), bw = l.slot < 2.2 ? 1 : yb;
+  const kEnd = Math.min(v1, full);
+  // the stretch under the 50 — tinted as it passes
+  ctx.fillStyle = 'rgba(' + RGB.red + ',.075)'; let run = -1;
+  for (let k = v0; k <= kEnd + 1; k++) {
+    const u = k <= kEnd && B.under[k];
+    if (u && run < 0) run = k;
+    if (!u && run >= 0) { ctx.fillRect(l.x(run) - l.slot / 2, l.pT, (k - run) * l.slot, l.ph); run = -1; }
+  }
+  // grid + price axis
+  const step = niceStep(cam.hi - cam.lo, W > 700 ? 6 : 5); ctx.strokeStyle = COL.rule; ctx.lineWidth = 1;
+  for (let p = Math.ceil(cam.lo / step) * step; p < cam.hi; p += step) { const yy = Math.round(y(p)) + .5; ctx.beginPath(); ctx.moveTo(l.pL, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); text(fmtP(p), l.pR + 6, yy, COL.dim, l.fsm, false, 'left', 'middle'); }
+  ctx.strokeStyle = COL.rule; [l.vT, l.vB, l.rT, l.rB].forEach(yy => { ctx.beginPath(); ctx.moveTo(l.pL, Math.round(yy) + .5); ctx.lineTo(l.pR, Math.round(yy) + .5); ctx.stroke(); });
+  // dates
+  const every = Math.max(1, Math.round((v1 - v0 + 1) / (W > 700 ? 9 : 5))); let lastYr = '';
+  for (let k = v0; k <= v1; k += every) { const d = B.d[k], yr = d.slice(2, 4), s = md(d) + (yr !== lastYr ? "'" + yr : ''); lastYr = yr; text(s, l.x(k), H - 6, COL.dim, l.fsm, false, 'center'); ctx.strokeStyle = COL.rule; ctx.beginPath(); ctx.moveTo(Math.round(l.x(k)) + .5, l.rB); ctx.lineTo(Math.round(l.x(k)) + .5, l.rB + 4); ctx.stroke(); }
+  // RSI panel
+  const ry = v => l.rB - (v - 10) / 80 * l.rh; ctx.setLineDash([3, 4]); ctx.strokeStyle = '#333';
+  [30, 70].forEach(v => { ctx.beginPath(); ctx.moveTo(l.pL, ry(v)); ctx.lineTo(l.pR, ry(v)); ctx.stroke(); }); ctx.setLineDash([]);
+  text('RSI 14', l.pL + 4, l.rT + 3, COL.dim, l.fsm, false, 'left', 'top'); text('vol', l.pL + 4, l.vT + 3, COL.dim, l.fsm, false, 'left', 'top');
+  ctx.strokeStyle = 'rgba(179,157,219,.85)'; ctx.lineWidth = 1.2; ctx.beginPath(); let started = false;
+  for (let k = v0; k <= kEnd; k++) { const r = B.rsi[k]; if (r == null) continue; if (!started) { ctx.moveTo(l.x(k), ry(r)); started = true; } else ctx.lineTo(l.x(k), ry(r)); } ctx.stroke();
+  // volume
+  let vmax = 0; for (let k = v0; k <= v1; k++) vmax = Math.max(vmax, B.v[k]);
+  for (let k = v0; k <= kEnd; k++) { const up = B.c[k] >= B.o[k], h = B.v[k] / vmax * l.vh; const brkBar = D.brk && k === D.brk.i && P('brk', t) > 0; ctx.fillStyle = brkBar ? COL.amber : 'rgba(' + (up ? RGB.green : RGB.red) + ',.45)'; ctx.fillRect(l.x(k) - bw / 2, l.vB - h, Math.max(1, bw), h); }
+  // moving averages: the 50 as a very light thin line, the 20 fainter
+  function ma(arr, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); let st = false; for (let k = v0; k <= kEnd; k++) { const v = arr[k]; if (v == null) continue; if (!st) { ctx.moveTo(l.x(k), y(v)); st = true; } else ctx.lineTo(l.x(k), y(v)); } ctx.stroke(); }
+  ma(B.s20, 'rgba(' + RGB.blue + ',.38)', 1);
+  if (FWD && pos >= N) { const a = .18 + .16 * (.5 + .5 * Math.sin(t / 380)); ctx.save(); ctx.shadowColor = COL.amber; ctx.shadowBlur = 10; ma(B.s50, 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')', 5); ctx.restore(); }
+  ma(B.s50, 'rgba(' + RGB.ink + ',.62)', 1.25);
+  // candles, one session at a time; the one being drawn fades in
+  for (let k = v0; k <= Math.min(v1, full); k++) {
+    const a = k < full ? 1 : (drawn - full); if (a <= 0) continue;
+    const up = B.c[k] >= B.o[k], col = up ? RGB.green : RGB.red, x = l.x(k), xr = bw === 1 ? Math.round(x) + .5 : x;
+    ctx.strokeStyle = 'rgba(' + col + ',' + (.9 * a).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(xr, y(B.h[k])); ctx.lineTo(xr, y(B.l[k])); ctx.stroke();
+    if (bw > 1) { const y1 = y(Math.max(B.o[k], B.c[k])), y2 = y(Math.min(B.o[k], B.c[k])); ctx.fillStyle = 'rgba(' + col + ',' + (.92 * a).toFixed(3) + ')'; ctx.fillRect(x - bw / 2, y1, bw, Math.max(1, y2 - y1)); }
+  }
+  // ── effects ──
+  const db = D.db, pDb = db ? P('db', t) : 0;
+  if (db && pDb > 0) {
+    const x1 = l.x(db.a), y1 = y(db.loA), x2 = l.x(db.b2), y2 = y(db.loB), e = ease(pDb);
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = COL.amber; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + (x2 - x1) * e, y1 + (y2 - y1) * e); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = COL.amber; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(x1, ry(db.rsiA)); ctx.lineTo(x1 + (x2 - x1) * e, ry(db.rsiA) + (ry(db.rsiB) - ry(db.rsiA)) * e); ctx.stroke();
+    if (pDb >= 1) label('double bottom ' + fmtP(db.loA) + ' → ' + fmtP(db.loB) + ' · RSI ' + Math.round(db.rsiA) + ' → ' + Math.round(db.rsiB), (x1 + x2) / 2, Math.max(y1, y2) + l.fsm + 8, COL.amber, l.fsm, true, 'center', 'down');
+  }
+  const pBrk = D.brk ? P('brk', t) : 0;
+  if (D.brk && pBrk > 0) {
+    const k = D.brk.i, x = l.x(k), a = pBrk < 1 ? .35 + .65 * Math.abs(Math.sin(pBrk * Math.PI * 3)) : .95;
+    ctx.save(); ctx.shadowColor = COL.amber; ctx.shadowBlur = pBrk < 1 ? 18 : 6; ctx.strokeStyle = 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')'; ctx.lineWidth = 2; ctx.strokeRect(x - Math.max(bw, 3) / 2 - 2, y(B.h[k]) - 2, Math.max(bw, 3) + 4, y(B.l[k]) - y(B.h[k]) + 4); ctx.restore();
+    label('BREAKOUT ' + (D.brk.volx != null ? D.brk.volx + '× vol' : ''), x, y(B.h[k]) - 10, COL.amber, l.fs, true, 'center', 'up');
+  }
+  // the cell's +8% line from the buy
+  if (BUY && P('cell', t) > 0) { const pc = P('cell', t), lvl = BUY.close * (1 + D.cell.h20_med / 100); ctx.setLineDash([2, 5]); ctx.strokeStyle = 'rgba(' + RGB.ink + ',' + (.35 * pc).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(l.x(BUY.i), y(lvl)); ctx.lineTo(l.pR, y(lvl)); ctx.stroke(); ctx.setLineDash([]); label('cell median +' + D.cell.h20_med + '%', l.x(BUY.i) + 6, y(lvl) - 4, 'rgba(' + RGB.ink + ',' + (.6 * pc).toFixed(3) + ')', l.fsm, false, 'left', 'up'); }
+  // priors: earlier scored retests of this name inside the window
+  (D.priors || []).forEach((p, k) => { if (P('prior' + k, t) <= 0) return; const x = l.x(p.i), yy = y(p.close), col = p.c20 >= 0 ? COL.green : COL.red; ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.stroke(); label('prior retest ' + md(p.date) + ' → ' + sgn(p.c20) + ' at +20d', x, yy + (p.c20 >= 0 ? -10 : l.fsm + 10), col, l.fsm, false, 'center', p.c20 >= 0 ? 'up' : 'down'); });
+  // THE BUY: burst + arrow in the direction of what actually happened
+  if (BUY) {
+    const pb = P('burst', t), x = l.x(BUY.i), yy = y(BUY.close), col = dirCol;
+    if (pb > 0 && pb < 1) { const r = 6 + pb * .30 * l.ph, g = ctx.createRadialGradient(x, yy, 0, x, yy, r); g.addColorStop(0, 'rgba(' + RGB[col] + ',' + (.85 * (1 - pb)).toFixed(3) + ')'); g.addColorStop(.6, 'rgba(' + RGB[col] + ',' + (.35 * (1 - pb)).toFixed(3) + ')'); g.addColorStop(1, 'rgba(' + RGB[col] + ',0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, yy, r, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = 'rgba(' + RGB[col] + ',' + (1 - pb).toFixed(3) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, yy, r * .8, 0, Math.PI * 2); ctx.stroke(); }
+    if (pb > 0) { ctx.fillStyle = COL[col]; ctx.strokeStyle = COL.bg; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    const pa = P('arrow', t);
+    if (pa > 0) { const up = OUT.dir === 'up', len = ease(pa) * .22 * l.ph, dx = ease(pa) * .10 * l.ph, x2 = x + dx, y2 = yy + (up ? -len : len); ctx.strokeStyle = COL[col]; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x2, y2); ctx.stroke(); if (pa > .5) { const ang = Math.atan2(y2 - yy, x2 - x), ah = 9; ctx.fillStyle = COL[col]; ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ah * Math.cos(ang - .5), y2 - ah * Math.sin(ang - .5)); ctx.lineTo(x2 - ah * Math.cos(ang + .5), y2 - ah * Math.sin(ang + .5)); ctx.closePath(); ctx.fill(); } }
+    if (pb > .5) { const up = OUT.dir === 'up'; label('BUY ' + fmtP(BUY.close) + ' · 50-day ' + fmtP(BUY.s50), x, up ? y(BUY.low) + l.fs + 8 : y(BUY.high) - 8, COL[col], l.fs, true, 'center', up ? 'down' : 'up'); }
+  }
+  // THE MOVE: the 20-day best-high line zooms in from the right and lands on the price scale
+  if (OUT && P('target', t) > 0) {
+    const pt = P('target', t), e = ease(pt), yy = y(OUT.bh_price), xs = l.pR - (l.pR - l.x(BUY.i)) * e, col = OUT.bh_pct >= 0 ? COL.green : COL.red, after = since('target', t), lw = after > 0 ? 1.2 + 1.5 * Math.max(0, 1 - after / 220) : 2.6;
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]);
+    tag(sgn(OUT.bh_pct), l.pR + 2 + (1 - e) * 40, yy, col, COL.bg, l.fsm, 'left');
+    if (pt >= 1) label('best high ' + fmtP(OUT.bh_price) + ' · ' + md(OUT.bh_date) + (OUT.so_far ? ' (so far)' : ''), l.pR - 4, yy - 5, col, l.fsm, true, 'right', 'up');
+  }
+  if (OUT && P('exit', t) > 0) {
+    const pe = P('exit', t);
+    if (OUT.kill_i != null && OUT.dir === 'down') { const x = l.x(OUT.kill_i), yy = y(OUT.kill_close); ctx.strokeStyle = COL.red; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 6, yy - 6); ctx.lineTo(x + 6, yy + 6); ctx.moveTo(x + 6, yy - 6); ctx.lineTo(x - 6, yy + 6); ctx.stroke(); label('KILL · close ' + fmtP(OUT.kill_close) + ' under the 50 · ' + md(OUT.kill_date), x, yy + l.fs + 12, COL.red, l.fs, true, 'center', 'down'); }
+    else { const x = l.x(OUT.c20_i), yy = y(OUT.c20); ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, yy, 5, 0, Math.PI * 2); ctx.stroke(); label('close ' + OUT.h20_lbl + ' ' + sgn(OUT.c20_pct) + ' · ½ · ½ · runner', x, yy + l.fs + 12, COL.ink, l.fs, true, 'center', 'down'); }
+  }
+  // FORWARD hold: the retest line into the future, TARGET and KILL zooming in from the right, the distance label
+  if (FWD && pos >= N) {
+    const xl = l.x(FWD.i), a = .45 + .35 * (.5 + .5 * Math.sin(t / 380));
+    ctx.setLineDash([2, 4]); ctx.strokeStyle = 'rgba(' + RGB.amber + ',' + a.toFixed(3) + ')'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xl, y(FWD.s50)); ctx.lineTo(l.pR, y(FWD.s50)); ctx.stroke(); ctx.setLineDash([]);
+    const ptg = P('ftarget', t); if (ptg > 0) { const e = ease(ptg), yy = y(FWD.target), xs = l.pR - (l.pR - xl) * e; ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.green; ctx.lineWidth = ptg < 1 ? 2.4 : 1.4; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]); tag('+' + FWD.target_pct.toFixed(0) + '% ' + fmtP(FWD.target), l.pR + 2 + (1 - e) * 40, yy, COL.green, COL.bg, l.fsm, 'left'); if (ptg >= 1) label('TARGET · cell median 20d best high', l.pR - 4, yy - 5, COL.green, l.fsm, true, 'right', 'up'); }
+    const pk = P('fkill', t); if (pk > 0) { const e = ease(pk), yy = y(FWD.kill), xs = l.pR - (l.pR - xl) * e; ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.red; ctx.lineWidth = pk < 1 ? 2.4 : 1.4; ctx.beginPath(); ctx.moveTo(xs, yy); ctx.lineTo(l.pR, yy); ctx.stroke(); ctx.setLineDash([]); tag('KILL ' + fmtP(FWD.kill), l.pR + 2 + (1 - e) * 40, yy, COL.red, COL.bg, l.fsm, 'left'); if (pk >= 1) label('KILL · a daily close under the 50', l.pR - 4, yy + l.fsm + 4, COL.red, l.fsm, true, 'right', 'down'); }
+    const pd = P('fdist', t); if (pd > 0) { const col = FWD.dist >= 0 ? COL.green : COL.red, s = sgn(FWD.dist) + ' from the line', s2 = 'THE RETEST LINE ' + fmtP(FWD.s50); ctx.globalAlpha = pd; label(s2, l.pR - 4, y(FWD.s50) - 6, COL.amber, l.fs, true, 'right', 'up'); label(s, xl, Math.min(y(FWD.kill), y(B.l[FWD.i])) - 10, col, l.fs, true, 'center', 'up'); ctx.globalAlpha = 1; ctx.fillStyle = COL.amber; ctx.beginPath(); ctx.arc(xl, y(B.c[FWD.i]), 4, 0, Math.PI * 2); ctx.fill(); }
+    text('← today', xl + 6, l.pB - 6, COL.dim, l.fsm, false, 'left');
+  }
+  $('#prog').style.transform = 'scaleX(' + (pos / N).toFixed(4) + ')';
+}
+
+/* stage bar + caption */
+const stEls = [];
+function buildStages() {
+  const sw = $('#stages'); sw.style.setProperty('--ns', D.stages.length);
+  D.stages.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'stage'; b.innerHTML = '<b>' + s.n + '</b><span class="t">' + s.t + '</span>'; b.addEventListener('click', () => { seek(Math.max(0, s.at + 1)); pause(); tick(performance.now(), true); }); sw.appendChild(b); stEls.push(b); });
+}
+let capIdx = -1;
+function ui() {
+  let cur = 0; D.stages.forEach((s, i) => { if (pos >= s.at + 1) cur = i; });
+  stEls.forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); });
+  if (cur !== capIdx) { capIdx = cur; const s = D.stages[cur]; const kc = s.key === 'buy' ? (OUT.dir === 'up' ? ' g' : ' r') : s.key === 'kill' ? ' r' : s.key === 'hold' ? ' g' : ''; $('#cap').innerHTML = '<div class="k' + kc + '">' + s.n + ' · ' + s.t + '</div><p>' + s.sub + '</p>'; }
+  const k = Math.min(N, Math.max(1, Math.ceil(pos))); $('#clock').textContent = 'bar ' + k + ' / ' + N + ' · ' + B.d[k - 1];
+  if (!scrubbing) $('#scrub').value = pos;
+  $('#play').textContent = ended ? 'Replay' : playing ? 'Pause' : 'Play';
+}
+let frozen = false;
+function tick(t, force) {
+  if (frozen && !force) return;
+  const dt = Math.max(0, Math.min(64, lastT ? t - lastT : 16)); lastT = t;
+  if (playing && t >= holdUntil) pos = Math.min(N, pos + RATE * speed * dt / 1000);
+  triggers(t); draw(t, dt); ui();
+  const live = FX.some(e => fx[e.key] !== undefined && fx[e.key] !== -1e9 && t < fx[e.key] + e.dur + 260);
+  if (pos >= N && playing && !live && t >= holdUntil) { playing = false; ended = true; ui(); }
+  const keep = playing || live || (FWD && pos >= N) || (cam && Math.abs(cam.hi - camTarget(L()).hi) > (cam.hi - cam.lo) * .002);
+  if (keep && !RM) raf = requestAnimationFrame(tick); else raf = 0;
+}
+function run() { if (!raf) { lastT = 0; raf = requestAnimationFrame(tick); } }
+function play() { if (ended || pos >= N) { seek(0); ended = false; } playing = true; run(); ui(); }
+function pause() { playing = false; ui(); }
+$('#play').addEventListener('click', () => playing ? pause() : play());
+$('#restart').addEventListener('click', () => { seek(0); playing = true; run(); });
+document.querySelectorAll('[data-speed]').forEach(b => b.addEventListener('click', () => { speed = +b.dataset.speed; document.querySelectorAll('[data-speed]').forEach(x => x.classList.toggle('on', x === b)); }));
+document.querySelectorAll('[data-zoom]').forEach(b => b.addEventListener('click', () => { const z = b.dataset.zoom; document.querySelectorAll('[data-zoom]').forEach(x => x.classList.toggle('on', x === b)); if (z === 'tight') { const a = D.db ? D.db.a : (D.brk ? D.brk.i : 0); v0 = Math.max(0, a - 12); } else v0 = 0; snap = true; tick(performance.now(), true); }));
+const sc = $('#scrub'); sc.max = N; sc.step = 0.05;
+sc.addEventListener('input', () => { scrubbing = true; seek(+sc.value); playing = false; tick(performance.now(), true); scrubbing = false; });
+sc.addEventListener('change', () => { scrubbing = false; });
+window.addEventListener('keydown', e => { if (e.target && /input|button|textarea/i.test(e.target.tagName) && e.code !== 'Space') return; if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); } else if (e.code === 'ArrowRight') { seek(pos + 5); tick(performance.now(), true); } else if (e.code === 'ArrowLeft') { seek(pos - 5); tick(performance.now(), true); } });
+window.addEventListener('resize', () => { size(); snap = true; tick(performance.now(), true); });
+
+/* boot: #t=end (or #t=<bar>) jumps to that frame, drawn synchronously for screenshots; reduced motion draws it all at once */
+buildStages(); size();
+window.__replay = {tick: t => tick(t, true), seek, freeze: () => { frozen = true; }, get pos() { return pos; }, get playing() { return playing; }, get fx() { return Object.assign({}, fx); }, N};
+const hash = /t=([^&]+)/.exec(location.hash || ''); const jump = hash ? hash[1] : null;
+if (jump === 'end' || RM) { seek(N); ended = true; playing = false; tick(performance.now(), true); if (FWD && !RM) run(); }
+else if (jump && !isNaN(+jump)) { seek(+jump); playing = false; tick(performance.now(), true); }
+else { seek(0); playing = true; run(); }
+})();
+
+</script>
+</body></html>
