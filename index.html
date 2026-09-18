@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Frame — Plan</title>
+<meta name="description" content="The BTC frame plan, animated: the six-stage sequence, the execution list, and what the machine measured. Riven, 9/18/2026.">
+<style>
+:root{
+  --bg:#0d0d0d; --ink:#e8e6e1; --mute:#8a877f; --dim:#5c5a55; --rule:#2a2a2a; --card:#111;
+  --amber:#f5b041; --blue:#4c8bf5; --green:#2ecc71; --red:#ef5350;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --D:16s;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--mono);-webkit-text-size-adjust:100%}
+body{font-size:17px;line-height:1.5;overflow-x:hidden}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 80px}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.top .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border:1px solid var(--rule);padding:8px 10px;min-height:36px;display:inline-flex;align-items:center}
+.nav a:hover{color:var(--ink);border-color:var(--mute);text-decoration:none}
+h1{font-size:clamp(30px,7vw,54px);line-height:1.05;margin:28px 0 8px;letter-spacing:-.02em}
+h1 span{color:var(--amber)}
+.sub{color:var(--mute);font-size:15px;margin:0 0 6px}
+.lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+h2{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);margin:64px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--rule);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+h2 small{color:var(--mute);letter-spacing:.06em;text-transform:none;font-size:13px}
+.y{color:var(--amber)}.b{color:var(--blue)}.g{color:var(--green)}.r{color:var(--red)}.m{color:var(--mute)}
+.num[data-src]{border-bottom:1px dotted var(--dim);cursor:help}
+.num{font-variant-numeric:tabular-nums}
+
+/* ── stage pills ── */
+.stages{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:14px 0 10px}
+.stage{border:1px solid var(--rule);padding:8px 4px;text-align:center;cursor:pointer;min-height:44px;background:transparent;color:var(--mute);font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;transition:color .2s,border-color .2s}
+.stage b{display:block;font-size:16px;color:var(--dim);letter-spacing:0;margin-bottom:2px;transition:color .2s}
+.stage.on{color:var(--ink);border-color:var(--amber)}.stage.on b{color:var(--amber)}
+.stage.done b{color:var(--ink)}
+.stage .t{display:none}
+@media(min-width:700px){.stage .t{display:block}}
+
+/* ── the chart ── */
+.chart{border:1px solid var(--rule);background:var(--card);position:relative}
+.chart svg{display:block;width:100%;height:auto}
+.price{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw var(--D) linear forwards}
+.ma{fill:none;stroke:var(--blue);stroke-width:2;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw var(--D) linear forwards;opacity:.9}
+.rsi{fill:none;stroke:var(--amber);stroke-width:2;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw var(--rsiD) linear forwards;animation-delay:var(--d)}
+.sup{stroke:var(--mute);stroke-width:1.5;stroke-dasharray:6 6;opacity:0;animation:fadein .5s ease-out forwards;animation-delay:var(--d)}
+.vb{opacity:0;animation:fadein .3s ease-out forwards;animation-delay:var(--d)}
+.st{opacity:0;animation:fadein .45s ease-out forwards;animation-delay:var(--d)}
+.badge{opacity:.22;animation:badge .4s ease-out forwards;animation-delay:var(--d)}
+.buy{opacity:0;transform-box:fill-box;transform-origin:center;animation:pop .6s cubic-bezier(.2,1.4,.4,1) forwards;animation-delay:var(--d)}
+.ring{opacity:0;transform-box:fill-box;transform-origin:center;animation:ring 1.8s ease-out infinite;animation-delay:var(--d)}
+.head{opacity:0}
+.grid line{stroke:var(--rule);stroke-width:1}
+.axis{fill:var(--dim);font-size:12px;font-family:var(--mono);letter-spacing:.08em}
+.tag{fill:var(--ink);font-size:15px;font-family:var(--mono);font-weight:bold}
+.tag.y{fill:var(--amber)}.tag.g{fill:var(--green)}.tag.r{fill:var(--red)}.tag.b{fill:var(--blue)}.tag.m{fill:var(--mute);font-weight:normal;font-size:13px}
+.bn{fill:var(--bg);font-size:15px;font-family:var(--mono);font-weight:bold}
+.prog{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--amber);transform-origin:left center;transform:scaleX(0);animation:prog var(--D) linear forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadein{to{opacity:1}}
+@keyframes badge{to{opacity:1}}
+@keyframes pop{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1)}}
+@keyframes ring{0%{opacity:.8;transform:scale(.6)}100%{opacity:0;transform:scale(2.2)}}
+@keyframes prog{to{transform:scaleX(1)}}
+
+/* ── caption under the chart ── */
+.cap{display:grid;border:1px solid var(--rule);border-top:0;background:var(--card)}
+.c{grid-area:1/1;padding:14px 16px;background:var(--card);opacity:0;animation:fadein .35s ease-out forwards;animation-delay:var(--d)}
+.c .k{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:4px}
+.c .big{font-size:clamp(26px,6vw,40px);line-height:1.05;letter-spacing:-.02em;margin:0 0 8px;font-variant-numeric:tabular-nums}
+.c .big small{font-size:.5em;color:var(--mute);letter-spacing:0}
+.c p{margin:0 0 6px;font-size:15px;color:var(--ink)}
+.c .src{font-size:12px;color:var(--dim);margin-top:6px}
+@media(min-width:700px){.c p{font-size:16px}}
+
+/* ── controls ── */
+.ctl{display:flex;gap:8px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;background:transparent;color:var(--ink);border:1px solid var(--mute);padding:0 18px;min-height:44px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.pri{border-color:var(--amber);color:var(--amber)}
+.btn.pri:hover{background:var(--amber);color:var(--bg)}
+.ctl .m{font-size:12px;margin-left:auto}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin:8px 0 0}
+.legend i{display:inline-block;width:18px;height:0;border-top:3px solid var(--ink);vertical-align:middle;margin-right:6px}
+.legend i.ma{border-top:2px dashed var(--blue)}.legend i.rsi{border-top:2px solid var(--amber)}.legend i.sup{border-top:2px dashed var(--mute)}
+
+/* ── execution cards ── */
+.cards{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:760px){.cards{grid-template-columns:1fr 1fr}}
+@media(min-width:1100px){.cards{grid-template-columns:1fr 1fr 1fr}}
+.card{border:1px solid var(--rule);background:var(--card);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.card .n{font-size:34px;line-height:1;color:var(--amber);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .h{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-top:2px}
+.card .w{font-size:13px;color:var(--blue);letter-spacing:.04em}
+.card ul{margin:2px 0 0;padding-left:18px;font-size:15px}
+.card li{margin:4px 0}
+.card .src{font-size:12px;color:var(--dim);margin-top:auto;padding-top:6px;border-top:1px solid var(--rule);word-break:break-word}
+.card .rule{color:var(--red)}
+.lines{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;font-size:15px;font-variant-numeric:tabular-nums;margin:2px 0}
+.lines div{display:flex;justify-content:space-between;border-bottom:1px solid var(--rule);padding:3px 0}
+.lines b{color:var(--ink);font-weight:bold}
+
+/* ── verdict strip ── */
+.strip{border:1px solid var(--rule);background:var(--card);padding:12px 8px 6px}
+.strip svg{display:block;width:100%;height:auto}
+.vlab{fill:var(--ink);font-size:14px;font-family:var(--mono)}
+.vsub{fill:var(--mute);font-size:12px;font-family:var(--mono)}
+.vval{font-size:15px;font-family:var(--mono);font-weight:bold;font-variant-numeric:tabular-nums}
+.vzero{stroke:var(--mute);stroke-width:1}
+.vci{stroke:var(--ink);stroke-width:1;opacity:.6}
+.note{border-left:2px solid var(--amber);padding:6px 12px;margin:12px 0 0;color:var(--mute);font-size:14px}
+.note b{color:var(--ink)}
+
+/* ── sources ── */
+.src-list{font-size:13px;color:var(--mute);line-height:1.7;padding-left:18px}
+.src-list code{color:var(--ink);font-family:var(--mono);word-break:break-all}
+.card .w,.card li,.c p,.note{overflow-wrap:anywhere}
+.foot{margin-top:40px;padding-top:12px;border-top:1px solid var(--rule);font-size:12px;color:var(--dim)}
+
+@media(prefers-reduced-motion:reduce){
+  .price,.ma,.rsi,.sup,.vb,.st,.badge,.buy,.c,.prog{animation-duration:.01s!important;animation-delay:0s!important}
+  .ring{animation:none;opacity:0}
+}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+  <div class="brand">Riven · The Frame</div>
+  <nav class="nav"><a href="#seq">Sequence</a><a href="#exec">Execution</a><a href="#pays">Verdicts</a><a href="#src">Sources</a><a href="/static/btc_frame_plan_20260918.html">Plan text</a></nav>
+</div></div>
+
+<div class="wrap">
+  <h1>THE FRAME —<br><span>the plan, animated</span></h1>
+  <p class="sub" id="subline"></p>
+  <p class="lbl">One setup · one frame · the entry Kevin and Brandon actually use · numbers from the files, not typed</p>
+
+  <!-- ───────────── 1 · THE SEQUENCE ───────────── -->
+  <h2 id="seq">01 · The sequence <small>— six stages, one line, the buy is stage four</small></h2>
+  <div class="stages" id="stages"></div>
+  <div class="chart" id="chart">
+    <svg id="svg" viewBox="0 0 1000 480" preserveAspectRatio="xMidYMid meet" aria-label="The six-stage sequence: a year under the 50, base with divergence, volume breakout, first retest of the 50 (the buy), the move, exit by halves"></svg>
+    <div class="prog" id="prog"></div>
+  </div>
+  <div class="cap" id="cap"></div>
+  <div class="ctl">
+    <button class="btn pri" id="play" type="button">Pause</button>
+    <button class="btn" id="restart" type="button">Restart</button>
+    <span class="m" id="clock">0.0s / 16s</span>
+  </div>
+  <div class="legend"><span><i></i>price</span><span><i class="ma"></i>50-day</span><span><i class="sup"></i>support</span><span><i class="rsi"></i>RSI (divergence)</span></div>
+
+  <!-- ───────────── 2 · THE EXECUTION LIST ───────────── -->
+  <h2 id="exec">02 · The execution list <small>— what runs, when, and what it fires</small></h2>
+  <div class="cards" id="cards"></div>
+
+  <!-- ───────────── 3 · WHAT PAYS / WHAT DOESN'T ───────────── -->
+  <h2 id="pays">03 · What pays / what doesn't <small>— measured verdicts, 20-day best high vs baseline, pp</small></h2>
+  <div class="strip"><svg id="vsvg" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet" aria-label="Measured lift of each leg of the method versus baseline"></svg></div>
+  <div class="strip" style="margin-top:10px"><svg id="icsvg" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMid meet" aria-label="Trend information coefficient with BTC over versus under its 50-week"></svg></div>
+  <div class="note" id="vnote"></div>
+
+  <!-- ───────────── 4 · SOURCES ───────────── -->
+  <h2 id="src">04 · Sources <small>— every number on this page traces to one of these</small></h2>
+  <ol class="src-list" id="sources"></ol>
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+/* ============================================================
+   DATA — the only place a number lives on this page. Every entry
+   carries `src`: the file (or launchd plist / memory note) it was
+   read from on 2026-09-18. The renderers below never type a figure.
+   ============================================================ */
+const DATA = {
+  asof: "2026-09-18", author: "Riven", plan: "static/btc_frame_plan_20260918.html",
+  coin: {
+    src: "memory/project-kevin-btc-coin-thesis-20260918.md ← qlab/thesis_chart_coin_btc.py (Alpaca SIP daily)",
+    ath: 444.64, athDate: "7/18/25", low: 139.11, lowDate: "7/31/26", ddPct: -68.7,
+    under50Since: "11/4/25", under50Sessions: 218, pctClosesAbove: 26, crossingsFailed: 10, firstHold: "9/17",
+    support: [{d: "4/8/25", p: 147.35}, {d: "9/5/24", p: 158.12}],
+    divDaily: {a: ["6/05", 147.88, 33], b: ["8/18", 146.02, 43]},
+    divWeekly: {a: ["6/22", 139.18, 37], b: ["7/27", 139.11, 38]},
+    breakout: {d: "8/19", close: 160.20, volx: 2.3}, gap: [160.20, 172.75],
+    retest: {d: "Wed 9/16", low: 161.18, sma50: 165.65},
+    move: {from: 161.18, to: 195.38, pct: 21.2, days: 2},
+    ticket: {name: "187.5C", from: 0.08, to: 6.60, x: 82}
+  },
+  cell: {
+    src: "data/qlab/kevin_ru_instances.json[ru] (n=348, recomputed 9/18: h20 median 8.00, P(+10%) 36.2%) · ru_distribution_20260918, daily note 9/18 16:25",
+    n: 348, randomN: 20000, uMin: 150, of: 252,
+    h20: 8.0, h20Random: 5.7, p10: 36, p10Random: 29, p20: 11, p20Random: 10
+  },
+  btc: {
+    src: "memory/project-kevin-btc-coin-thesis-20260918.md · btc_weekly_close_check.py · ~/Library/LaunchAgents/com.riven.btc_weekly_close_check.plist (Weekday 0, 19:05)",
+    close: 81309, sma50w: 78791, sma200w: 65495, sma50m: 62210, pctOver: 3.2,
+    weekClose: "Sunday 19:00 CT", check: "Sunday 19:05 CT", label: "com.riven.btc_weekly_close_check", horizon: "year-end 2026 (Kevin, 9/18 15:18)",
+    trace: {src: "qlab/btc_coin_trace.py (memory/project-kevin-btc-coin-thesis-20260918.md, 9/18 17:15)", weeksBelow: 44,
+            held: {yr: "2023-03", wks: "12/12", best: [["RIOT", 131], ["CLSK", 126], ["MARA", 91], ["MSTR", 56], ["COIN", 44]]},
+            fake: {yr: "2022-03", wks: "1/12", worst: [["COIN", -69], ["MSTR", -61], ["MARA", -75], ["RIOT", -75]]},
+            yearUnderMedian: 44}
+  },
+  finder: {
+    src: "data/qlab/kevin_finder.json (run 2026-09-18T16:50) · qlab/kevin_finder.py · com.riven.kevin_finder.plist (16:50 + 07:05)",
+    times: ["16:50", "07:05"], cell: "U ≥ 150/252 under the 50 + volume breakout + first retest",
+    entry: [{sym: "COIN", date: "9/17", close: 173.97, sma50: 165.95, under: 171}],
+    watch: [{sym: "TW", dist: 0.7}, {sym: "KR", dist: 3.5}, {sym: "WAY", dist: 6.8}, {sym: "SAP", dist: 7.0}]
+  },
+  watcher: {
+    src: "live_watcher.py LEVELS (retest lines, expire 2026-10-02) · alerts, not orders",
+    lines: [["MSTR", 109.61, 129.57], ["NBIS", 211.81], ["SMCI", 33.34], ["GLXY", 22.92], ["BTDR", 11.07],
+            ["MARA", 11.19], ["CLSK", 12.95], ["RIOT", 20.57], ["IREN", 40.28], ["CRCL", 76.14]],
+    expires: "10/02"
+  },
+  div5m: {
+    src: "div5m_live.py · com.riven.div5m_live.plist (StartInterval 60) · data/qlab/div5m_backtest.json (generated 2026-09-18T20:17Z)",
+    intervalS: 60, symbols: 21, sessions: 60, events: 1782, liftBh60: -0.07, ci: [-0.12, -0.01],
+    template: {sym: "QQQ", d: "9/18", t: "11:49", px: 715.19}, line: "DIV5M_ENTRY",
+    rule: "RSI-14 higher low vs price lower low on closed 5-minute bars, at/under the day's low or a named level, hist turning"
+  },
+  catalyst: {
+    src: "qlab/catalyst_gate.py → data/qlab/catalyst_flags.json · daily note 9/18 15:53 (Kevin: the SEC tokenized-assets story)",
+    keywords: "SEC · tokenized · innovation exemption · Clarity Act · ETF · treasury · regulation", tier: "T1"
+  },
+  tickets: {
+    src: "memory/project-operating-contract-v1.md (15% tickets, max 3) · project-dte-finding-20260916.md (8–30 DTE) · feedback-say-the-sizing-rule-before-the-last-dollar.md (30% cash, kill = daily close under the 20) · the plan (frame kill)",
+    dte: [8, 30], dteRet: 37.8, dte0Ret: -26.5, dteTrips: 11411, sizePct: 15, maxConc: 3, cashPct: 30,
+    kills: ["ticket: daily close under the 20 on the name", "frame name: daily close back under the 50", "frame: BTC weekly close under the 50-week"]
+  },
+  pulse: {
+    src: "session_pulse.py · com.riven.session_pulse.plist (StartInterval 900)",
+    periodS: 900, window: "08:35–15:05 CT, NYSE days", to: "one line to Brandon (marks, cash, fires) · frame-name fires to Kevin"
+  },
+  lab: {
+    src: "~/Library/LaunchAgents/com.riven.qlab_lab_worker_1..13.plist · data/qlab/lab_report.json[families]",
+    workers: 13,
+    families: ["btc_frame", "btc_frame_pay", "cond_ic", "cond_wide", "ic", "ic_pair", "ic_param", "payoff", "payoff_param", "payoff_vm", "payoff_wide", "stability"],
+    topup: "queue tops up every 15 min · BH pool tightens as it runs"
+  },
+  weekend: {
+    src: "com.riven.backfill_5m.plist (StartInterval 21600) · qlab/backfill_5m.py · qlab/ml/weekend_gbm.py + com.riven.weekend_gbm.plist · com.riven.qlab_bars_widen.plist (Sat 06:00) · daily note 9/18 16:25",
+    backfillEveryH: 6, names: 160, since: "2022-01-03", freeGb: 72, feed: "Alpaca SIP, ext hours, split-adjusted",
+    gbm: {tool: "sklearn HistGradientBoosting", targets: ["fwd20 > +5%", "fwd5 > +3%", "fwd20 > +10%"], years: "2019–26", purge: 20},
+    widen: "Sat 06:00"
+  },
+  verdicts: {
+    src: "daily note 9/18 16:0x — qlab/kevin_method_confluence.py (1.82M bars, 939 names, 20-day best-high median vs all bars, date-clustered 95% CI) · data/qlab/div5m_backtest.json (bh60 median lift, bootstrap CI)",
+    rows: [
+      {k: "First retest of the 50 after a volume breakout", s: "structure · n 3,874", v: 1.39, ci: [1.16, 1.73]},
+      {k: "…after a year mostly under the 50 (R+U)", s: "structure · n 346 · P(+20% in 20d) 10.4%", v: 2.41, ci: [0.95, 3.13]},
+      {k: "Daily divergence flag alone", s: "flag", v: -0.82, ci: [-0.87, -0.78]},
+      {k: "Weekly divergence flag alone", s: "flag", v: -0.33, ci: null},
+      {k: "Daily + weekly divergence stack", s: "flag", v: -2.16, ci: [-2.29, -2.05]},
+      {k: "5-minute divergent-bottom entry", s: "entry · 21 names · 60 sessions · n 1,782 · 60-min best high", v: -0.07, ci: [-0.12, -0.01]}
+    ],
+    ic: {
+      src: "lab family btc_frame — 450 IC studies, 988 names, 2021–26 (memory/project-kevin-btc-coin-thesis-20260918.md)",
+      studies: 450, names: 988, horizon: "21d",
+      rows: [{f: "close over 200-day", over: 0.043, under: 0.000}, {f: "50-day over 200-day", over: 0.043, under: 0.011}, {f: "position in 60-day range", over: 0.023, under: -0.011}],
+      sig: {over: [49, 230], under: [34, 220]}, mult: "3–5×"
+    },
+    betaNote: {n: 7, text: "In bitcoin-beta names the recipe has 7 historical instances — untested, not disproven. Forward results decide it."}
+  }
+};
+
+/* ============================================================
+   helpers
+   ============================================================ */
+const $ = (s, r) => (r || document).querySelector(s);
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const txt = (parent, x, y, s, cls, anchor) => { const t = el("text", {x, y, "class": cls || "tag", "text-anchor": anchor || "start"}, parent); t.textContent = s; return t; };
+const fmt = (n, d) => (d === undefined ? n : Number(n).toFixed(d));
+const sgn = (n, d) => (n > 0 ? "+" : "") + fmt(n, d);
+const pct = (n, d) => sgn(n, d) + "%";
+const num = (v, src, d) => `<span class="num" data-src="${src.replace(/"/g, "&quot;")}" title="${src.replace(/"/g, "&quot;")}">${d === undefined ? v : v}</span>`;
+const D_S = 16;                              // seconds, mirrors --D
+document.documentElement.style.setProperty("--D", D_S + "s");
+
+/* ============================================================
+   1 · THE SEQUENCE — geometry (viewBox 1000×480). The shape is a
+   stylized COIN; the numbers on it are COIN's, from DATA.coin.
+   ============================================================ */
+const X = {s1: 40, s2: 300, s3: 500, s4: 580, s5: 680, s6: 860, end: 980};
+const PRICE = [[40,120],[80,150],[110,135],[150,185],[185,170],[220,215],[250,205],[300,250],
+  [330,280],[355,265],[380,292],[410,262],[440,294],[470,270],[500,262],
+  [520,240],[540,205],[560,190],[580,198],
+  [605,212],[625,228],[640,232],[660,222],[680,205],
+  [710,180],[735,190],[770,140],[800,150],[830,105],[860,95],
+  [885,80],[910,92],[940,70],[960,78],[980,62]];
+const MA = [[40,90],[150,130],[300,205],[400,240],[500,246],[560,240],[640,232],[720,215],[820,180],[980,140]];
+const RSI = [[300,440],[340,425],[380,452],[410,420],[440,438],[500,412]];
+const BUY = [640, 232];
+const pts = a => a.map(p => p.join(",")).join(" ");
+
+const C = DATA.coin, CELL = DATA.cell;
+const STAGES = [
+  {n: "01", t: "A year under the 50", x: X.s1, cx: 170,
+   big: `${num(C.under50Sessions, C.src)} sessions`, bigSmall: "under the 50-day",
+   body: `COIN under its 50-day since ${num(C.under50Since, C.src)} · ${num(C.pctClosesAbove, C.src)}% of closes above · ${num(C.crossingsFailed, C.src)} crossings up, every one failed until ${C.firstHold}.`,
+   cell: `The cell: ${num(CELL.n, CELL.src)} instances in the R+U set (≥ ${num(CELL.uMin, CELL.src)} of ${CELL.of} sessions under the 50, then breakout, then first retest).`,
+   src: C.src},
+  {n: "02", t: "Base on support + divergence", x: X.s2, cx: 400,
+   big: num(pct(C.ddPct, 1), C.src), bigSmall: "off the high",
+   body: `${num(C.ath, C.src)} (${C.athDate}) → ${num(C.low, C.src)} (${C.lowDate}) · flattened on ${C.support[0].d} (${num(C.support[0].p, C.src)}) and ${C.support[1].d} (${num(C.support[1].p, C.src)}) support · daily divergence ${C.divDaily.a[0]} RSI ${num(C.divDaily.a[2], C.src)} → ${C.divDaily.b[0]} RSI ${num(C.divDaily.b[2], C.src)} · weekly ${C.divWeekly.a[0]} RSI ${num(C.divWeekly.a[2], C.src)} → ${C.divWeekly.b[0]} RSI ${num(C.divWeekly.b[2], C.src)}.`,
+   cell: `Price makes a lower low, RSI makes a higher low — that is the divergence. Measured alone it subtracts (see 03); it is the <b>setup</b>, not the trigger.`,
+   src: C.src},
+  {n: "03", t: "Breakout on volume", x: X.s3, cx: 540,
+   big: `${num(C.breakout.volx, C.src)}×`, bigSmall: "average volume",
+   body: `COIN ${C.breakout.d} close ${num(C.breakout.close, C.src)} through the 50 on ${num(C.breakout.volx, C.src)}× volume · gapped ${num(C.gap[0], C.src)} → ${num(C.gap[1], C.src)} the next day.`,
+   cell: `The trigger for tier-2 names (GLXY, BTDR, miners): a close above the 50 on 1.5×+ volume starts their sequence. The buy is still the retest after it.`,
+   src: C.src},
+  {n: "04", t: "First retest of the 50 = the buy", x: X.s4, cx: 630,
+   big: num(C.retest.low, C.src), bigSmall: `low on the 50 (${C.retest.sma50})`,
+   body: `COIN ${C.retest.d} low ${num(C.retest.low, C.src)} on the 50-day (${num(C.retest.sma50, C.src)}), gap filled. The entry is the 5-minute / hourly divergent low <b>here</b>: near the money, short-dated, sized at the low.`,
+   cell: `The cell pays here: 20-day best high ${num(pct(CELL.h20, 1), CELL.src)} vs ${num(pct(CELL.h20Random, 1), CELL.src)} random · P(+10%) ${num(CELL.p10, CELL.src)}% vs ${num(CELL.p10Random, CELL.src)}% · P(+20%) ${num(CELL.p20, CELL.src)}% vs ${num(CELL.p20Random, CELL.src)}%.`,
+   src: CELL.src},
+  {n: "05", t: "The move", x: X.s5, cx: 770,
+   big: `${num(pct(C.move.pct, 0), C.src)} <small>in ${C.move.days} days</small>`, bigSmall: "",
+   body: `${num(C.move.from, C.src)} → ${num(C.move.to, C.src)} · the ${C.ticket.name} ${num(C.ticket.from, C.src)} → ${num(C.ticket.to, C.src)} at his sale (${num(C.ticket.x, C.src)}×).`,
+   cell: `Target inside the frame: two to four tickets a week, one of them a 10×. The book needs to be positioned on the right names when the next one fires — not on every one.`,
+   src: C.src},
+  {n: "06", t: "Exit by halves", x: X.s6, cx: 920,
+   big: `½ · ½ · <small>runner</small>`, bigSmall: "",
+   body: `Half into the pop, half at the level, the runner rides. Kill = daily close back under the 50 on the name. BTC weekly close under the 50-week (${num(DATA.btc.sma50w.toLocaleString(), DATA.btc.src)}) ends the frame for every name.`,
+   cell: `Exits from the tape, never from cost. A fill text comes from the watcher, not a hand.`,
+   src: DATA.tickets.src}
+];
+
+function buildChart() {
+  const svg = $("#svg");
+  // grid
+  const g = el("g", {"class": "grid"}, svg);
+  [100, 180, 260, 330].forEach(y => el("line", {x1: 40, y1: y, x2: 980, y2: y}, g));
+  el("line", {x1: 40, y1: 392, x2: 980, y2: 392}, g);
+  el("line", {x1: 40, y1: 468, x2: 980, y2: 468}, g);
+  txt(svg, 42, 410, "VOLUME", "axis");
+  txt(svg, 42, 474, "RSI-14", "axis");
+  // stage dividers (faint)
+  [X.s2, X.s3, X.s4, X.s5, X.s6].forEach(x => el("line", {x1: x, y1: 44, x2: x, y2: 468, stroke: "#1e1e1e", "stroke-dasharray": "2 6"}, svg));
+
+  // volume bars (deterministic pseudo-noise, no data — a shape, not a number)
+  const vg = el("g", {}, svg);
+  for (let x = 46; x < 980; x += 15) {
+    let h = 10 + Math.abs(Math.sin(x * .37) * 9) + (x > X.s5 ? 6 : 0);
+    let fill = "#3a3a3a";
+    if (x >= 530 && x <= 545) { h = 52; fill = "var(--green)"; }
+    if (x >= 636 && x <= 650) { h = 26; fill = "var(--amber)"; }
+    if (x >= 880 && x <= 895) { h = 34; fill = "#4a4a4a"; }
+    const r = el("rect", {x, y: 392 - h, width: 9, height: h, fill, "class": "vb"}, vg);
+    r.dataset.x = x;
+  }
+
+  // support line (stage 2)
+  const sup = el("line", {x1: 300, y1: 296, x2: 500, y2: 296, "class": "sup"}, svg); sup.dataset.x = 330;
+  const supT = txt(svg, 302, 314, "support " + C.support[0].p + " / " + C.support[1].p, "tag m"); supT.setAttribute("class", "tag m st"); supT.dataset.x = 330;
+
+  // MA and price
+  const ma = el("polyline", {points: pts(MA), "class": "ma"}, svg);
+  const price = el("polyline", {points: pts(PRICE), "class": "price", id: "price"}, svg);
+  txt(svg, 44, 82, "50-day", "tag b").setAttribute("class", "tag b");
+
+  // RSI strip (stage 2 → shows the divergence)
+  const rsi = el("polyline", {points: pts(RSI), "class": "rsi"}, svg); rsi.dataset.x = 300;
+  const dv1 = el("line", {x1: 380, y1: 292, x2: 440, y2: 294, stroke: "var(--red)", "stroke-width": 1.5, "class": "st"}, svg); dv1.dataset.x = 445;
+  const dv2 = el("line", {x1: 380, y1: 452, x2: 440, y2: 438, stroke: "var(--amber)", "stroke-width": 1.5, "class": "st"}, svg); dv2.dataset.x = 445;
+  const r1 = txt(svg, 372, 466, "RSI " + C.divDaily.a[2], "tag y"); r1.setAttribute("class", "tag y st"); r1.dataset.x = 445;
+  const r2 = txt(svg, 446, 458, "RSI " + C.divDaily.b[2], "tag y"); r2.setAttribute("class", "tag y st"); r2.dataset.x = 445;
+  const ll = txt(svg, 506, 316, "lower low · higher RSI", "tag m"); ll.setAttribute("class", "tag m st"); ll.dataset.x = 445;
+
+  // stage labels inside the chart (short; the words live in the caption)
+  const inChart = [
+    {x: 60, y: 66, s: "a year under the 50", at: 90, cls: "tag m"},
+    {x: 508, y: 186, s: C.breakout.volx + "× vol", at: 540, cls: "tag g"},
+    {x: 655, y: 262, s: "BUY " + C.retest.low, at: 645, cls: "tag y"},
+    {x: 655, y: 282, s: "kill: close under the 50", at: 660, cls: "tag r"},
+    {x: 700, y: 130, s: pct(C.move.pct, 0) + " / " + C.move.days + "d", at: 790, cls: "tag g"},
+    {x: 872, y: 62, s: "½", at: 887, cls: "tag g"},
+    {x: 928, y: 52, s: "½", at: 942, cls: "tag g"},
+    {x: 946, y: 100, s: "runner", at: 965, cls: "tag m"}
+  ];
+  inChart.forEach(o => { const t = txt(svg, o.x, o.y, o.s, o.cls); t.setAttribute("class", o.cls + " st"); t.dataset.x = o.at; });
+  // exit ticks
+  [[885, 80], [940, 70]].forEach(p => { const l = el("line", {x1: p[0], y1: p[1] - 14, x2: p[0], y2: p[1] + 14, stroke: "var(--green)", "stroke-width": 3, "class": "st"}, svg); l.dataset.x = p[0] + 2; });
+  // BUY marker
+  const ring = el("circle", {cx: BUY[0], cy: BUY[1], r: 14, fill: "none", stroke: "var(--amber)", "stroke-width": 2, "class": "ring"}, svg); ring.dataset.x = 645;
+  const buy = el("circle", {cx: BUY[0], cy: BUY[1], r: 9, fill: "var(--amber)", "class": "buy"}, svg); buy.dataset.x = 645;
+
+  // stage badges along the top
+  STAGES.forEach(s => {
+    const gg = el("g", {"class": "badge"}, svg); gg.dataset.x = s.x + 2;
+    el("circle", {cx: s.cx, cy: 26, r: 14, fill: "var(--amber)"}, gg);
+    txt(gg, s.cx, 31, s.n.replace(/^0/, ""), "bn", "middle");
+  });
+
+  // play head (rAF-driven)
+  el("circle", {cx: 40, cy: 120, r: 7, fill: "var(--amber)", stroke: "var(--bg)", "stroke-width": 2, "class": "head", id: "head"}, svg);
+
+  // lengths → CSS vars; map x → seconds along the price path
+  const L = price.getTotalLength();
+  price.style.setProperty("--len", L);
+  ma.style.setProperty("--len", ma.getTotalLength());
+  const rl = rsi.getTotalLength(); rsi.style.setProperty("--len", rl);
+  const tAtX = x => {            // seconds at which the play head reaches x (binary search on the path)
+    let lo = 0, hi = L;
+    for (let i = 0; i < 22; i++) { const mid = (lo + hi) / 2; if (price.getPointAtLength(mid).x < x) lo = mid; else hi = mid; }
+    return D_S * (lo / L);
+  };
+  svg.querySelectorAll("[data-x]").forEach(e => e.style.setProperty("--d", tAtX(+e.dataset.x).toFixed(3) + "s"));
+  rsi.style.setProperty("--rsiD", (tAtX(500) - tAtX(300)).toFixed(3) + "s");
+  return {price, L, tAtX};
+}
+
+function buildStagesAndCaptions(tAtX) {
+  const sw = $("#stages"), cap = $("#cap");
+  STAGES.forEach((s, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "stage"; b.dataset.i = i;
+    b.innerHTML = `<b>${s.n}</b><span class="t">${s.t}</span>`;
+    b.addEventListener("click", () => seek(tAtX(s.x + 1)));
+    sw.appendChild(b);
+    const c = document.createElement("div"); c.className = "c"; c.style.setProperty("--d", tAtX(s.x + 1).toFixed(3) + "s");
+    c.innerHTML = `<div class="k">${s.n} · ${s.t}</div><div class="big">${s.big}${s.bigSmall ? ` <small>${s.bigSmall}</small>` : ""}</div><p>${s.body}</p><p class="m">${s.cell}</p><div class="src">source: ${s.src}</div>`;
+    cap.appendChild(c);
+  });
+  STAGES.tStart = STAGES.map(s => tAtX(s.x + 1));
+}
+
+/* ── playback: CSS animations do the drawing; rAF only moves the head ── */
+let anims = [], priceEl, priceLen, raf = 0, playing = true, done = false;
+const headEl = () => $("#head");
+function allAnims() { return document.getAnimations ? document.getAnimations() : []; }
+function nowT() {                      // seconds, from the price animation's own clock
+  const a = anims.find(a => a.effect && a.effect.target === priceEl);
+  return a ? Math.max(0, (a.currentTime || 0) / 1000) : 0;
+}
+function paint(t) {
+  const p = Math.min(1, t / D_S);
+  const pt = priceEl.getPointAtLength(p * priceLen);
+  const h = headEl(); h.setAttribute("cx", pt.x); h.setAttribute("cy", pt.y); h.style.opacity = 1;
+  $("#clock").textContent = t.toFixed(1) + "s / " + D_S + "s";
+  const st = STAGES.tStart; let cur = 0; for (let i = 0; i < st.length; i++) if (t >= st[i]) cur = i;
+  document.querySelectorAll(".stage").forEach((b, i) => { b.classList.toggle("on", i === cur); b.classList.toggle("done", i < cur); });
+}
+function loop() {
+  const t = nowT(); paint(t);
+  if (t >= D_S - .02) { done = true; playing = false; $("#play").textContent = "Replay"; raf = 0; return; }
+  if (playing) raf = requestAnimationFrame(loop);
+}
+function play() { anims.forEach(a => { try { a.play(); } catch (e) {} }); playing = true; $("#play").textContent = "Pause"; if (!raf) raf = requestAnimationFrame(loop); }
+function pause() { anims.forEach(a => { try { a.pause(); } catch (e) {} }); playing = false; $("#play").textContent = "Play"; if (raf) cancelAnimationFrame(raf); raf = 0; }
+function seek(t) { anims = allAnims(); anims.forEach(a => { try { a.currentTime = t * 1000; } catch (e) {} }); done = false; paint(t); if (!playing) { anims.forEach(a => { try { a.pause(); } catch (e) {} }); } else if (!raf) raf = requestAnimationFrame(loop); }
+function restart() { anims = allAnims(); anims.forEach(a => { try { a.currentTime = 0; a.play(); } catch (e) {} }); done = false; playing = true; $("#play").textContent = "Pause"; paint(0); if (!raf) raf = requestAnimationFrame(loop); }
+$("#play").addEventListener("click", () => { if (done) return restart(); playing ? pause() : play(); });
+$("#restart").addEventListener("click", restart);
+
+/* ============================================================
+   2 · THE EXECUTION LIST
+   ============================================================ */
+const B = DATA.btc, F = DATA.finder, W = DATA.watcher, V5 = DATA.div5m, T = DATA.tickets, P = DATA.pulse, LB = DATA.lab, WK = DATA.weekend, CG = DATA.catalyst;
+const CARDS = [
+  {h: "The BTC gate", w: `${B.check} · ${B.label}`,
+   li: [`The frame is on while BTC's <b>weekly close</b> holds over its 50-week: ${num(B.close.toLocaleString(), B.src)} vs ${num(B.sma50w.toLocaleString(), B.src)} (${num(pct(B.pctOver, 1), B.src)}) this week; 200-week ${num(B.sma200w.toLocaleString(), B.src)}, 50-month ${num(B.sma50m.toLocaleString(), B.src)}.`,
+        `The week closes ${B.weekClose}; the check runs at ${B.check} and texts <span class="g">GREEN</span> / <span class="r">RED</span>.`,
+        `<span class="rule">RED = no new frame tickets until a weekly close back above.</span> Horizon: ${B.horizon}.`,
+        `The tell is whether the close <b>holds</b>: ${B.trace.held.yr} held ${B.trace.held.wks} weeks → ${B.trace.held.best.map(x => `${x[0]} ${num(pct(x[1], 0), B.trace.src)}`).join(", ")} (60-session best high); ${B.trace.fake.yr} held ${B.trace.fake.wks} → ${B.trace.fake.worst.map(x => `${x[0]} ${num(pct(x[1], 0), B.trace.src)}`).join(", ")} at +60d — the fake. This event: ${num(B.trace.weeksBelow, B.trace.src)} weeks below, first reading Sunday.`], src: B.src + " · " + B.trace.src},
+  {h: "The finder", w: `nightly ${F.times[0]} + ${F.times[1]} · qlab/kevin_finder.py`,
+   li: [`Strict cell: ${F.cell}. Writes KEVIN_CELL lines to the inbound feed.`,
+        `<span class="g">ENTRY</span> ${F.entry.map(e => `${e.sym} ${e.date} (close ${num(e.close, F.src)}, 50d ${num(e.sma50, F.src)}, ${num(e.under, F.src)} sessions under)`).join(" · ")}.`,
+        `<span class="y">WATCH</span> nearest the 50: ${F.watch.map(w => `${w.sym} ${num(pct(w.dist, 1), F.src)}`).join(" · ")}.`], src: F.src},
+  {h: "The watcher lines", w: `live_watcher.py · retest lines expire ${W.expires} · alerts, not orders`,
+   lines: W.lines, li: [`The 50-day line on every tier-1/2 frame name. A tag with a 5-minute divergent low is the entry; MSTR carries a second line (${num(W.lines[0][2], W.src)}).`], src: W.src},
+  {h: "The 5-minute entry scanner", w: `every ${V5.intervalS}s in session · div5m_live.py · fires ${V5.line}`,
+   li: [`${V5.rule}.`,
+        `Every line carries the BTC frame state and the <b>catalyst tier</b> (${CG.tier} = ${CG.keywords}); a stage-5/6 name with a ${CG.tier} flag and a 5m divergence = size up.`,
+        `Template: ${V5.template.sym} ${V5.template.d} ${V5.template.t} at ${num(V5.template.px, V5.src)}. Backtest so far: ${num(V5.symbols, V5.src)} names × ${num(V5.sessions, V5.src)} sessions, n ${num(V5.events.toLocaleString(), V5.src)}, 60-min lift ${num(sgn(V5.liftBh60, 2), V5.src)} pp — it is the <b>timing</b>, not the edge.`], src: V5.src + " · " + CG.src},
+  {h: "The ticket rules", w: "at every fill · options_frame.py before any ticket",
+   li: [`<b>Near the money</b>, ${num(T.dte[0], T.src)}–${num(T.dte[1], T.src)} DTE (his own ${num(T.dteTrips.toLocaleString(), T.src)} round trips: ${num(pct(T.dteRet, 1), T.src)} on cost at ${T.dte[0]}–${T.dte[1]} DTE vs ${num(pct(T.dte0Ret, 1), T.src)} at 0DTE).`,
+        `Size at the <b>5-minute low</b>, ${num(T.sizePct, T.src)}% tickets, max ${num(T.maxConc, T.src)} open, keep ${num(T.cashPct, T.src)}% cash. Exits <b>by halves</b> into the pop; the runner rides.`,
+        `<span class="rule">Kills:</span> ${T.kills.join(" · ")}.`], src: T.src},
+  {h: "The pulse", w: `every ${num(P.periodS, P.src)}s · ${P.window} · session_pulse.py`,
+   li: [`${P.to}.`, `A watcher sends it, not a hand. Outside the session it only writes its beat.`], src: P.src},
+  {h: "The lab", w: `${num(LB.workers, LB.src)} launchd workers · qlab/lab`,
+   li: [`Families in the pool: ${LB.families.map(f => `<code>${f}</code>`).join(" ")}.`,
+        `${LB.topup}. The <code>btc_frame</code> family asks every result "does it hold with BTC over its 50-week".`], src: LB.src},
+  {h: "The weekend runs", w: `backfill every ${num(WK.backfillEveryH, WK.src)}h · GBM walk-forward · bars widen ${WK.widen}`,
+   li: [`<b>5-minute backfill</b>: ${num(WK.names, WK.src)} names (frame + most liquid) from ${WK.since}, ${WK.feed}, resumable — ${num(WK.freeGb, WK.src)} GB free.`,
+        `<b>${WK.gbm.tool}</b>, walk-forward by year ${WK.gbm.years} with a ${num(WK.gbm.purge, WK.src)}-session purge; targets ${WK.gbm.targets.join(" · ")}; AUC, Brier skill, top-decile lift, permutation + shap.`], src: WK.src},
+  {h: "The catalyst gate", w: "on every news poll · qlab/catalyst_gate.py",
+   li: [`${CG.tier} regulatory headline (${CG.keywords}) on a frame name → a name flag in catalyst_flags.json.`,
+        `<b>A ${CG.tier} on a stage-5/6 name is a ticket, not a log line.</b> The SEC tokenized-assets story was on the feed Thursday 01:59 CT; the fix is structural.`], src: CG.src}
+];
+function buildCards() {
+  const root = $("#cards");
+  CARDS.forEach((c, i) => {
+    const d = document.createElement("div"); d.className = "card";
+    let lines = "";
+    if (c.lines) lines = `<div class="lines">${c.lines.map(l => `<div><b>${l[0]}</b><span>${num(l[1], W.src)}</span></div>`).join("")}</div>`;
+    d.innerHTML = `<div class="n">${String(i + 1).padStart(2, "0")}</div><div class="h">${c.h}</div><div class="w">${c.w}</div>${lines}<ul>${c.li.map(x => `<li>${x}</li>`).join("")}</ul><div class="src">source: ${c.src}</div>`;
+    root.appendChild(d);
+  });
+}
+
+/* ============================================================
+   3 · WHAT PAYS / WHAT DOESN'T
+   ============================================================ */
+function buildVerdicts() {
+  const Vd = DATA.verdicts, svg = $("#vsvg");
+  const rows = Vd.rows, rowH = 62, top = 26, x0 = 560, scale = 120; // px per pp
+  const maxAbs = Math.max(...rows.map(r => Math.abs(r.ci ? Math.max(Math.abs(r.ci[0]), Math.abs(r.ci[1])) : r.v)));
+  const sc = Math.min(scale, 330 / maxAbs);
+  el("line", {x1: x0, y1: top - 10, x2: x0, y2: top + rows.length * rowH, "class": "vzero"}, svg);
+  txt(svg, x0, top - 14, "0", "vsub", "middle");
+  txt(svg, x0 + 2 * sc, top - 14, "+2 pp", "vsub", "middle"); txt(svg, x0 - 2 * sc, top - 14, "−2 pp", "vsub", "middle");
+  rows.forEach((r, i) => {
+    const y = top + i * rowH + 30, w = Math.abs(r.v) * sc, col = r.v >= 0 ? "var(--green)" : "var(--red)";
+    el("line", {x1: 20, y1: y + 22, x2: 980, y2: y + 22, stroke: "var(--rule)"}, svg);
+    txt(svg, 20, y - 2, r.k, "vlab");
+    txt(svg, 20, y + 15, r.s, "vsub");
+    el("rect", {x: r.v >= 0 ? x0 : x0 - w, y: y - 14, width: Math.max(w, 2), height: 18, fill: col, opacity: .85}, svg);
+    if (r.ci) { const a = x0 + r.ci[0] * sc, b = x0 + r.ci[1] * sc; el("line", {x1: a, y1: y - 5, x2: b, y2: y - 5, "class": "vci"}, svg); el("line", {x1: a, y1: y - 10, x2: a, y2: y, "class": "vci"}, svg); el("line", {x1: b, y1: y - 10, x2: b, y2: y, "class": "vci"}, svg); }
+    const vx = r.v >= 0 ? Math.max(x0 + w, r.ci ? x0 + r.ci[1] * sc : 0) + 10 : x0 + 10;
+    const vt = txt(svg, vx, y, sgn(r.v, 2) + " pp", "vval", "start"); vt.setAttribute("fill", col);
+  });
+  // IC panel
+  const ic = Vd.ic, s2 = $("#icsvg"), bw = 26, gap = 6, base = 160, scale2 = 1800;
+  s2.setAttribute("viewBox", "0 0 1000 230");
+  txt(s2, 20, 24, "Trend IC (" + ic.horizon + ") — BTC over the 50-week vs under · " + ic.studies + " studies · " + ic.names + " names", "vlab");
+  txt(s2, 20, 44, "significant cells: over " + ic.sig.over[0] + "/" + ic.sig.over[1] + " · under " + ic.sig.under[0] + "/" + ic.sig.under[1] + " · the block carries " + ic.mult + " the information in the frame", "vsub");
+  el("line", {x1: 20, y1: base, x2: 980, y2: base, "class": "vzero"}, s2);
+  ic.rows.forEach((r, i) => {
+    const cx = 120 + i * 300;
+    const ho = r.over * scale2, hu = r.under * scale2;
+    el("rect", {x: cx, y: ho >= 0 ? base - ho : base, width: bw, height: Math.max(Math.abs(ho), 1.5), fill: "var(--blue)"}, s2);
+    el("rect", {x: cx + bw + gap, y: hu >= 0 ? base - hu : base, width: bw, height: Math.max(Math.abs(hu), 1.5), fill: "#4a4a4a"}, s2);
+    txt(s2, cx, base - Math.max(ho, 0) - 8, sgn(r.over, 3), "vval").setAttribute("fill", "var(--blue)");
+    txt(s2, cx + bw + gap + bw + 6, base - Math.max(hu, 0) - 8 + (hu < 0 ? 26 : 0), sgn(r.under, 3), "vval").setAttribute("fill", "var(--mute)");
+    txt(s2, cx, base + 30, r.f, "vlab");
+    txt(s2, cx, base + 48, "over  ·  under", "vsub");
+  });
+  $("#vnote").innerHTML = `<b>Read it plainly:</b> the <b>structure</b> (a year under the 50 → volume breakout → first retest) is the part of the method that pays; the divergence <b>flags</b> subtract on their own; the 5-minute entry is timing, not lift. In the frame, buy strength at the first pullback — never the falling knife. ${Vd.betaNote.text} <span class="m">source: ${Vd.src} · ${ic.src}</span>`;
+}
+
+/* ============================================================
+   4 · SOURCES + header
+   ============================================================ */
+function buildSources() {
+  const seen = new Set(), out = [];
+  const add = s => s.split(" · ").forEach(p => { p = p.trim(); if (p && !seen.has(p)) { seen.add(p); out.push(p); } });
+  [DATA.plan, "memory/project-btc-frame-playbook-20260918.md", C.src, CELL.src, B.src, F.src, W.src, V5.src, CG.src, T.src, P.src, LB.src, WK.src, DATA.verdicts.src, DATA.verdicts.ic.src].forEach(add);
+  $("#sources").innerHTML = out.map(s => `<li><code>${s}</code></li>`).join("");
+  $("#subline").innerHTML = `${DATA.author} · ${DATA.asof} · the plan text is <a href="/static/btc_frame_plan_20260918.html">btc_frame_plan_20260918.html</a> · tap any dotted number for its file`;
+  $("#foot").textContent = "Gross of fees. Backtests are the map, forward results are the territory. Not advice. Built " + DATA.asof + " by " + DATA.author + ".";
+}
+
+/* ============================================================
+   boot
+   ============================================================ */
+(function boot() {
+  const {price, L, tAtX} = buildChart();
+  priceEl = price; priceLen = L;
+  buildStagesAndCaptions(tAtX);
+  buildCards(); buildVerdicts(); buildSources();
+  anims = allAnims();
+  const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || !document.getAnimations) { paint(D_S); done = true; playing = false; $("#play").textContent = "Replay"; return; }
+  // #t=<seconds> or #t=end — open on a frozen frame (a still for a text, or a proof screenshot)
+  const m = /[#?&]t=(end|[\d.]+)/.exec(location.hash + location.search);
+  if (m) { const t = m[1] === "end" ? D_S : Math.min(D_S, +m[1]); playing = false; seek(t); $("#play").textContent = t >= D_S - .02 ? "Replay" : "Play"; if (t >= D_S - .02) done = true; return; }
+  raf = requestAnimationFrame(loop);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { if (raf) cancelAnimationFrame(raf); raf = 0; } else if (playing && !raf) raf = requestAnimationFrame(loop); });
+})();
+</script>
+</body>
+</html>
